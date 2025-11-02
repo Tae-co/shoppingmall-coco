@@ -9,7 +9,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-
 	//스프링 기본 인증 작업 끄기
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
