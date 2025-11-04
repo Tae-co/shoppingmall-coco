@@ -109,7 +109,7 @@ const Header = () => {
                 <Route path="/login" />
                 <Route path="/shop" />
                 <Route path="/comate" />
-                <Route path="/cart" element={<Cart />}/>
+                <Route path="/cart" />
             </Routes>
         </div>
     );

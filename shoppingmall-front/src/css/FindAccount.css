@@ -1,0 +1,188 @@
+.find-account-container {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%), white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.find-account-card {
+  width: 448px;
+  min-height: 320px;
+  position: relative;
+  background: white;
+  border-radius: 14px;
+  outline: 1px solid rgba(0, 0, 0, 0.10);
+  outline-offset: -1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.find-account-header {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.back-button {
+  width: fit-content;
+  height: 32px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #0A0A0A;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.back-button:hover {
+  background: transparent;
+}
+
+.back-button img {
+  width: 16px;
+  height: 16px;
+}
+
+.find-account-title {
+  color: #0A0A0A;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 16px;
+  margin: 0 0 8px 0;
+  text-align: left;
+}
+
+.find-account-subtitle {
+  color: #717182;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+  text-align: left;
+}
+
+.find-account-body {
+  padding: 0 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.tab-container {
+  width: 100%;
+  height: 36px;
+  padding: 3.5px 3px;
+  background: #ECECF0;
+  border-radius: 14px;
+  display: flex;
+  gap: 0;
+  position: relative;
+  align-items: center;
+}
+
+.tab-button {
+  flex: 1;
+  height: 29px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 14px;
+  color: #0A0A0A;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.tab-button.active {
+  background: white;
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.find-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.find-account-form .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.find-account-form .input-group label {
+  color: #0A0A0A;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.find-account-input {
+  width: 100%;
+  height: 36px;
+  padding: 4px 12px;
+  background: #F3F3F5;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #717182;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.find-account-input::placeholder {
+  color: #717182;
+}
+
+.find-account-input:focus {
+  outline: none;
+  border-color: #155DFC;
+  background: white;
+}
+
+.verify-button {
+  width: 100%;
+  height: 36px;
+  background: #030213;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0;
+}
+
+.verify-button:hover {
+  background: #1a1a2e;
+}
+
