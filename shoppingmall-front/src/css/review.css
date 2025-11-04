@@ -1,0 +1,179 @@
+.reviewBox {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.reviewMain {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.reviewForm {
+    padding: 30px 40px;
+}
+
+.title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.title h4 {
+    font-size: 16px;
+    font-weight: 400;
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+.starContainer,
+.tagBox,
+.textBox,
+.fileBox,
+.buttonBox {
+    margin-bottom: 30px;
+}
+
+.starContainer h5,
+.tagBox h5,
+.textBox h5,
+.fileBox h5 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.starContainer div {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.starIcon {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    margin-right: 4px;
+}
+
+.tagsTitle {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.warnText {
+    /* warnStarTags가 렌더링될 때의 스타일 */
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #d9534f;
+    /* 경고색 */
+    padding-bottom: 10px;
+}
+
+.tagContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tagBtn {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #f7f7f7;
+    color: #444;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tagBtn:hover {
+    background-color: #e9e9e9;
+}
+
+.tagBtnactive {
+
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 150px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+    /* padding을 포함하여 width 100% */
+    resize: none;
+}
+
+.fileBox input[type="file"] {
+    /* 기본 파일 인풋 숨기기 (커스텀 버튼 필요 시) */
+    /* display: none; */
+    margin-top: 10px;
+}
+
+.fileInfo {
+    font-size: 14px;
+    color: #777;
+    margin-top: 10px;
+}
+
+.buttonBox {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.buttonBox button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.buttonBox button:first-child {
+    /* 취소 버튼 */
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.buttonBox button:last-child {
+    /* 리뷰등록 버튼 */
+    background-color: #007bff;
+    color: white;
+}
+
+.viewBox{
+    width: 400px;
+    height: 300px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
