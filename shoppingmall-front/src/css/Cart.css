@@ -1,0 +1,135 @@
+/* ===== 전체 컨테이너 ===== */
+.cart-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+
+/* ===== 제목 ===== */
+.cart-container h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* ===== 상품 행 ===== */
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 15px 0;
+}
+
+/* 왼쪽: 상품명, 가격 */
+.cart-item-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cart-item-left h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.cart-price {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* 오른쪽: 수량 및 삭제 버튼 */
+.cart-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===== 수량 조절 ===== */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background-color: transparent;
+}
+
+.quantity-control span {
+  min-width: 20px;
+  text-align: center;
+  font-size: 1rem;
+  color: #333;
+}
+
+.quantity-control button {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantity-control button:hover {
+  background-color: #eaeaea;
+}
+
+/* ===== 삭제 버튼 ===== */
+.remove-btn {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+  background-color: #ff4d4d;
+}
+
+/* ===== 총 금액 ===== */
+.cart-total {
+  text-align: right;
+  font-size: 1.2rem;
+  color: #222;
+  margin-top: 25px;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 15px;
+  font-weight: bold;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 600px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cart-actions {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .cart-total {
+    text-align: left;
+  }
+}
