@@ -1,0 +1,33 @@
+.home_content {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.category_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 100px;
+}
+.category_list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 120px;
+}
+.clickable_area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+.clickable_area img {
+    width: 70px;
+    margin-bottom: 15px;
+}
+.popular_product_wrapper, .comate_recommend_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 100px;
+}

@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
 import {NavLink, Link, Routes, Route} from 'react-router-dom';
+
 import Logo from '../images/logo.png';
+
 import '../css/Header.css';
 
+import Home from '../pages/Home';
 
 const Header = () => {
 
@@ -104,10 +107,10 @@ const Header = () => {
             
             {/* 라우트 매핑 */}
             <Routes>
-                <Route path="/" />
+                <Route path="/" element={<Home/>}/>
                 <Route path="/login" />
                 <Route path="/shop" />
-                <Route path="/comate" />
+                <Route path="/comate"/>
                 <Route path="/cart" />
             </Routes>
         </div>
