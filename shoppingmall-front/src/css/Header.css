@@ -1,3 +1,4 @@
+body { overflow-x: hidden; }
 body, button, dd, div, dl, dt, fieldset, figcaption, figure, form, 
 h1, h2, h3, h4, h5, h6, input, legend, li, ol, p, select, table, td, textarea, th, ul {
     margin: 0;
@@ -23,7 +24,8 @@ ul {
 .header_top .top_inner {
     display: flex;
     height: 14px;
-    padding: 8px 40px 0;
+    padding: 8px 40px;
+    box-sizing: border-box;
 }
 .header_top .top_list {
     align-items: center;
