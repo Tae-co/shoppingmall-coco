@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
 import FindAccount from './pages/FindAccount';
+import MyPage from './pages/MyPage';
 
 function App() {
   const location = useLocation();
@@ -19,6 +20,7 @@ function App() {
         <Route path="/signup/terms" element={<SignupTerms />} />
         <Route path="/signup/info" element={<SignupInfo />} />
         <Route path="/find-account" element={<FindAccount />} />
+        <Route path="/mypage" element={<MyPage />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>
