@@ -13,7 +13,7 @@ import SimpleSlider from './SimpleSlider'; // 슬라이더 컴포넌트
 const Home = () => {
 
     const navigate = useNavigate();
-    
+
     // 카테고리 클릭-> 카테고리 페이지로 이동 (임시 경로)
     // 현재 path는 빈 문자열
     const navigateToCategory = (category) => {
@@ -29,12 +29,11 @@ const Home = () => {
                 {/* 카테고리 영역 */}
                 <div className="category_wrapper">
                     <ul className="category_list">
-                            <li className="category_item">
-                                <div className="clickable_area" onClick={() => navigateToCategory('skincare')}>
-                                <img src={skincareImg} alt="category_img"/><div>SKIN CARE</div>
-                                </div>
-                            </li>
-                        
+                        <li className="category_item">
+                            <div className="clickable_area" onClick={() => navigateToCategory('skincare')}>
+                            <img src={skincareImg} alt="category_img"/><div>SKIN CARE</div>
+                            </div>
+                        </li>
                         <li className="category_item">
                             <div className="clickable_area" onClick={() => navigateToCategory('makeup')}>
                             <img src={makeupImg} alt="category_img"/><div>MAKE UP</div>
