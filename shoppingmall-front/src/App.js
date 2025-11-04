@@ -1,15 +1,30 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react"
 import './App.css';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Cart from './pages/Cart';
+import Login from './pages/Login';
+import SignupTerms from './pages/SignupTerms';
+import SignupInfo from './pages/SignupInfo';
+import FindAccount from './pages/FindAccount';
+
 
 function App() {
+  const location = useLocation();
+  const hideHeaderFooter = ['/login', '/signup/terms', '/signup/info', '/find-account'].includes(location.pathname);
+
   return (
     <div className="App">
-      <Header />
-      <Footer />
+      {!hideHeaderFooter && <Header />}
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup/terms" element={<SignupTerms />} />
+        <Route path="/signup/info" element={<SignupInfo />} />
+        <Route path="/find-account" element={<FindAccount />} />
+        <Route path="/cart" element={<Cart />} />
+      </Routes>
+      {!hideHeaderFooter && <Footer />}
     </div>
   );
 }
