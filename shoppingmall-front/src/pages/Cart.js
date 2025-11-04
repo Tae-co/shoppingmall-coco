@@ -1,78 +1,121 @@
 import React, { useState } from "react";
-import "../css/Cart.css"; // ✅ CSS 불러오기
+import "../css/Cart.css";
+import OrderSteps from "../components/OrderSteps.js";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([
-    { id: 1, name: "토너", price: 15000, quantity: 1 },
-    { id: 2, name: "에센스", price: 25000, quantity: 2 },
+    {
+      id: 1,
+      brand: "글로우 뷰티",
+      name: "히알루론산 수분 세럼",
+      price: 45000,
+      quantity: 2,
+      image: "/images/serum.jpg",
+    },
+    {
+      id: 2,
+      brand: "립 스튜디오",
+      name: "매트 립스틱 컬렉션",
+      price: 25000,
+      quantity: 1,
+      image: "/images/lipstick.jpg",
+    },
+    {
+      id: 3,
+      brand: "에이지리즈",
+      name: "안티에이징 페이스 크림",
+      price: 72000,
+      quantity: 1,
+      image: "/images/cream.jpg",
+    },
   ]);
 
-  // 수량 증가
   const increaseQuantity = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
+    setCartItems((prev) =>
+      prev.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  // 수량 감소
   const decreaseQuantity = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
+    setCartItems((prev) =>
+      prev.map((item) =>
         item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
+          ? { ...item, quantity: item.quantity - 1 } 
           : item
       )
     );
   };
 
-  // 상품 삭제
   const removeItem = (id) => {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
-  // 총합 계산
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
   return (
-    <div className="cart-container">
-      <h2>🛒 장바구니</h2>
-      {cartItems.length === 0 ? (
-        <p>장바구니가 비어있습니다.</p>
-      ) : (
-        <div>
-          {cartItems.map((item) => (
-            <div key={item.id} className="cart-item">
-              {/* 상품 정보 */}
-              <div className="cart-item-left">
-                <h3>{item.name}</h3>
-                <span className="cart-price">
-                  가격: {item.price.toLocaleString()}원
-                </span>
-              </div>
+    <div className="order-page">
+      <h2 className="order-title">주문하기</h2>
 
-              {/* 수량 및 삭제 버튼 */}
-              <div className="cart-actions">
-                <div className="quantity-control">
+      <OrderSteps currentStep={1} />
+
+      <div className="cart-grid">
+        {/* 장바구니 목록 */}
+        <div className="cart-list">
+          <h3 className="section-title">장바구니 ({cartItems.length})</h3>
+
+          {cartItems.map((item) => (
+            <div key={item.id} className="cart-card">
+              <img src={item.image} alt={item.name} className="cart-image" />
+              <div className="cart-info">
+                <p className="brand">{item.brand}</p>
+                <p className="product-name">{item.name}</p>
+                <p className="price">₩{item.price.toLocaleString()}</p>
+                <div className="quantity-box">
                   <button onClick={() => decreaseQuantity(item.id)}>-</button>
                   <span>{item.quantity}</span>
                   <button onClick={() => increaseQuantity(item.id)}>+</button>
                 </div>
+              </div>
+              <div className="cart-summary-item">
+                <p className="subtotal">
+                  소계: ₩{(item.price * item.quantity).toLocaleString()}
+                </p>
                 <button className="remove-btn" onClick={() => removeItem(item.id)}>
-                  삭제
+                  🗑
                 </button>
               </div>
             </div>
           ))}
-          <h3 className="cart-total">
-            총 금액: {totalPrice.toLocaleString()}원
-          </h3>
         </div>
-      )}
+
+        {/* 주문 요약 */}
+        <div className="order-summary">
+          <h3>주문 요약</h3>
+          <div className="summary-row">
+            <span>상품 금액</span>
+            <span>₩{totalPrice.toLocaleString()}</span>
+          </div>
+          <div className="summary-row">
+            <span>배송비</span>
+            <span>무료</span>
+          </div>
+          <hr />
+          <div className="summary-row total">
+            <span>총 결제 금액</span>
+            <strong>₩{totalPrice.toLocaleString()}</strong>
+          </div>
+          <button className="checkout-btn">주문하기</button>
+          <p className="summary-note">
+            * 주문 전 재고 확인이 필요할 수 있습니다.<br />
+            * 배송은 영업일 기준 2~3일 소요됩니다.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

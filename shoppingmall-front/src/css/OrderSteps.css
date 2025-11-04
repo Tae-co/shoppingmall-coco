@@ -1,0 +1,57 @@
+.order-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  margin: 40px 0 60px;
+  position: relative;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-weight: 600;
+  background-color: #fff;
+}
+
+.circle.active {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.step-text {
+  margin-left: 12px;
+  text-align: left;
+}
+
+.step-title {
+  font-weight: 600;
+  color: #222;
+}
+
+.step-desc {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* 단계 사이의 연결선 */
+.line {
+  width: 80px;
+  height: 2px;
+  background-color: #ccc;
+  margin: 0 20px;
+  border-radius: 1px;
+}

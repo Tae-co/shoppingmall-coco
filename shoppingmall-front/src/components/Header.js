@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {NavLink, Link, Routes, Route} from 'react-router-dom';
 import Logo from '../images/logo.png';
 import '../css/Header.css';
+import Cart from "../pages/Cart";
 
 
 const Header = () => {
@@ -108,7 +109,7 @@ const Header = () => {
                 <Route path="/login" />
                 <Route path="/shop" />
                 <Route path="/comate" />
-                <Route path="/cart" />
+                <Route path="/cart" element={<Cart />}/>
             </Routes>
         </div>
     );
