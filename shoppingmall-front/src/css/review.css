@@ -125,13 +125,10 @@
     font-size: 14px;
     resize: vertical;
     box-sizing: border-box;
-    /* padding을 포함하여 width 100% */
     resize: none;
 }
 
 .fileBox input[type="file"] {
-    /* 기본 파일 인풋 숨기기 (커스텀 버튼 필요 시) */
-    /* display: none; */
     margin-top: 10px;
 }
 
@@ -169,11 +166,114 @@
     color: white;
 }
 
-.viewBox{
+.viewBox {
     width: 400px;
     height: 300px;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    margin-right: 30px;
+}
+
+
+.fileError {
+    font-size: 14px;
+    font-weight: 500;
+    color: #d9534f;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.scrollable-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin-top: 10px;
+    background-color: #fafafa;
+    border-radius: 8px;
+    min-height: 170px;
+    max-width: 1328px;
+}
+
+.preview-component {
+    position: relative;
+    width: 300px;
+    height: 350px;
+    flex-shrink: 0;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 찌그러짐 방지 */
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.delete-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
+.addImgBtn {
+    width: 300px;
+    height: 350px;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-left: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.addImgBtn:hover {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.addImgBtn img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    margin-top: 10px;
+}
+
+.addImgBtn span {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
 }

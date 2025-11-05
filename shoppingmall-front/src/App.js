@@ -1,11 +1,16 @@
 import './App.css';
 import Review from './pages/Review.js';
+import UpdateReview from './pages/UpdateReview.js';
+import {Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <Review/>
-    </div>
+
+    <Routes>
+      <Route path="/reviews" element={<Review />} />
+      <Route path="/update-reviews" element={<UpdateReview />} />
+    </Routes>
+
   );
 }
 

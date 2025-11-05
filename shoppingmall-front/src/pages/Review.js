@@ -1,9 +1,12 @@
-import react, { useState, useRef, use } from "react";
+import react, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
 import '../css/review.css'
 function Review() {
+
+    const [text, setText] = useState(""); // 리뷰 텍스트를 위한 state
 
     const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
         , "흡수가 빨라요", "끈적임 없어요", "피부 진정", "화이트닝 효과"
@@ -19,14 +22,13 @@ function Review() {
     const starArray = [1, 2, 3, 4, 5]; // 별 인덱스 
     const [starTotal, setStar] = useState(0); // 별 점수 초기 상태
 
-    // 별 체크 및 별 갯수
+    // 별 개수
     const starScore = index => {
         let stars = [...starArray];
 
         for (let i = 0; i < 5; i++) {
             stars[i] = i <= index ? true : false;
         }
-
         setClicked(stars);
 
         let total = index + 1;
@@ -80,50 +82,109 @@ function Review() {
     };
 
     const ref = useRef(null);
-    const [fileReader, setFileReader] = useState();
+    const [previewFiles, setPreviewFiles] = useState([]); // {id, url} 객체 배열
+    const [fileError, setFileError] = useState("");
 
-    const encodeFile = (imgFile) => {
-        const reader = new FileReader();
+    const processFile = (file) => {
 
-        if (!imgFile) {
-            return;
+        return new Promise((resolve, reject) => {
+
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                resolve({
+                    id: crypto.randomUUID(), // 고유 ID
+                    url: event.target.result, // 미리보기 URL
+                    file: file
+                });
+            };
+            // 파일이 성공적으로 입력이 되었을 때 id, url, file를 만든다.
+
+            // 에러가 발생시 error 메시지 만든다.
+            reader.onerror = (error) => reject(error);
+
+            //파일을 읽는 작업 실행 
+            reader.readAsDataURL(file);
+
+
+        });
+    };
+
+    const handleFileChange = async (e) => {
+        const newFiles = Array.from(e.target.files);
+        if (newFiles.length === 0) return;
+
+        const currentCount = previewFiles.length;
+        const remainingSlots = 5 - currentCount;
+
+        if (newFiles.length > remainingSlots) {
+            setFileError(`최대 5개까지만 첨부할 수 있습니다. ${remainingSlots}개만 추가됩니다.`);
+            newFiles.splice(remainingSlots);
+        } else {
+            setFileError("");
         }
+        const newFileObjects = await Promise.all(newFiles.map(processFile));
+        setPreviewFiles(prevFiles => [...prevFiles, ...newFileObjects]);
 
-        reader.readAsDataURL(imgFile);
+        e.target.value = null;
+    };
 
-        return new Promise((resolve) => {
-            reader.onload = () => {
-                const result = reader.result;
+    const handleDelete = (idToDelete) => {
+        setPreviewFiles(prevFiles =>
+            prevFiles.filter(file => file.id !== idToDelete)
+        );
+        if (previewFiles.length - 1 < 5) {
+            setFileError("");
+        }
+    };
 
-                setFileReader(result);
-            }
-        })
-    }
+    const handleAddImageClick = () => {
+        if (previewFiles.length < 5) {
+            setFileError("");
+            ref.current.click();
+        } else {
+            setFileError("최대 5개까지만 첨부할 수 있습니다.");
+        }
+    };
 
-    const onFileReaderChange = (e) => {
-        const { files } = e.target;
 
-        if (!files || !files[0]) return;
+    const handleSubmit = (event) => {
 
-        const uploadImage = files[0];
-        encodeFile(uploadImage);
-    }
+        event.preventDefault();
+        const formData = new FormData();
 
-    const onClick = () => {
-        ref.current.click();
-    }
+        formData.append("starRating", starTotal);
+        formData.append("reviewText", text);
 
+        const positiveTags = ptags.filter((tag, index) => ptagsClicked[index]);
+        const negativeTags = ntags.filter((tag, index) => ntagsClicked[index]);
+
+        formData.append("goodTags", JSON.stringify(positiveTags));
+        formData.append("badTags", JSON.stringify(negativeTags));
+
+        previewFiles.forEach((pf, index) => {
+            formData.append(`images`, pf.file);
+        });
+
+        console.log("--- 폼 제출 데이터 ---");
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
+        console.log("----------------------");
+
+        alert("리뷰 등록 로직이 호출되었습니다. (콘솔을 확인하세요)");
+    };
 
     return (
         <div className="reviewBox">
-            <div calssName="reviewMain">
-                <div className="reviewForm">
+            <div className="reviewMain">
+                <form className="reviewForm" onSubmit={handleSubmit}>
                     <div className="title">
                         <h1>리뷰 작성</h1>
                         <h4>제품을 사용해보신 경험을 공유해주세요</h4>
                     </div>
 
-                    <div calssName="starContainer">
+                    <div className="starContainer">
                         {/* 별을 누를 때 마다 노란 색으로 채워야 됨, 별이 얼마나 채워졌는지 확인해야함 */}
                         <h5>별점을 선택해주세요.</h5>
                         <div>
@@ -144,7 +205,7 @@ function Review() {
                         {/* 버튼 형식의 태그  */}
                         <div className="tagContainer">
                             {ptags.map((tags, i) => (
-                                <button className={"tagBtn" + (ptagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ptoggleActive(i)}>{tags}</button>
+                                <button type="button" className={"tagBtn" + (ptagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ptoggleActive(i)}>{tags}</button>
                             ))}
                         </div>
                     </div>
@@ -158,36 +219,70 @@ function Review() {
 
                         {/* 버튼 형식의 태그  */}
                         <div className="tagContainer"> {ntags.map((tags, i) => (
-                            <button className={"tagBtn" + (ntagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ntoggleActive(i)}>{tags}</button>
+                            <button type="button" className={"tagBtn" + (ntagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ntoggleActive(i)}>{tags}</button>
                         ))} </div>
                     </div>
 
                     <div className="textBox">
                         {/* 최소 글자 수 못 넘겼을 때 나오는 글 표시 필요 */}
-                        <label htmlFor="{postText}">
+                        <label htmlFor="postText">
                             <h5>리뷰를 작성해주세요</h5>
                         </label>
                         <div>
                             <textarea
-                                className="textarea" id="postText" rows={40} cols={100} />
+                                className="textarea"
+                                id="postText"
+                                rows={30}
+                                placeholder="자세한 리뷰는 다른 분들께 큰 도움이 됩니다."
+                                value={text}
+                                minLength={1500}
+                                onChange={(e) => setText(e.target.value)}
+                            />
                         </div>
-                        {/* 최소글자 입력 경고 */}
                     </div>
 
                     <div className="fileBox">
-                        {/* 파일선택 버튼 바꾸기  */}
-                        <h5>사진 및 동영상 첨부(최대10개)</h5>
+                        <div className="scrollable-container">
+                            {/* 이미지 미리보기 컴포넌트 리스트 */}
+                            {previewFiles.map(preview => (
+                                <div key={preview.id} className="preview-component">
+                                    <img
+                                        src={preview.url}
+                                        alt="미리보기"
+                                        className="preview-image"
+                                    />
+                                    {/* 삭제 버튼 */}
+                                    <button type="button"
+                                        onClick={() => handleDelete(preview.id)}
+                                        className="delete-button"
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                            ))}
 
-                        <div className="viewBox">
-                            {fileReader ? (<img src={fileReader} alt="이미지 미리보기" />) : ("이미지 미리보기")}
+                            {/* 이미지 추가 버튼 (5개 미만일 때만 보임) */}
+                            {previewFiles.length < 5 && (
+                                <div className="addImgBtn" onClick={handleAddImageClick}>
+                                    <span>사진 추가 ({previewFiles.length}/5)</span>
+                                    <img src={addImg} />
+                                </div>
+                            )}
                         </div>
 
-                        <button onClick={onClick}>
-                            <input hidden type="file" id="image-uplaod" accept="image/*" onChange={onFileReaderChange} ref={ref} />
-                        </button>
+                        <input
+                            hidden
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            ref={ref}
+                        />
+
+                        {fileError && <div className="fileError">{fileError}</div>}
 
                         <div className="fileInfo" >
-                            <h5>이미지:JPG,PNG,GIF / 동영상: MP4, MOV</h5>
+                            <h5>이미지:JPG,PNG,GIF</h5>
                         </div>
 
                     </div>
@@ -196,10 +291,10 @@ function Review() {
                         {/* 취소 및 리뷰등록 버튼 바꾸기  */}
                         {/* 취소 선택시 상품 페이지로 */}
                         {/* 리뷰 등록 선택시 리뷰 등록 후 상품 페이지로 */}
-                        <button>취소</button>
-                        <button>리뷰등록</button>
+                        <Link path="/coco/products/{productId}"><button>취소</button></Link>
+                        <button type="submit">리뷰등록</button>
                     </div>
-                </div>
+                </form >
             </div>
         </div >
     )
