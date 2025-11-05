@@ -15,16 +15,27 @@ function OrderSteps({ currentStep = 1 }) {
         <React.Fragment key={step.id}>
           <div className="step">
             <div
-              className={`circle ${currentStep === step.id ? "active" : ""}`}
+              className={`circle 
+                ${currentStep === step.id ? "active" : ""}
+                ${currentStep > step.id ? "completed" : ""}
+              `}
             >
-              {step.id}
+              {currentStep > step.id ? "✓" : step.id}
             </div>
             <div className="step-text">
               <p className="step-title">{step.title}</p>
               <p className="step-desc">{step.desc}</p>
             </div>
           </div>
-          {index < steps.length - 1 && <div className="line"></div>}
+
+          {/* 선 표시 */}
+          {index < steps.length - 1 && (
+            <div
+              className={`line ${
+                currentStep > step.id ? "completed-line" : ""
+              }`}
+            ></div>
+          )}
         </React.Fragment>
       ))}
     </div>
