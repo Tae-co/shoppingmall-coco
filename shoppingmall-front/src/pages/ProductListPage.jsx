@@ -1,88 +1,470 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // 👈 상품 상세로 가려면 필요합니다.
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components';
+import ProductButton from '../components/product/ProductButton';
 
 // --- 가짜 데이터 (Mock Data) ---
 // (원래는 API로 받아와야 할 데이터)
 const mockProductListData = [
-  { 
-    prdNo: 1, 
-    prdName: '[JS] 히알루론산 세럼', 
-    prdPrice: 45000, 
-    imageUrl: 'https://picsum.photos/id/11/300/300', 
-    reviewCount: 3421, 
-    averageRating: 4.8,
-    skinTypes: ['dry', 'sensitive'], // 👈 필터용 데이터 (건성, 민감성)
-    skinConcerns: ['hydration', 'soothing'] // 👈 (수분, 진정)
-  },
-  { 
-    prdNo: 2, 
-    prdName: '[JS] 비타C C 토너', 
-    prdPrice: 52000, 
-    imageUrl: 'https://picsum.photos/id/12/300/300', 
-    reviewCount: 2166, 
-    averageRating: 4.5,
-    skinTypes: ['oily', 'combination'], // 👈 (지성, 복합성)
-    skinConcerns: ['brightening', 'pores'] // 👈 (미백, 모공)
-  },
-  { 
-    prdNo: 3, 
-    prdName: '[JS] 선크림 SPF50+', 
-    prdPrice: 25000, 
-    imageUrl: 'https://picsum.photos/id/13/300/300', 
-    reviewCount: 1500, 
-    averageRating: 4.7,
-    skinTypes: ['sensitive', 'dry'], // 👈 (민감성, 건성)
-    skinConcerns: ['uv', 'soothing'] // 👈 (자외선차단, 진정)
-  },
+ { prdNo: 1, prdName: '[JS] 히알루론산 세럼', prdPrice: 45000, imageUrl: 'https://picsum.photos/id/11/300/300', reviewCount: 3421, averageRating: 4.8, skinTypes: ['dry', 'sensitive'], skinConcerns: ['hydration', 'soothing'], regDate: '2025-11-01', simpleReview: '"수분감이 정말 좋아요! 인생템입니다."' },
+  { prdNo: 2, prdName: '[JS] 비타C C 토너', prdPrice: 52000, imageUrl: 'https://picsum.photos/id/12/300/300', reviewCount: 2166, averageRating: 4.5, skinTypes: ['oily', 'combination'], skinConcerns: ['brightening', 'pores'], regDate: '2025-11-03', simpleReview: '"피부톤이 밝아지는 느낌이에요."' },
+  { prdNo: 3, prdName: '[JS] 선크림 SPF50+', prdPrice: 25000, imageUrl: 'https://picsum.photos/id/13/300/300', reviewCount: 1500, averageRating: 4.7, skinTypes: ['sensitive', 'dry'], skinConcerns: ['uv', 'soothing'], regDate: '2025-11-02', simpleReview: '"백탁 현상 없고 순해서 매일 씁니다."' },
+  { prdNo: 4, prdName: '[JS] 딥 클렌징 오일', prdPrice: 28000, imageUrl: 'https://picsum.photos/id/14/300/300', reviewCount: 1200, averageRating: 4.6, skinTypes: ['dry', 'combination'], skinConcerns: ['hydration'], regDate: '2025-10-30', simpleReview: '"세정력이 좋아요."' },
+  { prdNo: 5, prdName: '[JS] 레티놀 크림', prdPrice: 75000, imageUrl: 'https://picsum.photos/id/15/300/300', reviewCount: 950, averageRating: 4.9, skinTypes: ['dry', 'combination'], skinConcerns: ['pores'], regDate: '2025-10-29', simpleReview: '"피부가 탱탱해지는 기분!"' },
+  { prdNo: 6, prdName: '[JS] 시카 진정 마스크', prdPrice: 3500, imageUrl: 'https://picsum.photos/id/16/300/300', reviewCount: 2500, averageRating: 4.7, skinTypes: ['sensitive'], skinConcerns: ['soothing'], regDate: '2025-11-04', simpleReview: '"붉은 기가 가라앉아요."' },
+  { prdNo: 7, prdName: '[JS] 쿠션 파운데이션 21호', prdPrice: 48000, imageUrl: 'https://picsum.photos/id/17/300/300', reviewCount: 1800, averageRating: 4.4, skinTypes: ['oily'], skinConcerns: ['pores'], regDate: '2025-10-28', simpleReview: '"커버력이 미쳤어요."' },
+  { prdNo: 8, prdName: '[JS] 아이래쉬 세럼', prdPrice: 22000, imageUrl: 'https://picsum.photos/id/18/300/300', reviewCount: 700, averageRating: 4.2, skinTypes: ['sensitive'], skinConcerns: ['hydration'], regDate: '2025-10-27', simpleReview: '"속눈썹이 길어지는 느낌."' },
+  { prdNo: 9, prdName: '[JS] 립 틴트 (로즈)', prdPrice: 18000, imageUrl: 'https://picsum.photos/id/19/300/300', reviewCount: 3100, averageRating: 4.6, skinTypes: ['dry'], skinConcerns: ['hydration'], regDate: '2025-11-05', simpleReview: '"색상이 너무 예뻐요."' },
+  { prdNo: 10, prdName: '[JS] 바디 로션', prdPrice: 19000, imageUrl: 'https://picsum.photos/id/20/300/300', reviewCount: 800, averageRating: 4.5, skinTypes: ['dry'], skinConcerns: ['hydration'], regDate: '2025-10-26', simpleReview: '"촉촉하고 향이 좋아요."' },
+  { prdNo: 11, prdName: '[JS] 각질 제거 패드', prdPrice: 23000, imageUrl: 'https://picsum.photos/id/21/300/300', reviewCount: 1600, averageRating: 4.6, skinTypes: ['oily', 'combination'], skinConcerns: ['pores'], regDate: '2025-10-25', simpleReview: '"피부가 매끈해졌어요."' },
+  { prdNo: 12, prdName: '[JS] 헤어 에센스', prdPrice: 31000, imageUrl: 'https://picsum.photos/id/22/300/300', reviewCount: 900, averageRating: 4.7, skinTypes: [], skinConcerns: ['hydration'], regDate: '2025-10-24', simpleReview: '머릿결이 부드러워져서 좋아요. 그런데 사람들마다 안맞을 수도 있으니 참고하시기 바랄께요.' },
 ];
 // ---------------------------------
 
-// --- 필터 옵션 정의 ---
+// --- 필터 옵션 및 태그 매핑 ---
 const filterOptions = {
-  skinTypes: [
-    { id: 'dry', label: '건성' },
-    { id: 'oily', label: '지성' },
-    { id: 'combination', label: '복합성' },
-    { id: 'sensitive', label: '민감성' },
-  ],
-  skinConcerns: [
-    { id: 'hydration', label: '수분/보습' },
-    { id: 'brightening', label: '미백' },
-    { id: 'pores', label: '모공' },
-    { id: 'soothing', label: '진정' },
-    { id: 'uv', label: '자외선차단' },
-  ]
+  skinTypes: [ { id: 'dry', label: '건성' }, { id: 'oily', label: '지성' }, { id: 'combination', label: '복합성' }, { id: 'sensitive', label: '민감성' } ],
+  skinConcerns: [ { id: 'hydration', label: '수분/보습' }, { id: 'brightening', label: '미백' }, { id: 'pores', label: '모공' }, { id: 'soothing', label: '진정' }, { id: 'uv', label: '자외선차단' } ]
+};
+const skinTypeMap = {
+  dry: '건성',
+  oily: '지성',
+  combination: '복합성',
+  sensitive: '민감성'
 };
 // ---------------------------------
 
-// (CSS를 위해 간단한 스타일 객체)
-const styles = {
-  pageContainer: { display: 'flex', padding: '20px' },
-  filterSidebar: { width: '200px', padding: '10px', borderRight: '1px solid #eee' },
-  filterGroup: { marginBottom: '20px' },
-  filterTitle: { fontSize: '16px', fontWeight: 'bold' },
-  filterLabel: { display: 'block', margin: '5px 0' },
-  mainContent: { flex: 1, paddingLeft: '20px' },
-  title: { fontSize: '24px', marginBottom: '20px' },
-  productList: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' },
-  productCard: { border: '1px solid #ddd', padding: '10px', textDecoration: 'none', color: 'black' },
-  productImage: { width: '100%', height: 'auto' },
-  productName: { fontSize: '18px', fontWeight: 'bold' },
-  productPrice: { fontSize: '16px', marginTop: '5px' },
-  productRating: { fontSize: '14px', color: '#666', marginTop: '5px' }
-};
+// 스타일 컴포넌트 정의
+
+// 스켈레톤 로딩 애니메이션
+const shimmer = keyframes`
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+`;
+
+// 스켈레톤 공통 스타일
+const SkeletonBase = styled.div`
+  background: #f0f0f0;
+  background-image: linear-gradient(to right, #f0f0f0 0%, #e8e8e8 20%, #f0f0f0 40%, #f0f0f0 100%);
+  background-repeat: no-repeat;
+  background-size: 800px 100%;
+  border-radius: 4px;
+  animation: ${shimmer} 1.5s linear infinite;
+`;
+
+// 스켈레톤 카드
+const SkeletonCard = styled.div`
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+`;
+
+const SkeletonImage = styled(SkeletonBase)`
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+`;
+
+const SkeletonContent = styled.div`
+  padding: 10px;
+`;
+
+const SkeletonText = styled(SkeletonBase)`
+  height: 20px;
+  margin-top: 10px;
+  &:first-child {
+    width: 80%;
+  }
+  &:last-child {
+    width: 50%;
+  }
+`;
+
+const PageContainer = styled.div`
+  display: flex;
+  padding: 20px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  /* 모바일 미디어 쿼리 추가 */
+  @media (max-width: 768px) {
+    /* 모바일에서는 좌우 여백 줄임 */
+    padding: 10px;
+  }
+`;
+
+// 필터 사이드바 스타일
+const Sidebar = styled.aside`
+  /* --- 데스크톱 스타일 --- */
+  width: 240px;
+  margin-right: 30px;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+
+  /* 모바일 스타일 */
+  @media (max-width: 768px) {
+    position: fixed; /* 화면에 고정 (컨텐츠 위로 뜸) */
+    left: 0;
+    top: 0;
+    width: 300px; /* 모바일에서 열릴 때 너비 */
+    height: 100%;
+    background: white;
+    z-index: 1000; /* 다른 요소들보다 위에 있도록 */
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    margin-right: 0;
+    
+    /* prop($isOpen) 값에 따라 보이고 숨겨짐 */
+    transform: ${props => (props.$isOpen ? 'translateX(0)' : 'translateX(-100%)')};
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto; /* 모바일에서도 스크롤 유지 */
+  }
+`;
+
+// 모바일 필터 닫기 버튼
+const CloseButton = styled.button`
+  display: none; /* 데스크톱에선 숨김 */
+
+  @media (max-width: 768px) {
+    display: block; /* 모바일에서만 보임 */
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #555;
+  }
+`;
+
+// 필터 열렸을 때 뒤쪽 컨텐츠 어둡게 하는 배경
+const Backdrop = styled.div`
+  display: none; /* 데스크톱에선 숨김 */
+
+  @media (max-width: 768px) {
+    display: ${props => (props.$isOpen ? 'block' : 'none')};
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999; /* 사이드바 바로 뒤 */
+  }
+`;
+
+const FilterTitle = styled.h3`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+`;
+
+const FilterGroup = styled.div`
+  margin-bottom: 25px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+`;
+
+const FilterGroupTitle = styled.h4`
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+`;
+
+// 체크박스를 감싸는 라벨을
+const FilterLabel = styled.label`
+  display: block;
+  margin-bottom: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  /* 마우스 올리면 살짝 연해지기 */
+  &:hover {
+    color: #555;
+  }
+`;
+
+// 기본 체크박스는 숨김
+const FilterCheckbox = styled.input.attrs({ type: 'checkbox' })`
+  display: none; 
+  
+  /* 체크됐을 때(checked)의 스타일을 라벨이 아닌,
+     체크박스 아이콘(:before)과 텍스트(span)에 적용 */
+  
+  /* 가짜 체크박스 아이콘 만들기 */
+  + span {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 10px;
+    position: relative;
+    top: -1px;
+  }
+  
+  /* 체크됐을 때 가짜 아이콘에 V 표시 */
+  &:checked + span {
+    background: #333;
+    border-color: #333;
+    &::before {
+      content: '✔';
+      color: white;
+      font-size: 12px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+`;
+
+const MainContent = styled.main`
+  flex: 1;
+`;
+
+// 검색창 스타일
+const SearchContainer = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+`;
+
+// 상품 개수와 정렬 필터를 담는 상단 바
+const TopBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+`;
+
+// 모바일용 필터 열기 버튼
+const FilterButton = styled.button`
+  display: none; /* 데스크톱에선 숨김 */
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    display: block; /* 모바일에서만 보임 */
+    margin-right: 10px;
+  }
+`;
+
+const TopBarControls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ProductCount = styled.span`
+  font-size: 16px;
+  font-weight: 600;
+  & strong {
+    color: #4e54c8; /* 포인트 컬러 */
+  }
+`;
+
+const SortSelect = styled.select`
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+`;
+
+const ProductListGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px; /* 간격 살짝 넓힘 */
+`;
+
+// Link 컴포넌트에 스타일 + :hover 효과
+const ProductCard = styled(Link)`
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px;
+  text-decoration: none;
+  color: black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  /* 마우스를 올리면 카드가 살짝 위로 이동하고 그림자가 진해짐 */
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ProductImage = styled.img`
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 4px;
+`;
+
+// 이미지 외의 컨텐츠를 감싸는 래퍼 (padding 적용)
+const CardContent = styled.div`
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* 카드의 남은 공간을 꽉 채움 */
+`;
+
+const ProductName = styled.h3`
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 10px;
+`;
+
+const ProductRating = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+`;
+
+// 피부 타입 태그
+const TagContainer = styled.div`
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+`;
+
+const Tag = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  background: #f0f0f0;
+  color: #555;
+  padding: 4px 8px;
+  border-radius: 4px;
+`;
+
+// 간단 리뷰
+const SimpleReview = styled.p`
+  font-size: 13px;
+  color: #555;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f5f5f5;
+  font-style: italic;
+
+  /* --- 말줄임표 스타일 --- */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 텍스트를 2줄로 제한 */
+  -webkit-box-orient: vertical;
+`;
+
+const ProductPrice = styled.p`
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  
+  /* lex-grow: 1과 함께 사용되어 가격을 맨 아래로 밀어냄 */
+  margin-top: auto; 
+  padding-top: 10px; /* 리뷰와의 간격 */
+`;
+
+// 페이지네이션 스타일
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px; /* 목록과 간격 */
+`;
+
+const PageButton = styled.button`
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: 1px solid ${props => (props.$active ? '#333' : '#ddd')};
+  background: ${props => (props.$active ? '#333' : 'white')};
+  color: ${props => (props.$active ? 'white' : '#333')};
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: ${props => (props.$active ? 'bold' : 'normal')};
+  
+  &:hover {
+    background: ${props => (props.$active ? '#333' : '#f0f0f0')};
+  }
+
+  &:disabled {
+    background: #f9f9f9;
+    color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+// -------------------------------
+
+// 스켈레톤 카드를 렌더링하는 컴포넌트
+const ProductListSkeleton = () => (
+  <ProductListGrid>
+    {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+      <SkeletonCard key={index}>
+        <SkeletonImage />
+        <SkeletonContent>
+          <SkeletonText />
+          <SkeletonText />
+        </SkeletonContent>
+      </SkeletonCard>
+    ))}
+  </ProductListGrid>
+);
+
+// 한 페이지에 보여줄 아이템 개수
+const ITEMS_PER_PAGE = 6;
 
 function ProductListPage() {
   // 상품 목록을 저장할 상태 (State)
   const [products, setProducts] = useState([]);
   // 로딩 중인지 알려줄 상태
   const [isLoading, setIsLoading] = useState(true);
+  // 모바일 필터 열림/닫힘 상태
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // 필터 상태 관리
-  const [activeFilters, setActiveFilters] = useState({
-    skinTypes: [],    // 예: ['dry', 'sensitive']
-    skinConcerns: []  // 예: ['hydration']
-  });
+  //  닫기 버튼을 참조할 ref 생성
+  const closeButtonRef = useRef(null);
+
+  // URL에서 현재 상태 읽어오기
+  const searchTerm = searchParams.get('q') || '';
+  const sortOrder = searchParams.get('sort') || 'popularity';
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const activeFilters = {
+    skinTypes: searchParams.getAll('skinType'),
+    skinConcerns: searchParams.getAll('skinConcern'),
+  };
 
   // 전체 상품 목록은 처음에 한 번만 불러오기
   useEffect(() => {
@@ -90,31 +472,89 @@ function ProductListPage() {
     setTimeout(() => {
       setProducts(mockProductListData);
       setIsLoading(false);
-    }, 1000);
+    }, 500);
   }, []);
 
-  // 필터 변경 핸들러
-  const handleFilterChange = (category, value) => {
-    // category: 'skinTypes' 또는 'skinConcerns'
-    // value: 'dry', 'hydration' 등
-    setActiveFilters(prevFilters => {
-      const currentValues = prevFilters[category]; // 현재 활성화된 필터 배열
-      let newValues;
+  // isFilterOpen 상태가 변경될 때 포커스를 제어하는 useEffect
+  useEffect(() => {
+    if (isFilterOpen) {
+      // 필터가 열리면, 0.1초 뒤 (애니메이션 끝날 무렵) 닫기 버튼에 포커스
+      setTimeout(() => {
+        closeButtonRef.current?.focus(); // .current가 실제 DOM 요소를 가리킴
+      }, 100); // 100ms 딜레이
+    }
+  }, [isFilterOpen]); // isFilterOpen이 바뀔 때마다 실행
 
-      if (currentValues.includes(value)) {
-        // 이미 체크되어 있으면 -> 체크 해제 (배열에서 제거)
-        newValues = currentValues.filter(item => item !== value);
+// 모든 핸들러 함수를 'setSearchParams'로 URL을 업데이트하도록 변경
+
+  // (Helper) URL 파라미터를 업데이트하는 공통 함수
+  const updateSearchParams = (newParams, resetPage = true) => {
+    // 현재 URL의 모든 파라미터를 복사
+    const params = new URLSearchParams(searchParams);
+    
+    // 새 파라미터 적용 (e.g., {q: '세럼'}, {sort: 'newest'})
+    for (const [key, value] of Object.entries(newParams)) {
+      if (value) {
+        params.set(key, value);
       } else {
-        // 체크 안되어 있으면 -> 체크 (배열에 추가)
-        newValues = [...currentValues, value];
+        params.delete(key); // 값이 없으면 URL에서 제거
       }
-      
-      return { ...prevFilters, [category]: newValues };
-    });
+    }
+    
+    // 페이지 변경이 아닌 경우, 1페이지로 리셋
+    if (resetPage) {
+      params.set('page', '1');
+    }
+    
+    setSearchParams(params);
+  };
+  
+  // (Helper) 배열(필터)을 위한 핸들러
+  const handleFilterChange = (category, value) => {
+    const currentValues = searchParams.getAll(category);
+    let newValues;
+
+    if (currentValues.includes(value)) {
+      newValues = currentValues.filter(item => item !== value);
+    } else {
+      newValues = [...currentValues, value];
+    }
+
+    const params = new URLSearchParams(searchParams);
+    params.delete(category); // 해당 카테고리 파라미터 모두 삭제
+    newValues.forEach(val => params.append(category, val)); // 새 값들만 다시 추가
+    params.set('page', '1'); // 1페이지로 리셋
+    setSearchParams(params);
   };
 
-  // 렌더링 직전에 필터링 로직 수행
-  const filteredProducts = products.filter(product => {
+  // 검색어 변경 핸들러
+  const handleSearchChange = (e) => {
+    updateSearchParams({ q: e.target.value });
+  };
+  
+  // 정렬 변경 핸들러
+  const handleSortChange = (e) => {
+    updateSearchParams({ sort: e.target.value });
+  };
+  
+  // 페이지 변경 핸들러
+  const handlePageChange = (pageNumber) => {
+    // (페이지 변경이므로, resetPage = false)
+    updateSearchParams({ page: pageNumber.toString() }, false); 
+  };
+
+  const handleAddToCart = (e) => {
+    e.preventDefault(); 
+    console.log('장바구니 담기 클릭!');
+  };
+
+  // 검색어 필터링
+  const searchedProducts = products.filter(product =>
+    product.prdName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // 활성 필터
+  const filteredProducts = searchedProducts.filter(product => {
     // 스킨타입 필터 검사
     const skinTypeMatch = activeFilters.skinTypes.length === 0 || // 선택된 필터가 없으면 모두 통과
       activeFilters.skinTypes.some(filterType => product.skinTypes.includes(filterType));
@@ -127,81 +567,172 @@ function ProductListPage() {
     return skinTypeMatch && skinConcernMatch;
   });
 
-  // 컴포넌트가 처음 렌더링될 때 API를 호출 (지금은 가짜 데이터 로드)
-  useEffect(() => {
-    // API 호출 시뮬레이션 (1초 지연)
-    setIsLoading(true);
-    setTimeout(() => {
-      setProducts(mockProductListData); // 가짜 데이터를 state에 저장
-      setIsLoading(false);
-    }, 1000); // 1초 뒤에 데이터가 들어온 것처럼
-  }, []); // [] (빈 배열) : 처음 한 번만 실행
+  // 정렬
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortOrder) {
+      case 'newest': return new Date(b.regDate) - new Date(a.regDate); // 최신순
+      case 'priceAsc': return a.prdPrice - b.prdPrice; // 가격 낮은 순
+      case 'priceDesc': return b.prdPrice - a.prdPrice; // 가격 높은 순
+      default: return b.reviewCount - a.reviewCount; // 인기순 (기본값)
+    }
+  });
 
-  // 로딩 중일 때 표시할 화면
-  if (isLoading) {
-    return <div style={styles.container}><h2>상품 목록을 불러오는 중...</h2></div>;
-  }
+  // 페이지네이션 로직
+  // 총 페이지 수 계산
+  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
+  // 현재 페이지에 보여줄 아이템 계산
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const paginatedProducts = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   // 로딩이 끝나고 상품을 화면에 그리기
   return (
-    <div style={styles.pageContainer}>
+    <PageContainer>
+      {/* 뒷배경. 클릭하면 필터 닫힘 */}
+      <Backdrop $isOpen={isFilterOpen} onClick={() => setIsFilterOpen(false)} />
       
-      {/* --- 필터 사이드바 UI --- */}
-      <aside style={styles.filterSidebar}>
-        <h3>필터</h3>
-        {/* 피부타입 필터 */}
-        <div style={styles.filterGroup}>
-          <h4 style={styles.filterTitle}>피부타입</h4>
-          {filterOptions.skinTypes.map(option => (
-            <label key={option.id} style={styles.filterLabel}>
-              <input 
-                type="checkbox" 
-                checked={activeFilters.skinTypes.includes(option.id)}
-                onChange={() => handleFilterChange('skinTypes', option.id)}
-              />
-              {option.label}
-            </label>
-          ))}
-        </div>
-        {/* 피부고민 필터 */}
-        <div style={styles.filterGroup}>
-          <h4 style={styles.filterTitle}>피부고민</h4>
-          {filterOptions.skinConcerns.map(option => (
-            <label key={option.id} style={styles.filterLabel}>
-              <input 
-                type="checkbox" 
-                checked={activeFilters.skinConcerns.includes(option.id)}
-                onChange={() => handleFilterChange('skinConcerns', option.id)}
-              />
-              {option.label}
-            </label>
-          ))}
-        </div>
-      </aside>
+      {/* $isOpen prop 전달 */}
+      <Sidebar $isOpen={isFilterOpen}>
+        {/* 닫기 버튼 */}
+        <CloseButton ref={closeButtonRef} onClick={() => setIsFilterOpen(false)}>
+          &times;
+        </CloseButton>
+
+      {/* --- 필터 사이드바 --- */}
+        <FilterTitle>필터</FilterTitle>
+        
+          {/* 피부타입 필터 */}
+          <FilterGroup>
+            <FilterGroupTitle>피부타입</FilterGroupTitle>
+            {filterOptions.skinTypes.map(option => (
+              <FilterLabel key={option.id}>
+                <FilterCheckbox 
+                  checked={activeFilters.skinTypes.includes(option.id)}
+                  onChange={() => handleFilterChange('skinType', option.id)}
+                />
+                <span></span>
+                {option.label}
+              </FilterLabel>
+            ))}
+          </FilterGroup>
+        
+          {/* 피부고민 필터 */}
+          <FilterGroup>
+            <FilterGroupTitle>피부고민</FilterGroupTitle>
+            {filterOptions.skinConcerns.map(option => (
+              <FilterLabel key={option.id}>
+                <FilterCheckbox 
+                  checked={activeFilters.skinConcerns.includes(option.id)}
+                  onChange={() => handleFilterChange('skinConcern', option.id)}
+                />
+                <span></span>
+                {option.label}
+              </FilterLabel>
+            ))}
+          </FilterGroup>
+          
+      </Sidebar>
 
       {/* --- 메인 상품 목록 --- */}
-      <main style={styles.mainContent}>
-        <h2 style={styles.title}>상품 목록 ({filteredProducts.length}개)</h2>
-        
-        {/* 정렬 UI가 들어갈 자리 */}
-        
-        <div style={styles.productList}>
-          {/* 'products' 대신 'filteredProducts'를 map으로 렌더링 */}
-          {filteredProducts.map((product) => (
-            <Link key={product.prdNo} to={`/products/${product.prdNo}`} style={styles.productCard}>
-              <img src={product.imageUrl} alt={product.prdName} style={styles.productImage} />
-              <h3 style={styles.productName}>{product.prdName}</h3>
-              <p style={styles.productPrice}>{product.prdPrice.toLocaleString()}원</p>
-              <p style={styles.productRating}>
-                ⭐ {product.averageRating} ({product.reviewCount})
-              </p>
-            </Link>
-          ))}
-        </div>
-        
-        {/* 페이지네이션 UI가 들어갈 자리 */}
-      </main>
-    </div>
+      <MainContent>
+        {/* 검색창 UI */}
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder="상품명으로 검색..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </SearchContainer>
+
+        {/* 상단 바 (상품 개수, 정렬) */}
+        <TopBar>
+          <TopBarControls>
+            {/* 필터 열기 버튼 */}
+            <FilterButton onClick={() => setIsFilterOpen(true)}>
+              필터
+            </FilterButton>
+            <ProductCount>
+              총 <strong>{filteredProducts.length}</strong>개 상품
+            </ProductCount>
+          </TopBarControls>
+          
+          <SortSelect 
+            value={sortOrder} 
+            onChange={handleSortChange}
+          >
+            <option value="popularity">인기순</option>
+            <option value="newest">최신순</option>
+            <option value="priceAsc">가격 낮은 순</option>
+            <option value="priceDesc">가격 높은 순</option>
+          </SortSelect>
+        </TopBar>
+
+        {/* --- 로딩 / 비어있음 / 데이터 있음 분기 --- */}
+        {isLoading ? (
+          // 로딩 중일 때: 스켈레톤 렌더링
+          <ProductListSkeleton />
+        ) : paginatedProducts.length === 0 ? (
+          // 로딩 끝 & 상품 0개일 때: 비어있는 상태
+          <div style={{ textAlign: 'center', padding: '80px 20px', color: '#888' }}>
+            <h3>검색 결과가 없습니다</h3>
+            <p>필터 조건을 다시 확인해 주세요.</p>
+          </div>
+        ) : (
+          // 로딩 끝 & 상품 있음: 실제 데이터
+          <>
+            <ProductListGrid>
+              {paginatedProducts.map((product) => (
+                <ProductCard key={product.prdNo} to={`/products/${product.prdNo}`}>
+                  <ProductImage src={product.imageUrl} alt={product.prdName} loading="lazy"/>
+                  <CardContent>
+                    <ProductName>{product.prdName}</ProductName>
+                    <ProductRating>
+                      ⭐ {product.averageRating} ({product.reviewCount})
+                    </ProductRating>
+                    <TagContainer>
+                      {product.skinTypes.map(type => (
+                        <Tag key={type}># {skinTypeMap[type] || type}</Tag>
+                      ))}
+                    </TagContainer>
+                    <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
+                    <SimpleReview>{product.simpleReview}</SimpleReview>
+                    <ProductButton onClick={handleAddToCart} $primary style={{ marginTop: '12px' }}>
+                      장바구니 담기
+                    </ProductButton>
+                  </CardContent>
+                </ProductCard>
+              ))}
+            </ProductListGrid>
+
+            {/* 페이지네이션 UI 렌더링 */}
+            <PaginationContainer>
+              <PageButton 
+                onClick={() => handlePageChange(currentPage - 1)} 
+                disabled={currentPage === 1}
+              >
+                이전
+              </PageButton>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <PageButton
+                  key={index + 1}
+                  $active={index + 1 === currentPage}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </PageButton>
+              ))}
+              <PageButton 
+                onClick={() => handlePageChange(currentPage + 1)} 
+                disabled={currentPage === totalPages}
+              >
+                다음
+              </PageButton>
+            </PaginationContainer>
+          </>
+        )}
+      </MainContent>
+    </PageContainer>
   );
 }
 
