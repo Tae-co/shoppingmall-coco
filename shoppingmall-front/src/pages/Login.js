@@ -11,10 +11,56 @@ const Login = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 로직 구현 예정
-    console.log('로그인 시도:', { userId, password });
+    
+    // 유효성 검사
+    if (!userId.trim()) {
+      alert('아이디를 입력해주세요.');
+      return;
+    }
+    if (!password.trim()) {
+      alert('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      // 로그인 API 호출
+      const response = await fetch('http://localhost:8080/api/member/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memId: userId,
+          memPwd: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // 로그인 성공 - JWT 토큰과 사용자 정보를 localStorage에 저장
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        localStorage.setItem('member', JSON.stringify(data));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        alert('로그인되었습니다.');
+        
+        // 로그인 상태 변경 이벤트 발생 (Header 컴포넌트가 감지)
+        window.dispatchEvent(new Event('loginStatusChanged'));
+        
+        // 메인 페이지로 이동 (Header가 마운트되면서 자동으로 로그인 상태 체크)
+        navigate('/');
+      } else {
+        alert(data.message || '아이디 또는 비밀번호가 일치하지 않습니다.');
+      }
+    } catch (error) {
+      console.error('로그인 오류:', error);
+      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleFindAccount = (e) => {
