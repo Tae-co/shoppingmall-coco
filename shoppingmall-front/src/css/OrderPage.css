@@ -89,10 +89,11 @@
   align-items: flex-end; /* 입력폼 그룹과 버튼을 하단에 정렬 */
   gap: 10px;
 }
-.form-group-with-button .form-group {
+/* '주소 검색' 아랫줄 정렬을 위한 수정 */
+.shipping-form .form-group-with-button .form-group {
   flex-grow: 1;
   margin-bottom: 0; 
-  /* 버튼과 같이 있는 폼 그룹의 불필요한 바닥 여백을 제거 */
+  /* 'margin-bottom: 20px'를 덮어쓰기 위해 더 강력하게 지정 */
 }
 .btn-outline {
   padding: 12px 20px;
@@ -103,7 +104,7 @@
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
-  height: 46.5px; 
+  /* height는 삭제됨 */
   box-sizing: border-box;
 }
 
@@ -137,7 +138,6 @@
   font-weight: bold;
   color: #00c73c;
 }
-/* 2번 수정: '미충족' 안내 문구 스타일 */
 .shipping-warning {
   font-size: 0.9rem;
   font-weight: 500;
