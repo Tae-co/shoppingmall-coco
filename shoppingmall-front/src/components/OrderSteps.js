@@ -12,23 +12,20 @@ function OrderSteps({ currentStep = 1 }) {
   return (
     <div className="order-steps">
       {steps.map((step, index) => (
-        <div key={step.id} className="step">
-          {/* 원형 단계 표시 */}
-          <div
-            className={`circle ${currentStep === step.id ? "active" : ""}`}
-          >
-            {step.id}
+        <React.Fragment key={step.id}>
+          <div className="step">
+            <div
+              className={`circle ${currentStep === step.id ? "active" : ""}`}
+            >
+              {step.id}
+            </div>
+            <div className="step-text">
+              <p className="step-title">{step.title}</p>
+              <p className="step-desc">{step.desc}</p>
+            </div>
           </div>
-
-          {/* 텍스트 */}
-          <div className="step-text">
-            <div className="step-title">{step.title}</div>
-            <div className="step-desc">{step.desc}</div>
-          </div>
-
-          {/* 단계 사이의 선 */}
           {index < steps.length - 1 && <div className="line"></div>}
-        </div>
+        </React.Fragment>
       ))}
     </div>
   );

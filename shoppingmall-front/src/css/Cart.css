@@ -152,3 +152,67 @@
   margin-top: 10px;
   line-height: 1.4;
 }
+/* 주문하기 페이지 전체 */
+.order-page {
+  background-color: white; 
+  min-height: 100vh;
+}
+
+/* 주문하기 제목 */
+.order-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 40px 80px 20px;
+}
+
+/* 주문하기 아래 영역 배경 */
+.order-content-area {
+  background-color: #F3F3F5; /* 회색 배경 */
+  padding: 40px 80px;
+  min-height: calc(100vh - 120px);
+  box-sizing: border-box;
+}
+
+/* 장바구니 및 주문 요약 레이아웃 */
+.cart-grid {
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+}
+
+.cart-list {
+  flex: 2;
+}
+.order-summary {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  padding: 20px 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px; 
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  gap: 15px;
+}
+
+.continue-btn {
+  padding: 10px 20px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.continue-btn:hover {
+  background-color: #333;
+}

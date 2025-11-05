@@ -3,6 +3,7 @@ import "../css/Cart.css";
 import OrderSteps from "../components/OrderSteps.js";
 
 function Cart() {
+
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -29,6 +30,8 @@ function Cart() {
       image: "/images/cream.jpg",
     },
   ]);
+
+  
 
   const increaseQuantity = (id) => {
     setCartItems((prev) =>
@@ -57,48 +60,61 @@ function Cart() {
     0
   );
 
-  return (
-    <div className="order-page">
-      <h2 className="order-title">주문하기</h2>
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert("장바구니가 비어 있습니다.");
+      return;
+    }
+    /*navigate("/order", { state: { items: cartItems } });*/
+  };
 
+  return (
+  <div className="order-page">
+    <h2 className="order-title">주문하기</h2>
+
+    <div className="order-content-area">
       <OrderSteps currentStep={1} />
 
       <div className="cart-grid">
         {/* 장바구니 목록 */}
-        <div className="cart-list">
-          <h3 className="section-title">장바구니 ({cartItems.length})</h3>
+       <div className="cart-list">
+  <h3 className="section-title">장바구니 ({cartItems.length})</h3>
 
-          {cartItems.map((item) => (
-            <div key={item.id} className="cart-card">
-              <img src={item.image} alt={item.name} className="cart-image" />
-              <div className="cart-info">
-                <p className="brand">{item.brand}</p>
-                <p className="product-name">{item.name}</p>
-                <p className="price">₩{item.price.toLocaleString()}</p>
-                <div className="quantity-box">
-                  <button onClick={() => decreaseQuantity(item.id)}>-</button>
-                  <span>{item.quantity}</span>
-                  <button onClick={() => increaseQuantity(item.id)}>+</button>
-                </div>
-              </div>
-              <div className="cart-summary-item">
-                <p className="subtotal">
-                  소계: ₩{(item.price * item.quantity).toLocaleString()}
-                </p>
-                <button className="remove-btn" onClick={() => removeItem(item.id)}>
-                  🗑
-                </button>
-              </div>
-            </div>
-          ))}
+  {cartItems.length === 0 ? (
+    <p className="empty-cart">장바구니가 비어 있습니다.</p>
+  ) : (
+    cartItems.map((item) => (
+      <div key={item.id} className="cart-card">
+        <img src={item.image} alt={item.name} className="cart-image" />
+        <div className="cart-info">
+          <p className="brand">{item.brand}</p>
+          <p className="product-name">{item.name}</p>
+          <p className="price">{item.price.toLocaleString()}원</p>
+          <div className="quantity-box">
+            <button onClick={() => decreaseQuantity(item.id)}>-</button>
+            <span>{item.quantity}</span>
+            <button onClick={() => increaseQuantity(item.id)}>+</button>
+          </div>
         </div>
+        <div className="cart-summary-item">
+          <p className="subtotal">
+            소계: {(item.price * item.quantity).toLocaleString()}원
+          </p>
+          <button className="remove-btn" onClick={() => removeItem(item.id)}>
+            🗑
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
 
         {/* 주문 요약 */}
         <div className="order-summary">
           <h3>주문 요약</h3>
           <div className="summary-row">
             <span>상품 금액</span>
-            <span>₩{totalPrice.toLocaleString()}</span>
+            <span>{totalPrice.toLocaleString()}원</span>
           </div>
           <div className="summary-row">
             <span>배송비</span>
@@ -107,7 +123,7 @@ function Cart() {
           <hr />
           <div className="summary-row total">
             <span>총 결제 금액</span>
-            <strong>₩{totalPrice.toLocaleString()}</strong>
+            <strong>{totalPrice.toLocaleString()}원</strong>
           </div>
           <button className="checkout-btn">주문하기</button>
           <p className="summary-note">
@@ -117,7 +133,7 @@ function Cart() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
-
 export default Cart;

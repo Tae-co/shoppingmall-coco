@@ -2,15 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 50px;
+  gap: 40px;
   margin: 40px 0 60px;
-  position: relative;
 }
 
 .step {
   display: flex;
+  flex-direction: column; /* 세로 배치 */
   align-items: center;
-  position: relative;
+  text-align: center;
 }
 
 .circle {
@@ -23,35 +23,36 @@
   justify-content: center;
   color: #999;
   font-weight: 600;
+  font-size: 15px;
   background-color: #fff;
 }
 
 .circle.active {
-  background-color: #000;
-  color: #fff;
+  background-color: #000;  /* 현재 단계: 검정색 원 */
   border-color: #000;
+  color: #fff;
 }
 
 .step-text {
-  margin-left: 12px;
-  text-align: left;
+  margin-top: 8px;
 }
 
 .step-title {
   font-weight: 600;
   color: #222;
+  font-size: 15px;
 }
 
 .step-desc {
-  font-size: 0.85rem;
+  font-size: 13px;
   color: #888;
+  margin-top: 2px;
 }
 
-/* 단계 사이의 연결선 */
+/* 단계 사이 라인 */
 .line {
   width: 80px;
   height: 2px;
   background-color: #ccc;
-  margin: 0 20px;
   border-radius: 1px;
 }
