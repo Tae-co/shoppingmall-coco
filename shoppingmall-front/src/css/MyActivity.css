@@ -1,0 +1,130 @@
+.review-activity-container {
+  background-color: #fafafa;
+  min-height: 100vh;
+  padding: 40px 80px;
+  font-family: "Pretendard", sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 상단 버튼 */
+.back-btn {
+  border: none;
+  background: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* 리뷰 카드 */
+.review-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+/* 이미지 + 정보 */
+.review-header {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.review-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.review-info {
+  flex: 1;
+}
+
+.review-brand {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.review-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.review-rating {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #ffb400;
+}
+
+.review-date {
+  color: #777;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+/* 태그 */
+.review-tags {
+  margin: 12px 0 10px;
+}
+
+.review-tag {
+  display: inline-block;
+  background: #f2f2f2;
+  color: #555;
+  font-size: 13px;
+  border-radius: 20px;
+  padding: 4px 10px;
+  margin-right: 6px;
+}
+
+/* 내용 */
+.review-content {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+/* 수정 / 삭제 버튼 */
+.review-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  transform: scale(1.1);
+}
+
+.star {
+  font-size: 16px;
+  color: #ddd; 
+}
+
+.star.filled {
+  color: #ffb400;
+}

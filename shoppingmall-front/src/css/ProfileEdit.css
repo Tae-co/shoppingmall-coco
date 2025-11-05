@@ -1,0 +1,227 @@
+/* 전체 컨테이너 */
+.profile-edit-container {
+  background-color: #fafafa;
+  min-height: 100vh;
+  padding: 40px 80px 80px;
+  font-family: "Pretendard", sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 뒤로가기 */
+.back-btn {
+  border: none;
+  background: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+
+/* 페이지 제목 */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.section {
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 32px 40px;
+  margin-bottom: 40px;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+/* 라벨 */
+.section label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+/* 닉네임 input과 버튼 한 줄 */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 인풋 필드 */
+.input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  color: #222;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.input:focus {
+  background-color: #f2f2f2;
+}
+
+/* 읽기 전용 입력창 */
+.input.readonly {
+  background-color: #fafafa;
+  color: #888;
+  margin-top: 4px;
+  padding: 10px 16px;
+}
+
+/* 수정 버튼 */
+.edit-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  color: #222;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap; 
+  transform: none;
+}
+
+.edit-btn:hover {
+  background-color: #fafafa;
+  border-color: #ccc;
+}
+
+/* 공통 input 색상 */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: black;
+  cursor: pointer;
+}
+
+/* 라디오 버튼 그룹 */
+.option-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+  margin-top: 12px;
+}
+
+/* 피부 고민 : 세로 4개씩 + 왼쪽 정렬 */
+.option-grid.checkbox {
+  display: grid;
+  grid-template-rows: repeat(4, auto); /* 세로로 4개씩 */
+  grid-auto-flow: column; /* 세로 먼저, 오른쪽으로 이동 */
+  justify-content: start; /* ✅ 왼쪽 정렬 */
+  column-gap: 100px; /* 열 간격 */
+  row-gap: 12px; /* 항목 간 간격 */
+  width: 100%;
+  min-height: 220px;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  margin-top: 12px;
+  box-sizing: border-box;
+}
+
+/* 각 항목 라벨 */
+.option-grid.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 섹션 구분선 (중복 방지) */
+.section {
+  margin-bottom: 42px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* 피부 고민 다음 섹션(퍼스널 컬러)은 구분선 제거 */
+.section:last-of-type {
+  border-bottom: none;
+}
+
+/* 반응형 (모바일) */
+@media (max-width: 768px) {
+  .option-grid.checkbox {
+    grid-template-rows: repeat(2, auto);
+    column-gap: 50px;
+    min-height: auto;
+  }
+}
+
+/* 각 항목 라벨 */
+.option-grid.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 각 항목 */
+.option-grid.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 퍼스널 컬러 select */
+.select {
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid #e0e0e0;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 14px;
+  margin-top: 14px;
+}
+
+/* 저장 버튼 */
+.save-btn {
+  width: 100%;
+  max-width: 700px;
+  margin: 40px auto 0;
+  background:black;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 0;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.12);
+  transition: opacity 0.2s ease;
+}
+
+.save-btn:hover {
+  opacity: 0.95;
+}

@@ -1,0 +1,178 @@
+.account-settings-container {
+  background-color: #fafafa;
+  min-height: 100vh;
+  padding: 40px 80px 80px;
+  font-family: "Pretendard", sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* 뒤로가기 */
+.back-btn {
+  border: none;
+  background: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+
+/* 제목 */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+/* 섹션 */
+.setting-section {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+
+.setting-section h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.section-desc {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 18px;
+}
+
+/* 인풋 */
+.input-group input {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.change-btn {
+  width: 100%;
+  background: black;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 0;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* 알림 토글 */
+.notify-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f0f0f0;
+  padding: 14px 0;
+  position: relative;
+}
+
+.notify-item span {
+  font-weight: 600;
+  color: #222;
+}
+
+.notify-item p {
+  position: absolute;
+  left: 140px;
+  font-size: 13px;
+  color: #777;
+}
+
+/* 토글 스위치 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: black;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* 개인정보 버튼 */
+.privacy-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.privacy-btns button {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 0;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.privacy-btns button:hover {
+  background: #E2E2E2;
+}
+
+/* 계정 삭제 */
+.setting-section.danger {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.delete-btn {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 0;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  transform: none;
+}
+
+.delete-btn:hover {
+  background: #E2E2E2;
+  transform: none;
+}

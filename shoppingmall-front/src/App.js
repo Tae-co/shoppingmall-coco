@@ -7,6 +7,12 @@ import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
 import FindAccount from './pages/FindAccount';
 import MyPage from './pages/MyPage';
+import ProfileEdit from "./pages/ProfileEdit";
+import OrderHistory from "./pages/OrderHistory";
+import MyActivity from './pages/MyActivity';
+import AccountSettings from "./pages/AccountSettings";
+import MyCoMate from './pages/MyCoMate';
+
 
 function App() {
   const location = useLocation();
@@ -21,6 +27,11 @@ function App() {
         <Route path="/signup/info" element={<SignupInfo />} />
         <Route path="/find-account" element={<FindAccount />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/profile-edit" element={<ProfileEdit />} />
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/my-activity" element={<MyActivity />} />
+        <Route path="/account-settings" element={<AccountSettings />} />
+        <Route path="/my-comate" element={<MyCoMate />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>

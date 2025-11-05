@@ -1,0 +1,154 @@
+/* 전체 컨테이너 */
+.mycomate-container {
+  background-color: #fafafa;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  color: #222;
+}
+
+/* 헤더 영역 */
+.mycomate-header {
+  margin-bottom: 40px;
+}
+
+.mycomate-header .back-link {
+  font-size: 14px;
+  color: #777;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.mycomate-header .back-link:hover {
+  text-decoration: underline;
+}
+
+.mycomate-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mycomate-header p {
+  color: #666;
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+/* 탭 메뉴 */
+.mycomate-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 24px;
+}
+
+.mycomate-tab {
+  padding: 10px 18px;
+  font-weight: 500;
+  font-size: 15px;
+  color: #999;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mycomate-tab.active {
+  color: #222;
+  border-bottom-color: #222;
+}
+
+.mycomate-tab:hover {
+  color: #333;
+}
+
+/* Co-mate 카드 */
+.mycomate-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.2s ease;
+}
+
+.mycomate-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* 프로필 */
+.mycomate-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mycomate-avatar {
+  width: 48px;
+  height: 48px;
+  background-color: #f2f2f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #999;
+  font-weight: 600;
+}
+
+/* 정보 */
+.mycomate-info .name {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mycomate-info .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mycomate-info .tag {
+  background-color: #f5f5f5;
+  color: #555;
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.mycomate-info .review-count {
+  color: #999;
+  font-size: 13px;
+}
+
+/* 버튼 */
+.follow-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #333;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.follow-btn:hover {
+  background-color: #fafafa;
+}
+
+/* 비어있는 탭 메시지 */
+.empty-tab-message {
+  text-align: center;
+  color: #aaa;
+  padding: 40px 0;
+  font-size: 15px;
+}
