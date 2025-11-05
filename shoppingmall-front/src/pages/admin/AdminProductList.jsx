@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 // --- 가짜 데이터 (Mock Data) ---
 // ProductListPage의 데이터를 재활용하되, 관리자용 정보를 추가합니다.
@@ -54,42 +55,212 @@ const categories = [
 // 상태 필터 목록 정의
 const statuses = ['판매중', '품절'];
 
-// (간단한 스타일 객체)
-const styles = {
-  container: { padding: '20px', background: '#f4f7f6' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
-  title: { fontSize: '24px', fontWeight: 'bold' },
-  headerButtons: { display: 'flex', gap: '10px' },
-  button: { padding: '10px 15px', border: 'none', borderRadius: '5px', cursor: 'pointer' },
-  buttonPrimary: { background: '#333', color: 'white', textDecoration: 'none' },
-  
-  // 대시보드 (간단하게)
-  dashboard: { display: 'flex', gap: '20px', marginBottom: '20px' },
-  dashCard: { flex: 1, background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
-  
-  // 상품 목록
-  content: { background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
-  contentHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
-  contentTitle: { fontSize: '18px', fontWeight: 'bold' },
-  
-  // 테이블
-  table: { width: '100%', borderCollapse: 'collapse', textAlign: 'left' },
-  th: { padding: '12px', borderBottom: '2px solid #eee', background: '#f9f9f9' },
-  td: { padding: '12px', borderBottom: '1px solid #eee', verticalAlign: 'middle' },
-  img: { width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' },
-  statusTag: { padding: '4px 8px', borderRadius: '12px', color: 'white', fontSize: '12px' },
-  editButton: { textDecoration: 'none', color: 'blue', marginRight: '10px' },
-  deleteButton: { color: 'red', cursor: 'pointer', background: 'none', border: 'none' },
+// --- 스타일 컴포넌트 정의 ---
 
-  // 테이블 하단 텍스트 스타일 추가
-  tableFooter: {
-    textAlign: 'center',
-    padding: '20px 0',
-    color: '#555',
-    fontSize: '14px',
-    borderTop: '1px solid #eee'
+// (기존 styles.container)
+const Container = styled.div`
+  padding: 20px;
+`;
+
+// (기존 styles.header)
+const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const Title = styled.h2`
+  font-size: 24px;
+  font-weight: bold;
+`;
+
+// 대시보드 스타일 컴포넌트
+const Dashboard = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+`;
+
+const DashCard = styled.div`
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+`;
+
+const DashCardTitle = styled.h3`
+  font-size: 16px; /* AdminHome(h3)과 맞추기 위해 h3로 변경 */
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+`;
+
+const DashCardValue = styled.p`
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+`;
+
+// (기존 styles.content)
+const Content = styled.main`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+`;
+
+const ContentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const ContentTitle = styled.h3`
+  font-size: 18px;
+  font-weight: bold;
+`;
+
+const HeaderButtons = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+// (기존 styles.button)
+const Button = styled.button`
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  background: #f0f0f0;
+  color: #333;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e0e0e0;
   }
-};
+`;
+
+// (기존 styles.buttonPrimary - Link 태그용)
+const ButtonLink = styled(Link)`
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  background: #333;
+  color: white;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #555;
+  }
+`;
+
+const FilterContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+// <input>, <select> 태그에 공통 스타일 적용
+const CommonInputStyle = `
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+`;
+
+const SearchInput = styled.input`
+  ${CommonInputStyle}
+  flex: 1; /* 검색창만 길게 */
+`;
+
+const FilterSelect = styled.select`
+  ${CommonInputStyle}
+`;
+
+// 👇 1. 테이블을 감쌀 'TableWrapper' 컴포넌트 정의
+const TableWrapper = styled.div`
+  width: 100%; /* (Content) 영역을 꽉 채움 */
+  overflow-x: auto; /* 내용물이 밖으로 넘치면 가로 스크롤바를 만듭니다 */
+`;
+
+// (기존 styles.table)
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 900px; /* 테이블의 최소 너비를 설정 */
+`;
+
+const Th = styled.th`
+  padding: 12px;
+  border-bottom: 2px solid #eee;
+  background: #f9f9f9;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap; /* 셀 내용이 잘리거나 줄바꿈되지 않도록 진행 */
+`;
+
+const Td = styled.td`
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+  font-size: 14px;
+  white-space: nowrap;
+`;
+
+const ProductImage = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+`;
+
+// (기존 styles.statusTag)
+// props를 받아 '판매중'과 '품절'의 배경색을 다르게 설정
+const StatusTag = styled.span`
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+  background: ${props => (props.status === '판매중' ? 'green' : 'red')};
+`;
+
+// (기존 styles.editButton - Link 태그용)
+const EditLink = styled(Link)`
+  color: blue;
+  text-decoration: none;
+  margin-right: 10px;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+// (기존 styles.deleteButton)
+const DeleteButton = styled.button`
+  color: red;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+// (기존 styles.tableFooter)
+const TableFooter = styled.div`
+  text-align: center;
+  padding: 20px 0;
+  color: #555;
+  font-size: 14px;
+  border-top: 1px solid #eee;
+`;
 
 function AdminProductList() {
   const [products, setProducts] = useState([]);
@@ -151,150 +322,139 @@ function AdminProductList() {
   };
 
   if (isLoading) {
-    return <div style={styles.container}><h2>관리자 페이지 로딩 중...</h2></div>;
+    return <Container><h2>관리자 페이지 로딩 중...</h2></Container>;
   }
 
   return (
-    <div style={styles.container}>
+    <Container>
       {/* --- 1. 헤더 --- */}
-      <header style={styles.header}>
+      <Header>
         <div>
-          <h2 style={styles.title}>Coco 관리자 페이지</h2>
-          <p>상품 관리 시스템</p>
+          <Title>상품 관리 시스템</Title>
         </div>
         <div>
-          {/* (와이어프레임의 헤더 메뉴 - 지금은 링크만) */}
           <span style={{ marginRight: '15px' }}>admin님</span>
-          <a href="#" style={{ marginRight: '15px' }}>대시보드</a>
-          <a href="#">로그아웃</a>
+          <EditLink to="/admin" style={{ marginRight: '15px' }}>대시보드</EditLink>
+          <Button as="a" href="#">로그아웃</Button>
         </div>
-      </header>
+      </Header>
 
-      {/* --- 2. 대시보드 (하드코딩된 숫자를 'dashboardData'로 교체) --- */}
-      <div style={styles.dashboard}>
-        <div style={styles.dashCard}>
-          <h3>전체 상품</h3>
-          <p style={{fontSize: '24px'}}>{dashboardData.totalProducts}</p>
-        </div>
-        <div style={styles.dashCard}>
-          <h3>판매중</h3>
-          <p style={{fontSize: '24px'}}>{dashboardData.inStockProducts}</p>
-        </div>
-        <div style={styles.dashCard}>
-          <h3>품절</h3>
-          <p style={{fontSize: '24px'}}>{dashboardData.outOfStockProducts}</p>
-        </div>
-        <div style={styles.dashCard}>
-          <h3>총 재고</h3>
-          <p style={{fontSize: '24px'}}>{dashboardData.totalStockCount.toLocaleString()}</p>
-        </div>
-      </div>
+      {/* --- 2. 대시보드 'dashboardData' --- */}
+      <Dashboard>
+        <DashCard>
+          <DashCardTitle>전체 상품</DashCardTitle>
+          <DashCardValue>{dashboardData.totalProducts}</DashCardValue>
+        </DashCard>
+        <DashCard>
+          <DashCardTitle>판매중</DashCardTitle>
+          <DashCardValue>{dashboardData.inStockProducts}</DashCardValue>
+        </DashCard>
+        <DashCard>
+          <DashCardTitle>품절</DashCardTitle>
+          <DashCardValue>{dashboardData.outOfStockProducts}</DashCardValue>
+        </DashCard>
+        <DashCard>
+          <DashCardTitle>총 재고</DashCardTitle>
+          <DashCardValue>{dashboardData.totalStockCount.toLocaleString()}</DashCardValue>
+        </DashCard>
+      </Dashboard>
 
       {/* --- 3. 상품 목록 --- */}
-      <main style={styles.content}>
-        <div style={styles.contentHeader}>
-          <h3 style={styles.contentTitle}>상품 목록</h3>
-          <div style={styles.headerButtons}>
-            <button style={styles.button}>🔄 새로고침</button>
-            {/* '상품 등록' 버튼 -> 상품 등록 페이지로 이동 */}
-            <Link to="/admin/product/new" style={{...styles.button, ...styles.buttonPrimary}}>
+      <Content>
+        <ContentHeader>
+          <ContentTitle>상품 목록</ContentTitle>
+          <HeaderButtons>
+            <Button onClick={() => window.location.reload()}>🔄 새로고침</Button>
+            <ButtonLink to="/admin/product/new">
               + 상품 등록
-            </Link>
-          </div>
-        </div>
+            </ButtonLink>
+          </HeaderButtons>
+        </ContentHeader>
 
         {/* 검색 / 필터 - input에 value와 onChange 연결 */}
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-          <input 
+        <FilterContainer>
+          <SearchInput 
             type="text" 
             placeholder="상품명으로 검색..." 
-            style={{ flex: 1, padding: '10px' }}
-            value={searchTerm} // state와 연결
-            onChange={(e) => setSearchTerm(e.target.value)} // state 변경
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {/* 카테고리 선택 드롭다운 */}
-          <select 
-            style={{ padding: '10px' }}
-            value={selectedCategory} // state와 연결
-            onChange={(e) => setSelectedCategory(e.target.value)} // state 변경
+          
+          <FilterSelect 
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="">전체 카테고리</option>
-            {/* categories 배열을 map으로 돌려서 option 태그 생성 */}
             {categories.map(categoryName => (
               <option key={categoryName} value={categoryName}>
                 {categoryName}
               </option>
             ))}
-          </select>
+          </FilterSelect>
           
-          {/* 상태 선택 드롭다운 */}
-          <select 
-            style={{ padding: '10px' }}
-            value={selectedStatus} // state와 연결
-            onChange={(e) => setSelectedStatus(e.target.value)} // state 변경
+          <FilterSelect 
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
           >
             <option value="">전체 상태</option>
-            {/* statuses 배열을 map으로 돌려서 option 태그 생성 */}
             {statuses.map(statusName => (
               <option key={statusName} value={statusName}>
                 {statusName}
               </option>
             ))}
-          </select>
-        </div>
+          </FilterSelect>
+        </FilterContainer>
 
         {/* --- 4. 상품 테이블 --- */}
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>ID</th>
-              <th style={styles.th}>이미지</th>
-              <th style={styles.th}>상품명</th>
-              <th style={styles.th}>카테고리</th>
-              <th style={styles.th}>가격</th>
-              <th style={styles.th}>재고</th>
-              <th style={styles.th}>상태</th>
-              <th style={styles.th}>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* 'products' 대신 'filteredProducts'를 map으로 렌더링 */}
-            {filteredProducts.map((product) => (
-              <tr key={product.prdNo}>
-                <td style={styles.td}>{product.prdNo}</td>
-                <td style={styles.td}><img src={product.imageUrl} alt={product.prdName} style={styles.img} /></td>
-                <td style={styles.td}>{product.prdName}</td>
-                <td style={styles.td}>{product.categoryName}</td>
-                <td style={styles.td}>{product.prdPrice.toLocaleString()}원</td>
-                <td style={styles.td}>{product.stock}개</td>
-                <td style={styles.td}>
-                  <span style={{
-                    ...styles.statusTag, 
-                    background: product.status === '판매중' ? 'green' : 'red'
-                  }}>
-                    {product.status}
-                  </span>
-                </td>
-                <td style={styles.td}>
-                  <Link to={`/admin/product/edit/${product.prdNo}`} style={styles.editButton}>
-                    수정
-                  </Link>
-                  <button onClick={() => handleDelete(product)} style={styles.deleteButton}>
-                    삭제
-                  </button>
-                </td>
+        <TableWrapper>
+          <Table>
+            <thead>
+              <tr>
+                <Th>ID</Th>
+                <Th>이미지</Th>
+                <Th>상품명</Th>
+                <Th>카테고리</Th>
+                <Th>가격</Th>
+                <Th>재고</Th>
+                <Th>상태</Th>
+                <Th>관리</Th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* 테이블 바로 밑에 총 상품 개수 표시 */}
-        <div style={styles.tableFooter}>
+            </thead>
+            <tbody>
+              {filteredProducts.map((product) => (
+                <tr key={product.prdNo}>
+                  <Td>{product.prdNo}</Td>
+                  <Td><ProductImage src={product.imageUrl} alt={product.prdName} /></Td>
+                  <Td>{product.prdName}</Td>
+                  <Td>{product.categoryName}</Td>
+                  <Td>{product.prdPrice.toLocaleString()}원</Td>
+                  <Td>{product.stock}개</Td>
+                  <Td>
+                    {/* props로 상태값을 전달 */}
+                    <StatusTag status={product.status}>
+                      {product.status}
+                    </StatusTag>
+                  </Td>
+                  <Td>
+                    <EditLink to={`/admin/product/edit/${product.prdNo}`}>
+                      수정
+                    </EditLink>
+                    <DeleteButton onClick={() => handleDelete(product)}>
+                      삭제
+                    </DeleteButton>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableWrapper>
+        
+        <TableFooter>
           총 {filteredProducts.length}개의 상품
-        </div>
+        </TableFooter>
 
-      </main>
-    </div>
+      </Content>
+    </Container>
   );
 }
 

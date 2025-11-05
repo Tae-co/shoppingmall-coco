@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 취소 버튼에 필요
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom'; // useParams 추가
 import styled from 'styled-components';
+
+// --- (가짜 데이터 및 카테고리) ---
 
 // 임시 카테고리 (DB에서 불러와야 함)
 const categories = [
@@ -10,11 +12,18 @@ const categories = [
   { id: 4, name: '선케어' },
 ];
 
+// --- 가짜 데이터 (Mock Data) ---
+// AdminProductList의 데이터를 수정 페이지 로드용으로 사용
+const mockAdminProducts = {
+  '1': { prdNo: 1, prdName: '히알루론산 수분 세럼', prdPrice: 35000, imageUrl: 'https://picsum.photos/id/75/100/100', categoryNo: '1', stock: 150, description: '수분 가득 세럼입니다.' },
+  '2': { prdNo: 2, prdName: '쿠션 파운데이션 23호', prdPrice: 28000, imageUrl: 'https://picsum.photos/id/102/100/100', categoryNo: '2', stock: 80, description: '커버력 좋은 쿠션입니다.' },
+  '3': { prdNo: 3, prdName: '딥 클렌징 오일', prdPrice: 24000, imageUrl: 'https://picsum.photos/id/103/100/100', categoryNo: '3', stock: 65, description: '' },
+  '4': { prdNo: 4, prdName: '비타민C 브라이트닝 크림', prdPrice: 42000, imageUrl: 'https://picsum.photos/id/104/100/100', categoryNo: '1', stock: 0, description: '' },
+};
 // ---------------------------------
 
-// --- 스타일 컴포넌트 정의 ---
+// --- 스타일 컴포넌트 정의  ---
 
-// (기존 styles.container)
 const Container = styled.div`
   padding: 20px;
   max-width: 800px;
@@ -27,7 +36,6 @@ const Title = styled.h2`
   margin-bottom: 20px;
 `;
 
-// (기존 styles.form)
 const Form = styled.form`
   background: white;
   padding: 30px;
@@ -35,12 +43,10 @@ const Form = styled.form`
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 `;
 
-// (기존 styles.formGroup)
 const FormGroup = styled.div`
   margin-bottom: 20px;
 `;
 
-// (기존 styles.label)
 const Label = styled.label`
   display: block;
   margin-bottom: 5px;
@@ -48,33 +54,29 @@ const Label = styled.label`
   font-size: 14px;
 `;
 
-// 폼 요소들의 공통 스타일
 const CommonInputStyle = `
-  width: 100%; /* 부모 너비의 100% */
+  width: 100%;
   padding: 12px;
   font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-sizing: border-box; /* padding이 width를 넘치지 않게 함 */
+  box-sizing: border-box;
 `;
 
-// (기존 styles.input)
 const Input = styled.input`
-  ${CommonInputStyle} /* 공통 스타일 적용 */
+  ${CommonInputStyle}
 `;
 
-// (기존 styles.textarea)
 const Textarea = styled.textarea`
-  ${CommonInputStyle} /* 공통 스타일 적용 */
+  ${CommonInputStyle}
   min-height: 100px;
-  resize: vertical; /* 세로로만 크기 조절 허용 */
+  resize: vertical;
 `;
 
 const Select = styled.select`
-  ${CommonInputStyle} /* 공통 스타일 적용 */
+  ${CommonInputStyle}
 `;
 
-// (기존 styles.buttonContainer)
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -82,7 +84,6 @@ const ButtonContainer = styled.div`
   margin-top: 30px;
 `;
 
-// (기존 styles.button)
 const Button = styled.button`
   padding: 12px 20px;
   border: none;
@@ -92,7 +93,6 @@ const Button = styled.button`
   font-weight: 600;
   transition: background 0.2s;
 
-  /* 'props.primary'가 true이면 파란색, 아니면 회색 */
   background: ${props => (props.primary ? '#333' : '#eee')};
   color: ${props => (props.primary ? 'white' : '#333')};
 
@@ -100,22 +100,41 @@ const Button = styled.button`
     opacity: 0.8;
   }
 `;
-
-
 // ---------------------------------
 
-function AdminProductNew() {
-  const navigate = useNavigate(); // '취소' 시 뒤로 가기 위한 훅
+function AdminProductEdit() {
+  const navigate = useNavigate();
+  const { productId } = useParams(); // URL에서 상품 ID 가져오기 (예: '1')
 
   // 폼의 각 항목을 state로 관리
   const [formData, setFormData] = useState({
     prdName: '',
     description: '',
     imageUrl: '',
-    categoryNo: '', // 카테고리 ID
+    categoryNo: '',
     prdPrice: 0,
     stock: 0
   });
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 페이지 로드 시 (또는 productId 변경 시) 기존 상품 데이터 불러오기
+  useEffect(() => {
+    // (실제로는 API로 `/api/admin/products/${productId}` 호출)
+    console.log(`[관리자] ${productId}번 상품 데이터 로드 시도...`);
+    setIsLoading(true);
+    
+    setTimeout(() => { // API 호출 시뮬레이션
+      const foundProduct = mockAdminProducts[productId];
+      if (foundProduct) {
+        setFormData(foundProduct); // 찾은 상품 데이터로 폼 상태 설정
+      } else {
+        alert('존재하지 않는 상품입니다.');
+        navigate('/admin/products');
+      }
+      setIsLoading(false);
+    }, 500); // 0.5초 딜레이
+    
+  }, [productId, navigate]); // productId가 바뀔 때마다 다시 실행
 
   // input 값이 변경될 때 state를 업데이트하는 핸들러
   const handleChange = (e) => {
@@ -126,28 +145,31 @@ function AdminProductNew() {
     }));
   };
 
-  // '등록' 버튼 클릭 시 실행될 핸들러
+  // '수정' 버튼 클릭 시 실행될 핸들러
   const handleSubmit = (e) => {
     e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
 
-    // (실제로는 여기서 API로 formData를 서버에 전송)
-    console.log('[관리자] 새 상품 등록 데이터:', formData);
+    // (실제로는 여기서 API로 formData를 서버에 전송 - PUT 또는 PATCH)
+    console.log(`[관리자] ${productId}번 상품 수정 데이터:`, formData);
+    
+    alert(`상품이 수정되었습니다: ${formData.prdName}`);
+    navigate('/admin/products'); // 수정 완료 후 관리자 목록 페이지로 이동
+  };
 
-    // (성공 시)
-    alert(`상품이 등록되었습니다: ${formData.prdName}`);
-        navigate(`/admin/products`); // 등록 완료 후 관리자 목록 페이지로 이동
-    };
+  // '취소' 버튼 클릭 시
+  const handleCancel = () => {
+    if (window.confirm('수정을 취소하시겠습니까? 변경 사항이 저장되지 않습니다.')) {
+      navigate('/admin/products'); // 관리자 목록 페이지로 이동
+    }
+  };
 
-    // '취소' 버튼 클릭 시
-    const handleCancel = () => {
-        if (window.confirm('작성을 취소하시겠습니까? 변경 사항이 저장되지 않습니다.')) {
-        navigate('/admin/products'); // 관리자 목록 페이지로 이동
-        }
-    };
+  if (isLoading) {
+    return <Container><h2>상품 정보 로딩 중...</h2></Container>;
+  }
 
-    return (
+  return (
     <Container>
-      <Title>새 상품 등록</Title>
+      <Title>상품 수정 (ID: {productId})</Title>
       
       <Form onSubmit={handleSubmit}>
         
@@ -235,13 +257,11 @@ function AdminProductNew() {
 
         {/* 버튼 영역 */}
         <ButtonContainer>
-          {/* '취소' 버튼 */}
           <Button type="button" onClick={handleCancel}>
             취소
           </Button>
-          {/* '등록' 버튼 (primary prop 전달) */}
           <Button type="submit" primary>
-            등록
+            수정 완료
           </Button>
         </ButtonContainer>
 
@@ -250,4 +270,4 @@ function AdminProductNew() {
   );
 }
 
-export default AdminProductNew;
+export default AdminProductEdit;
