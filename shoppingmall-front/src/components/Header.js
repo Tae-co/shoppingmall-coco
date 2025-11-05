@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {NavLink, Link, Routes, Route} from 'react-router-dom';
 import Logo from '../images/logo.png';
 import '../css/Header.css';
-import Cart from "../pages/Cart";
+
 
 
 const Header = () => {
