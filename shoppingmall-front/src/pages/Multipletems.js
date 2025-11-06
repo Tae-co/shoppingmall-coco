@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import '../css/MultipleItems.css';
 
 import ProductCard from '../components/ProductCard';
-import sampleImg from '../images/sample_img.png'; // 임시 상품 이미지
+import sampleImg_product from '../images/sampleImg_product.png'; // 임시 상품 이미지
 
 function MultipleItems() {
     const settings = {
@@ -21,11 +21,11 @@ function MultipleItems() {
 
     // 인기 상품 데이터 (임시)
     const products = [
-        { id: 1, name: "비타민 크림", price: 23000, img: sampleImg, star_avg: 4.5, reviewCount: 10},
-        { id: 2, name: "모이스처 로션", price: 18000, img: sampleImg, star_avg: 4.0, reviewCount: 385},
-        { id: 3, name: "딥 클렌징 폼", price: 15000, img: sampleImg, star_avg: 3.0, reviewCount: 300},
-        { id: 4, name: "선크림 SPF50", price: 21000, img: sampleImg, star_avg: 2.5, reviewCount: 5},
-        { id: 5, name: "선크림 SPF100", price: 23000, img: sampleImg, star_avg: 4.8, reviewCount: 100}
+        { id: 1, name: "비타민 크림", price: 23000, img: sampleImg_product, star_avg: 4.5, reviewCount: 10},
+        { id: 2, name: "모이스처 로션", price: 18000, img: sampleImg_product, star_avg: 4.0, reviewCount: 385},
+        { id: 3, name: "딥 클렌징 폼", price: 15000, img: sampleImg_product, star_avg: 3.0, reviewCount: 300},
+        { id: 4, name: "선크림 SPF50", price: 21000, img: sampleImg_product, star_avg: 2.5, reviewCount: 5},
+        { id: 5, name: "선크림 SPF100", price: 23000, img: sampleImg_product, star_avg: 4.8, reviewCount: 100}
     ];
 
     // 장바구니 추가 버튼 (임시)
