@@ -1,5 +1,5 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 import skincareImg from '../images/category/category_skincare.png';
 import makeupImg from '../images/category/category_makeup.png';
@@ -10,6 +10,7 @@ import '../css/Home.css';
 
 import SimpleSlider from './SimpleSlider'; // 메인배너 슬라이더 컴포넌트
 import MultipleItems from './Multipletems'; // 인기상품 슬라이더 컴포넌트
+import ComateCardList from './ComateCardList';
 
 const Home = () => {
 
@@ -21,9 +22,6 @@ const Home = () => {
         const path = '';
         navigate(path);
     };
-
-    // co-mate 데이터 (임시)
-    const comateRecommend = [];
 
     return (
         <div>
@@ -69,11 +67,14 @@ const Home = () => {
                 <div className="comate_recommend_wrapper">
                     <div className="comate_title">
                         <h2>CO-MATE</h2>
-                        <div className="sub_title">신뢰할 수 있는 뷰티 전문가들을 팔로우하세요</div>
+                        <div className="sub_title_wrapper">
+                            <div className="sub_title">신뢰할 수 있는 뷰티 전문가들을 팔로우하세요</div>
+                            <div className="sub_title"><Link to="/comate" className="more">더보기</Link></div>
+                        </div>
                     </div>
                     <div className="comate_list">
                     {/* comate 관련 컴포넌트 추가 예정 */}
-
+                    <ComateCardList/>
                     </div>
                 </div>
             </div>

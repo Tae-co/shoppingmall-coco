@@ -28,9 +28,14 @@ function MultipleItems() {
         { id: 5, name: "선크림 SPF100", price: 23000, img: sampleImg_product, star_avg: 4.8, reviewCount: 100}
     ];
 
+    // 상품 상세보기 페이지 이동 (임시)
+    const handleProductClick = (prdName) => {
+        console.log(prdName);
+    };
+
     // 장바구니 추가 버튼 (임시)
-    const handleAddToCart = (product) => {
-        console.log(`${product.name} 장바구니 추가`);
+    const handleAddToCart = (prdName) => {
+        console.log(`${prdName} 장바구니 추가`);
     };
 
     return (
@@ -45,8 +50,8 @@ function MultipleItems() {
                         star_avg={p.star_avg}
                         reviewCount={p.reviewCount}
                         
-                        onClick={() => console.log(`${p.name}`)} // 상품 클릭-> 상세페이지로 이동 경로 추가 예정
-                        onAddToCart={() => handleAddToCart(p)} // 장바구니 클릭-> 장바구니에 상품 추가 로직 추가 예정
+                        onClick={() => handleProductClick(p.name)} // 상품 클릭-> 상세페이지로 이동 경로 추가 예정
+                        onAddToCart={() => handleAddToCart(p.name)} // 장바구니 클릭-> 장바구니에 상품 추가 로직 추가 예정
                     />
                 </div>
             ))}
