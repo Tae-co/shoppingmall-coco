@@ -1,36 +1,35 @@
-// src/pages/OrderFailPage/OrderFailPage.jsx
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../../css/OrderResultPage.css'; // 공용 CSS 사용
+import '../../css/OrderResultPage.css'; // 주문 성공/실패 페이지 공용 CSS 사용
 
+// 주문 실패를 사용자에게 안내하고 해결 방법을 제공하는 컴포넌트
 function OrderFailPage() {
   
-  // (오류 코드는 더 이상 사용되지 않습니다)
-  // const errorCode = "ERR-A3B2C1";
+  
 
   return (
     <div className="order-result-page">
 
+      {/* 실패 상태를 시각적으로 나타내는 아이콘 영역 */}
       <div className="result-icon-wrapper">
         <div className="result-icon fail">
           <span>!</span>
         </div>
       </div>
       
+      {/* 실패 제목과 부제목 */}
       <h1 className="result-title">주문 처리 실패</h1>
       <p className="result-subtitle">결제가 거부되었습니다</p>
 
-      {/* --- ★ 1. [수정] 오류 알림 박스 (오류 코드 삭제) ★ --- */}
+      {/* 결제 거부 원인을 간략히 설명하는 경고 알림 박스 */}
       <div className="error-alert-box">
         <span className="icon">⚠️</span>
         <div>
           <strong>카드사에서 결제를 승인하지 않았습니다.</strong>
-          {/* 오류 코드 span이 삭제되었습니다. */}
         </div>
       </div>
 
-      {/* --- 해결 방법 박스 --- */}
+      {/* 실패 시 사용자가 취할 수 있는 해결 방법을 안내하는 박스 */}
       <div className="result-box solution-box">
         <h2>해결 방법</h2>
         <ul className="solution-list">
@@ -53,7 +52,7 @@ function OrderFailPage() {
         </ul>
       </div>
 
-      {/* --- 고객센터 박스 --- */}
+      {/* 문제 지속 시 연락할 고객센터 정보를 제공하는 박스 */}
       <div className="support-box">
         <span className="icon">📞</span>
         <div>
@@ -66,7 +65,7 @@ function OrderFailPage() {
         </div>
       </div>
 
-      {/* --- 알림 박스 --- */}
+      {/* 주문 실패 관련 추가 정보를 알리는 알림 박스 */}
       <div className="notification-box" style={{ marginTop: '20px' }}>
         <p>
           <strong>알림:</strong> 결제가 실패했지만 장바구니는 그대로 유지됩니다.
@@ -74,11 +73,12 @@ function OrderFailPage() {
         </p>
       </div>
 
+      {/* 사용자가 다음 행동을 선택할 수 있는 버튼 그룹 */}
       <div className="result-buttons">
-        {/* (버튼 스타일은 CSS에서 검은색으로 수정됨) */}
+        {/* 결제 재시도 버튼 (PaymentPage로 이동) */}
         <Link to="/payment" className="btn-primary-blue">다시 시도하기</Link>
         
-        {/* --- ★ 4. [수정] emoji 및 'icon' 클래스 삭제 ★ --- */}
+        {/* 장바구니로 돌아가는 버튼 */}
         <Link to="/cart" className="btn-secondary-light">
           장바구니로 돌아가기
         </Link>

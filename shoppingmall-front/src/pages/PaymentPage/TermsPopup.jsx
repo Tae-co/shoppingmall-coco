@@ -1,32 +1,32 @@
-// src/pages/PaymentPage/TermsPopup.jsx
-
 import React from 'react';
-// 1. 팝업 전용 CSS를 import 합니다 (경로 확인: 두 단계 위)
 import '../../css/TermsPopup.css'; 
 
-// 부모(PaymentPage)로부터 'onClose' 함수를 props(매개변수)로 받습니다.
+// 약관 상세 내용을 모달로 보여주는 컴포넌트
+// 부모(PaymentPage)로부터 모달을 닫는 'onClose' 함수를 props로 받습니다.
 function TermsPopup({ onClose }) {
   return (
-    // 배경 (오버레이)
+    // 배경 (오버레이) 클릭 시 모달이 닫히도록 설정
     <div className="popup-overlay" onClick={onClose}>
       
-      {/* 팝업 내용 (하얀 박스) */}
+      {/* 팝업 내용 (하얀 박스) 영역 */}
+      {/* 내부 콘텐츠 클릭 시 오버레이의 onClick 이벤트 전파를 막아 모달이 닫히지 않도록 함 */}
       <div className="popup-content" onClick={(e) => e.stopPropagation()}>
         
-        {/* 팝업 헤더 */}
+        {/* 팝업 헤더 영역 */}
         <div className="popup-header">
-          {/* 제목을 '약관'으로 변경 */}
+          {/* 팝업 제목 */}
           <h3>약관 및 정책</h3>
+          {/* 닫기 버튼 */}
           <button onClick={onClose} className="btn-close">&times;</button>
         </div>
 
-        {/* 팝업 본문 (스크롤 가능한 텍스트 영역) */}
+        {/* 팝업 본문 (스크롤 가능한 약관 텍스트 영역) */}
         <div className="popup-body">
           <div className="terms-content">
+            {/* 첫 번째 약관: 구매조건 및 결제대행 서비스 약관 */}
             <h4>구매조건 및 결제대행 서비스 약관 (필수)</h4>
             <p>
               <strong>제1조 (목적)</strong><br />
-              {/* --- ★ 'coco'로 수정됨 ★ --- */}
               이 약관은 coco 쇼핑몰(이하 "몰")이 운영하는 사이버 몰에서 제공하는 인터넷 관련 서비스(이하 "서비스")를 이용함에 있어 "몰"과 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
             </p>
             <p>
@@ -50,12 +50,12 @@ function TermsPopup({ onClose }) {
             
             <hr style={{ margin: '20px 0' }} />
 
+            {/* 두 번째 약관: 개인정보 수집 및 이용 동의 */}
             <h4>개인정보 수집 및 이용 동의 (필수)</h4>
             <p>
               "몰"은(는) 주문 처리를 위해 다음과 같이 개인정보를 수집 및 이용합니다.
             </p>
             <ul>
-              {/* --- ★ 'coco'로 수정됨 ★ --- */}
               <li><strong>수집하는 자:</strong> coco 쇼핑몰</li>
               <li><strong>수집·이용 목적:</strong> 주문 상품의 배송, 결제 처리 및 고객상담</li>
               <li><strong>수집하는 개인정보 항목:</strong> (필수) 성명, 휴대폰 번호, 주소, (선택) 배송 메시지</li>

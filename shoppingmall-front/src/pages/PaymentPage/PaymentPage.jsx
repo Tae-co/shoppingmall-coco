@@ -1,95 +1,98 @@
-// 1. { useEffect } 가 import 목록에서 제거되었습니다.
 import React, { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import '../../css/PaymentPage.css'; 
-import { useOrder } from '../OrderContext';
-import TermsPopup from './TermsPopup'; 
+import { useOrder } from '../OrderContext'; // 전역 주문 상태(Context) 훅
+import TermsPopup from './TermsPopup'; // 약관 상세 보기 팝업 컴포넌트
 
+// 결제 수단 선택, 포인트 사용, 약관 동의 및 최종 결제를 처리하는 페이지 컴포넌트 (주문 프로세스 3단계)
 function PaymentPage() {
   const navigate = useNavigate();
 
-  // '보관함'에서 필요한 정보는 그대로 가져옵니다.
+  // 전역 주문 상태(OrderContext)에서 필요한 금액 및 포인트 정보를 가져옵니다.
   const {
-    orderSubtotal,
-    shippingFee,
-    userPoints,
-    pointsToUse, setPointsToUse
+    orderSubtotal, // 상품 총액
+    shippingFee,   // 배송비
+    userPoints,    // 사용자 보유 포인트
+    pointsToUse, setPointsToUse // 사용할 포인트 상태
   } = useOrder();
 
-  // (기존 state: paymentMethod, agreements, isTermsPopupOpen 등은 동일)
-  const [paymentMethod, setPaymentMethod] = useState('api');
+  // 로컬 상태 관리: 결제 수단, 약관 동의, 약관 팝업 표시 여부
+  const [paymentMethod, setPaymentMethod] = useState('api'); // 'api' 또는 'card'
   const [agreements, setAgreements] = useState({
-    purchase: false,
-    info: false
+    purchase: false, // 구매 조건 동의
+    info: false      // 개인정보 처리 동의
   });
   const [isTermsPopupOpen, setIsTermsPopupOpen] = useState(false);
   
-  // --- ★ 1. [수정] 카드 정보 폼을 위한 state 4개 추가 ★ ---
+  // 카드 정보 직접 입력을 위한 로컬 상태
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvc, setCardCvc] = useState('');
-  // --- ★ 수정 끝 ★ ---
 
+  // 약관 팝업 열기/닫기 핸들러
   const handleOpenTermsPopup = () => setIsTermsPopupOpen(true);
   const handleCloseTermsPopup = () => setIsTermsPopupOpen(false);
-
-  // 'useEffect' API 초기화 코드는 삭제된 상태입니다.
   
-  // (기존 로직: totalAmount, finalAmount, 포인트/약관 함수 등은 동일)
+  // 금액 계산: 총 주문 금액과 최종 결제 금액
   const totalAmount = orderSubtotal + shippingFee; 
   const finalAmount = totalAmount - pointsToUse;   
+  
+  // 포인트 입력 필드 변경 핸들러
   const handlePointsChange = (e) => {
     let value = Number(e.target.value);
     if (value < 0) value = 0;
-    if (value > userPoints) value = userPoints;
-    if (value > totalAmount) value = totalAmount;
+    if (value > userPoints) value = userPoints;       // 보유 포인트 초과 방지
+    if (value > totalAmount) value = totalAmount;     // 결제 금액 초과 방지
     setPointsToUse(value); 
   };
+  
+  // '모두 사용' 버튼 핸들러
   const handleUseAllPoints = () => {
+    // 사용할 수 있는 최대 포인트 (보유 포인트와 결제 금액 중 작은 값)
     const maxUsablePoints = Math.min(userPoints, totalAmount);
     setPointsToUse(maxUsablePoints); 
   };
+  
+  // 약관 동의 체크박스 변경 핸들러
   const handleAgreementChange = (e) => {
     const { name, checked } = e.target;
     setAgreements(prev => ({ ...prev, [name]: checked }));
   };
 
-  // --- ★ 2. [수정] '결제하기' 버튼 핸들러에 '카드 정보' 유효성 검사 추가 ★ ---
+  // '결제하기' 버튼 클릭 시 최종 유효성 검사 및 결제 처리
   const handlePaymentSubmit = () => {
-    // (약관 동의 검사)
+    // 1. 필수 약관 동의 검사
     if (!agreements.purchase || !agreements.info) {
       alert("필수 약관에 모두 동의해주세요.");
       return;
     }
     
     if (paymentMethod === 'api') {
-      // --- 1. 'API 간편결제'일 경우 (잠시 대기 후 성공) ---
+      // 2-1. 'API 간편결제'일 경우: 성공 페이지로 모의 이동
       console.log("결제를 진행합니다... (테스트 대기)");
       setTimeout(() => {
         navigate('/order-success');
       }, 2000); // 2초 딜레이
 
     } else if (paymentMethod === 'card') {
-      // --- 2. '신용/체크카드'일 경우 (필수값 검사 후 실패) ---
+      // 2-2. '신용/체크카드' 직접 입력일 경우: 카드 정보 필수값 검사
       
-      // ★ 카드 정보 4개 항목이 비어있는지 검사 ★
       if (!cardNumber || !cardName || !cardExpiry || !cardCvc) {
         alert("카드 정보를 모두 입력해주세요.");
-        return; // 함수 종료
+        return; 
       }
 
-      // ★ 검사를 통과했다면, 요청대로 '실패' 처리 ★
-      console.log("현재 '신용/체크카드 직접 입력'은 지원하지 않습니다.");
+      // 카드 정보 유효성 검사 통과 후: 모의 실패 처리
+      console.log("현재 '신용/체크카드 직접 입력'은 지원하지 않습니다. 실패 처리합니다.");
       navigate('/order-fail'); // 실패 페이지로 이동
     }
   };
-  // --- ★ 수정 끝 ★ ---
   
   return (
     <div className="payment-page">
       
-      {/* --- 상단 진행 단계 --- */}
+      {/* --- 상단 진행 단계 표시 --- */}
       <div className="checkout-progress">
         <div className="step-item complete">
           <span className="step-icon">✔</span><span className="step-label">장바구니</span>
@@ -111,16 +114,18 @@ function PaymentPage() {
       <h1>주문하기</h1>
 
       <div className="payment-content-wrapper">
-        {/* --- 왼쪽 결제 정보 입력 --- */}
+        {/* --- 왼쪽: 결제 상세 입력 영역 --- */}
         <div className="payment-details">
           <h2>결제 수단 선택</h2>
           <div className="payment-method-options">
+            {/* API 간편결제 선택 옵션 */}
             <div 
               className={`method-option ${paymentMethod === 'api' ? 'selected' : ''}`}
               onClick={() => setPaymentMethod('api')}
             >
               <span className="radio-icon"></span> API 간편결제 (포트원/토스 등)
             </div>
+            {/* 신용/체크카드 직접 입력 선택 옵션 */}
             <div 
               className={`method-option ${paymentMethod === 'card' ? 'selected' : ''}`}
               onClick={() => setPaymentMethod('card')}
@@ -129,7 +134,7 @@ function PaymentPage() {
             </div>
           </div>
 
-          {/* --- ★ 3. [수정] '카드 정보' 폼에 value와 onChange 연결 ★ --- */}
+          {/* 결제 수단이 'card'일 때만 카드 정보 입력 폼 표시 */}
           {paymentMethod === 'card' && (
             <div className="card-info-section">
               <h2>카드 정보</h2>
@@ -154,6 +159,7 @@ function PaymentPage() {
                     onChange={(e) => setCardName(e.target.value)}
                   />
                 </div>
+                {/* 만료일 및 CVC를 한 줄에 표시 */}
                 <div className="form-group-half">
                   <div className="form-group">
                     <label htmlFor="card-expiry">만료일</label>
@@ -184,12 +190,14 @@ function PaymentPage() {
           <div className="points-section">
             <h2>포인트 사용</h2>
             <div className="points-form form-group-with-button">
+              {/* 사용할 포인트 입력 필드 */}
               <input 
                 type="number" 
                 placeholder="0"
                 value={pointsToUse || ''} 
                 onChange={handlePointsChange}
               />
+              {/* 포인트 모두 사용 버튼 */}
               <button type="button" className="btn-outline" onClick={handleUseAllPoints}>
                 모두 사용
               </button>
@@ -197,7 +205,7 @@ function PaymentPage() {
             <p className="points-info">보유 포인트: {userPoints.toLocaleString()} P</p>
           </div>
           
-          {/* --- 약관 동의 --- */}
+          {/* --- 약관 동의 섹션 --- */}
           <div className="agreement-section">
             <div className="agreement-item">
               <input 
@@ -219,16 +227,18 @@ function PaymentPage() {
               />
               <label htmlFor="agree-info">개인정보 제공 및 처리 동의 (필수)</label>
             </div>
+            {/* 약관 상세 팝업 열기 링크 */}
             <span className="agreement-link" onClick={handleOpenTermsPopup}>
               약관 보기
             </span>
           </div>
         </div>
 
-        {/* --- 오른쪽 최종 결제 금액 --- */}
+        {/* --- 오른쪽: 주문 요약 및 결제 버튼 --- */}
         <div className="order-summary-sidebar">
           <div className="summary-box">
             <h3>최종 결제 금액</h3>
+            {/* 금액 상세 */}
             <div className="summary-row">
               <span>상품 금액</span>
               <span>₩{orderSubtotal.toLocaleString()}</span>
@@ -238,6 +248,7 @@ function PaymentPage() {
               <span>₩{shippingFee.toLocaleString()}</span>
             </div>
             
+            {/* 포인트 사용 시에만 표시 */}
             {pointsToUse > 0 && (
               <div className="summary-row discount">
                 <span>포인트 사용</span>
@@ -245,18 +256,21 @@ function PaymentPage() {
               </div>
             )}
             
+            {/* 총 결제 금액 */}
             <div className="summary-total">
               <span>총 결제 금액</span>
               <span>₩{finalAmount.toLocaleString()}</span>
             </div>
             
+            {/* 최종 결제 버튼 (결제 유효성 검사 실행) */}
             <button 
               type="button" 
               className="btn-primary"
-              onClick={handlePaymentSubmit} // ★ 이 버튼이 유효성 검사를 호출합니다
+              onClick={handlePaymentSubmit}
             >
               ₩{finalAmount.toLocaleString()} 결제하기
             </button>
+            {/* 이전 단계 버튼 (배송 정보 페이지로 이동) */}
             <button 
               type="button" 
               className="btn-secondary"
@@ -264,6 +278,7 @@ function PaymentPage() {
             >
               이전 단계
             </button>
+            {/* 주문 관련 유의 사항 */}
             <p className="summary-note">
               주문 완료 후 주문 취소/변경이 어려울 수 있습니다.
               주문 내용을 다시 한 번 확인해주세요.
@@ -272,7 +287,7 @@ function PaymentPage() {
         </div>
       </div>
 
-      {/* --- 약관 팝업 --- */}
+      {/* --- 약관 팝업 렌더링 --- */}
       {isTermsPopupOpen && <TermsPopup onClose={handleCloseTermsPopup} />}
     </div>
   );

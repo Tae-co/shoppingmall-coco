@@ -1,5 +1,3 @@
-/* src/css/OrderPage.css */
-
 /* --- 1. 기본 레이아웃 --- */
 .order-page {
   width: 100%;
@@ -17,11 +15,21 @@
 }
 .order-page h2 {
   font-size: 1.5rem;
+  font-weight: 600; /* h2 폰트 굵기 추가 */
+  margin: 0; /* .section-header가 여백을 관리하므로 제거 */
+  padding: 0;
+  border-bottom: none; /* .section-header가 밑줄을 관리 */
+  text-align: left;
+}
+/* '배송방법' h2는 .section-header가 없으므로 기존 스타일 유지 */
+.shipping-details > h2 {
+  font-size: 1.5rem;
   margin-top: 30px;
   margin-bottom: 20px;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
   text-align: left;
+  font-weight: 600; /* 폰트 굵기 통일 */
 }
 .order-page h3 {
   font-size: 1.25rem;
@@ -58,6 +66,33 @@
 
 
 /* --- 3. 배송 정보 폼 --- */
+
+.section-header {
+  display: flex;
+  justify-content: space-between; /* h2와 버튼을 양쪽 끝으로 */
+  align-items: center; /* 세로 중앙 정렬 */
+  border-bottom: 1px solid #eee; /* h2에 있던 밑줄을 여기로 이동 */
+  padding-bottom: 10px;
+  margin-bottom: 20px; /* 폼과의 간격 */
+}
+
+.btn-load-info {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  color: #333;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0; /* 버튼 찌그러짐 방지 */
+}
+.btn-load-info:hover {
+  background-color: #e9e9e9;
+}
+
+
+
 .shipping-form .form-group {
   margin-bottom: 20px;
 }
@@ -93,7 +128,6 @@
 .shipping-form .form-group-with-button .form-group {
   flex-grow: 1;
   margin-bottom: 0; 
-  /* 'margin-bottom: 20px'를 덮어쓰기 위해 더 강력하게 지정 */
 }
 .btn-outline {
   padding: 12px 20px;
@@ -104,7 +138,6 @@
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
-  /* height는 삭제됨 */
   box-sizing: border-box;
 }
 
@@ -163,5 +196,7 @@
   color: #555;
   margin-bottom: 20px;
 }
-.btn-primary { width: 100%; padding: 14px; font-size: 1rem; font-weight: 600; color: #fff; background-color: #333; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
-.btn-secondary { width: 100%; padding: 14px; font-size: 1rem; font-weight: 600; color: #333; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
+.btn-primary { width: 100%; padding: 14px; font-size: 1rem; font-weight: 600; color: #fff; 
+  background-color: #333; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+.btn-secondary { width: 100%; padding: 14px; font-size: 1rem; font-weight: 600; color: #333; 
+  background-color: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }

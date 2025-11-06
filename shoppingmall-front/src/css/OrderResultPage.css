@@ -1,9 +1,8 @@
-/* src/css/OrderResultPage.css */
-
 /* --- 1. 기본 레이아웃 --- */
+/* 주문 결과 페이지 컨테이너의 전체 너비, 중앙 정렬 및 기본 스타일 설정 */
 .order-result-page {
   width: 100%;
-  max-width: 960px; /* 더 넓은 중앙 영역 */
+  max-width: 960px; /* 넓은 중앙 영역 */
   margin: 40px auto;
   padding: 20px;
   box-sizing: border-box;
@@ -11,11 +10,12 @@
   color: #333;
 }
 
-/* 상단 아이콘 (성공/실패) */
+/* 상단 아이콘 영역 (성공/실패 아이콘 중앙 정렬) */
 .result-icon-wrapper {
   text-align: center;
   margin: 40px 0 20px 0;
 }
+/* 결과 상태를 표시하는 원형 아이콘 스타일 */
 .result-icon {
   width: 72px;
   height: 72px;
@@ -28,17 +28,19 @@
   font-weight: bold;
   color: #fff;
 }
+/* 주문 성공 시 아이콘 스타일 (초록색) */
 .result-icon.success {
-  background-color: #28a745; /* 초록색 */
+  background-color: #28a745;
 }
+/* 주문 실패 시 아이콘 스타일 (옅은 빨간색 배경, 진한 빨간색 글씨) */
 .result-icon.fail {
-  background-color: #fce8e6; /* 옅은 빨간색 */
-  color: #d9534f; /* 진한 빨간색 */
+  background-color: #fce8e6;
+  color: #d9534f;
   border: 1px solid #f8d7da;
-  font-size: 2rem; /* 아이콘 모양 변경을 위해 */
+  font-size: 2rem;
 }
 
-/* 상단 제목 (주문 완료/실패) */
+/* 상단 제목 (주문 완료 또는 실패) */
 .result-title {
   font-size: 2rem;
   font-weight: 600;
@@ -46,6 +48,7 @@
   margin-bottom: 8px;
   text-align: center;
 }
+/* 상단 부제목 (추가 설명) */
 .result-subtitle {
   font-size: 1rem;
   color: #555;
@@ -53,7 +56,7 @@
   text-align: center;
 }
 
-/* 공통 박스 스타일 */
+/* 공통 정보 박스 스타일 */
 .result-box {
   border: 1px solid #eee;
   border-radius: 8px;
@@ -62,6 +65,7 @@
   margin-bottom: 20px;
   text-align: left; 
 }
+/* 박스 내 제목 스타일 (하단 구분선 포함) */
 .result-box h2 {
   font-size: 1.25rem;
   font-weight: 600;
@@ -71,20 +75,24 @@
 }
 
 /* --- 2. [성공] 주문 정보 --- */
+/* 주문 상세 정보 표시 (항목: 값) */
 .order-info-box .info-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* 항목과 값을 양 끝으로 분리 */
   font-size: 0.95rem;
   color: #555;
   margin-bottom: 15px;
 }
+/* 정보 항목(레이블) 텍스트 색상 */
 .order-info-box .info-row span:first-child {
   color: #888;
 }
+/* 정보 값 텍스트 스타일 */
 .order-info-box .info-row span:last-child {
   font-weight: 500;
   color: #333;
 }
+/* 최종 결제 금액 요약 행 스타일 (상단 구분선 포함) */
 .order-info-box .info-total {
   display: flex;
   justify-content: space-between;
@@ -96,6 +104,7 @@
   padding-top: 20px;
   border-top: 1px solid #eee;
 }
+/* 최종 결제 금액 숫자 텍스트 강조 스타일 */
 .order-info-box .info-total-amount {
   font-size: 1.75rem;
   font-weight: 700;
@@ -103,6 +112,7 @@
 }
 
 /* --- 3. [성공] 다음 단계 --- */
+/* 주문 완료 후 다음에 취할 수 있는 행동 안내 행 */
 .step-row {
   display: flex;
   align-items: center;
@@ -112,6 +122,7 @@
 .step-row:last-child {
   border-bottom: none;
 }
+/* 단계 안내 옆의 아이콘 스타일 */
 .step-row-icon {
   width: 40px;
   height: 40px;
@@ -124,6 +135,7 @@
   margin-right: 20px;
   font-size: 1.2rem;
 }
+/* 단계 제목 및 설명 텍스트 영역 */
 .step-row-text h3 {
   font-size: 1rem;
   font-weight: 600;
@@ -136,6 +148,7 @@
 }
 
 /* --- 4. [실패] 오류 박스 --- */
+/* 주문 실패 시 오류 메시지를 담는 경고 알림창 */
 .error-alert-box {
   background-color: #fef7f7;
   border: 1px solid #f8d7da;
@@ -143,9 +156,10 @@
   padding: 20px;
   display: flex;
   align-items: center;
-  color: #721c24;
+  color: #721c24; /* 짙은 경고 텍스트 색상 */
   margin-bottom: 20px;
 }
+/* 경고 아이콘 스타일 */
 .error-alert-box .icon {
   font-size: 1.5rem;
   margin-right: 15px;
@@ -155,6 +169,7 @@
   margin: 0;
   line-height: 1.5;
 }
+/* 오류 메시지의 제목 또는 중요 내용을 굵게 표시 */
 .error-alert-box strong {
   font-weight: 600;
   display: block;
@@ -162,11 +177,13 @@
 }
 
 /* --- 5. [실패] 해결/지원/알림 박스 --- */
+/* 오류 해결을 위한 안내 목록 스타일 */
 .solution-list {
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
+/* 해결 방법 개별 항목 스타일 */
 .solution-item {
   display: flex;
   align-items: center;
@@ -174,12 +191,12 @@
   color: #333;
   margin-bottom: 15px;
 }
+/* 순서 번호를 표시하는 원형 배경 스타일 */
 .solution-item .number {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  /* --- ★ 2. [수정] 배경색을 검은색으로 변경 ★ --- */
-  background-color: #333; 
+  background-color: #333; /* 배경색을 검은색으로 설정 */
   color: #fff;
   font-size: 0.85rem;
   font-weight: bold;
@@ -189,6 +206,7 @@
   margin-right: 15px;
   flex-shrink: 0;
 }
+/* 고객 지원 정보 박스 스타일 */
 .support-box, .notification-box {
   padding: 20px;
   border-radius: 8px;
@@ -213,6 +231,7 @@
 .support-box p {
   margin: 0;
 }
+/* 일반 알림 또는 참고 사항 박스 스타일 */
 .notification-box {
   background-color: #f8f8f8;
   color: #666;
@@ -220,12 +239,14 @@
 }
 
 /* --- 6. 버튼 --- */
+/* 결과 화면 하단의 버튼 그룹 중앙 정렬 */
 .result-buttons {
   display: flex;
-  justify-content: center; /* 버튼 중앙 정렬 */
+  justify-content: center;
   gap: 10px;
   margin-top: 30px;
 }
+/* 모든 결과 버튼 링크의 공통 스타일 */
 .result-buttons a {
   padding: 14px 20px;
   font-size: 1rem;
@@ -237,26 +258,22 @@
   box-sizing: border-box;
 }
 
-/* [성공] 주문 내역 보기 (다크) */
+/* 주 버튼 스타일 (검은색 배경) */
 .btn-primary-dark {
   color: #fff;
   background-color: #333;
   border: 1px solid #333;
 }
-/* [성공] 쇼핑 계속하기 (라이트) */
+/* 보조 버튼 스타일 (흰색 배경) */
 .btn-secondary-light {
   color: #333;
   background-color: #fff;
   border: 1px solid #ddd;
 }
 
-/* --- ★ 3. [수정] '다시 시도하기' 버튼을 검은색으로 변경 ★ --- */
-/* (기존 .btn-primary-blue CSS를 .btn-primary-dark 스타일로 덮어씀) */
+/* [실패] 다시 시도하기 버튼 스타일 (주 버튼 스타일인 검은색으로 덮어씀) */
 .btn-primary-blue {
   color: #fff;
   background-color: #333;
   border: 1px solid #333;
 }
-
-/* --- ★ 4. [수정] 아이콘 클래스 삭제 ★ --- */
-/* .btn-secondary-light.icon 스타일 블록이 삭제되었습니다. */
