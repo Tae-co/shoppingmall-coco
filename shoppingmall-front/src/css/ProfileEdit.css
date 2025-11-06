@@ -1,11 +1,12 @@
 /* 전체 컨테이너 */
 .profile-edit-container {
   background-color: #f3f3f5;
+  color: #222;
   min-height: 100vh;
-  padding: 40px 80px 80px;
+  padding: 30px 80px;
   font-family: "Pretendard", sans-serif;
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 auto; 
 }
 
 /* 뒤로가기 */
