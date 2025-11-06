@@ -3,23 +3,6 @@ import { Link, useSearchParams } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import ProductButton from '../components/product/ProductButton';
 
-// --- 가짜 데이터 (Mock Data) ---
-// (원래는 API로 받아와야 할 데이터)
-const mockProductListData = [
- { prdNo: 1, prdName: '[JS] 히알루론산 세럼', prdPrice: 45000, imageUrl: 'https://picsum.photos/id/11/300/300', reviewCount: 3421, averageRating: 4.8, skinTypes: ['dry', 'sensitive'], skinConcerns: ['hydration', 'soothing'], regDate: '2025-11-01', simpleReview: '"수분감이 정말 좋아요! 인생템입니다."' },
-  { prdNo: 2, prdName: '[JS] 비타C C 토너', prdPrice: 52000, imageUrl: 'https://picsum.photos/id/12/300/300', reviewCount: 2166, averageRating: 4.5, skinTypes: ['oily', 'combination'], skinConcerns: ['brightening', 'pores'], regDate: '2025-11-03', simpleReview: '"피부톤이 밝아지는 느낌이에요."' },
-  { prdNo: 3, prdName: '[JS] 선크림 SPF50+', prdPrice: 25000, imageUrl: 'https://picsum.photos/id/13/300/300', reviewCount: 1500, averageRating: 4.7, skinTypes: ['sensitive', 'dry'], skinConcerns: ['uv', 'soothing'], regDate: '2025-11-02', simpleReview: '"백탁 현상 없고 순해서 매일 씁니다."' },
-  { prdNo: 4, prdName: '[JS] 딥 클렌징 오일', prdPrice: 28000, imageUrl: 'https://picsum.photos/id/14/300/300', reviewCount: 1200, averageRating: 4.6, skinTypes: ['dry', 'combination'], skinConcerns: ['hydration'], regDate: '2025-10-30', simpleReview: '"세정력이 좋아요."' },
-  { prdNo: 5, prdName: '[JS] 레티놀 크림', prdPrice: 75000, imageUrl: 'https://picsum.photos/id/15/300/300', reviewCount: 950, averageRating: 4.9, skinTypes: ['dry', 'combination'], skinConcerns: ['pores'], regDate: '2025-10-29', simpleReview: '"피부가 탱탱해지는 기분!"' },
-  { prdNo: 6, prdName: '[JS] 시카 진정 마스크', prdPrice: 3500, imageUrl: 'https://picsum.photos/id/16/300/300', reviewCount: 2500, averageRating: 4.7, skinTypes: ['sensitive'], skinConcerns: ['soothing'], regDate: '2025-11-04', simpleReview: '"붉은 기가 가라앉아요."' },
-  { prdNo: 7, prdName: '[JS] 쿠션 파운데이션 21호', prdPrice: 48000, imageUrl: 'https://picsum.photos/id/17/300/300', reviewCount: 1800, averageRating: 4.4, skinTypes: ['oily'], skinConcerns: ['pores'], regDate: '2025-10-28', simpleReview: '"커버력이 미쳤어요."' },
-  { prdNo: 8, prdName: '[JS] 아이래쉬 세럼', prdPrice: 22000, imageUrl: 'https://picsum.photos/id/18/300/300', reviewCount: 700, averageRating: 4.2, skinTypes: ['sensitive'], skinConcerns: ['hydration'], regDate: '2025-10-27', simpleReview: '"속눈썹이 길어지는 느낌."' },
-  { prdNo: 9, prdName: '[JS] 립 틴트 (로즈)', prdPrice: 18000, imageUrl: 'https://picsum.photos/id/19/300/300', reviewCount: 3100, averageRating: 4.6, skinTypes: ['dry'], skinConcerns: ['hydration'], regDate: '2025-11-05', simpleReview: '"색상이 너무 예뻐요."' },
-  { prdNo: 10, prdName: '[JS] 바디 로션', prdPrice: 19000, imageUrl: 'https://picsum.photos/id/20/300/300', reviewCount: 800, averageRating: 4.5, skinTypes: ['dry'], skinConcerns: ['hydration'], regDate: '2025-10-26', simpleReview: '"촉촉하고 향이 좋아요."' },
-  { prdNo: 11, prdName: '[JS] 각질 제거 패드', prdPrice: 23000, imageUrl: 'https://picsum.photos/id/21/300/300', reviewCount: 1600, averageRating: 4.6, skinTypes: ['oily', 'combination'], skinConcerns: ['pores'], regDate: '2025-10-25', simpleReview: '"피부가 매끈해졌어요."' },
-  { prdNo: 12, prdName: '[JS] 헤어 에센스', prdPrice: 31000, imageUrl: 'https://picsum.photos/id/22/300/300', reviewCount: 900, averageRating: 4.7, skinTypes: [], skinConcerns: ['hydration'], regDate: '2025-10-24', simpleReview: '머릿결이 부드러워져서 좋아요. 그런데 사람들마다 안맞을 수도 있으니 참고하시기 바랄께요.' },
-];
-// ---------------------------------
 
 // --- 필터 옵션 및 태그 매핑 ---
 const filterOptions = {
@@ -32,6 +15,9 @@ const skinTypeMap = {
   combination: '복합성',
   sensitive: '민감성'
 };
+
+// 한 페이지에 보여줄 아이템 개수
+const ITEMS_PER_PAGE = 6;
 // ---------------------------------
 
 // 스타일 컴포넌트 정의
@@ -442,19 +428,14 @@ const ProductListSkeleton = () => (
   </ProductListGrid>
 );
 
-// 한 페이지에 보여줄 아이템 개수
-const ITEMS_PER_PAGE = 6;
-
 function ProductListPage() {
-  // 상품 목록을 저장할 상태 (State)
-  const [products, setProducts] = useState([]);
-  // 로딩 중인지 알려줄 상태
+  const [products, setProducts] = useState([]); // API 응답의 content 배열
+  const [totalPages, setTotalPages] = useState(0); // 총 페이지 개수
+  const [totalElements, setTotalElements] = useState(0); // 총 상품 개수
+
   const [isLoading, setIsLoading] = useState(true);
-  // 모바일 필터 열림/닫힘 상태
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  //  닫기 버튼을 참조할 ref 생성
   const closeButtonRef = useRef(null);
 
   // URL에서 현재 상태 읽어오기
@@ -468,26 +449,46 @@ function ProductListPage() {
 
   // 전체 상품 목록은 처음에 한 번만 불러오기
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setProducts(mockProductListData);
-      setIsLoading(false);
-    }, 500);
-  }, []);
+    const fetchProducts = async () => {
+      setIsLoading(true); // 로딩 시작
+
+      try {
+        // searchParams를 API URL 쿼리 스트링으로 변환
+        const queryString = searchParams.toString();
+
+        // 실제 API 호출
+        const response = await fetch(`http://localhost:8080/api/products?${queryString}`);
+
+        if(!response.ok) {
+          throw new Error('데이터를 불러오는 데 실패했습니다.');
+        }
+
+        const data = await response.json();
+
+        setProducts(data.content);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false); // 로딩 종료
+      }
+    };
+
+    fetchProducts(); // 함수 실행
+  }, [searchParams]); // searchParams가 변경될 때마다 useEffect 다시 실행
 
   // isFilterOpen 상태가 변경될 때 포커스를 제어하는 useEffect
   useEffect(() => {
     if (isFilterOpen) {
-      // 필터가 열리면, 0.1초 뒤 (애니메이션 끝날 무렵) 닫기 버튼에 포커스
+      // 필터가 열리면, 0.1초 뒤 닫기 버튼에 포커스
       setTimeout(() => {
         closeButtonRef.current?.focus(); // .current가 실제 DOM 요소를 가리킴
       }, 100); // 100ms 딜레이
     }
   }, [isFilterOpen]); // isFilterOpen이 바뀔 때마다 실행
 
-// 모든 핸들러 함수를 'setSearchParams'로 URL을 업데이트하도록 변경
-
-  // (Helper) URL 파라미터를 업데이트하는 공통 함수
+  // URL 파라미터를 업데이트하는 공통 함수
   const updateSearchParams = (newParams, resetPage = true) => {
     // 현재 URL의 모든 파라미터를 복사
     const params = new URLSearchParams(searchParams);
@@ -509,7 +510,7 @@ function ProductListPage() {
     setSearchParams(params);
   };
   
-  // (Helper) 배열(필터)을 위한 핸들러
+  // 배열(필터)을 위한 핸들러
   const handleFilterChange = (category, value) => {
     const currentValues = searchParams.getAll(category);
     let newValues;
@@ -521,69 +522,39 @@ function ProductListPage() {
     }
 
     const params = new URLSearchParams(searchParams);
-    params.delete(category); // 해당 카테고리 파라미터 모두 삭제
-    newValues.forEach(val => params.append(category, val)); // 새 값들만 다시 추가
-    params.set('page', '1'); // 1페이지로 리셋
+    params.delete(category);
+    newValues.forEach(val => params.append(category, val));
+    params.set('page', '1');
     setSearchParams(params);
   };
 
   // 검색어 변경 핸들러
   const handleSearchChange = (e) => {
-    updateSearchParams({ q: e.target.value });
+    const params = new URLSearchParams(searchParams);
+    params.set('q', e.target.value);
+    params.set('page', '1');
+    setSearchParams(params);
   };
   
   // 정렬 변경 핸들러
   const handleSortChange = (e) => {
-    updateSearchParams({ sort: e.target.value });
+    const params = new URLSearchParams(searchParams);
+    params.set('sort', e.target.value);
+    params.set('page', '1');
+    setSearchParams(params);
   };
   
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber) => {
-    // (페이지 변경이므로, resetPage = false)
-    updateSearchParams({ page: pageNumber.toString() }, false); 
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    setSearchParams(params);
   };
 
   const handleAddToCart = (e) => {
     e.preventDefault(); 
     console.log('장바구니 담기 클릭!');
   };
-
-  // 검색어 필터링
-  const searchedProducts = products.filter(product =>
-    product.prdName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // 활성 필터
-  const filteredProducts = searchedProducts.filter(product => {
-    // 스킨타입 필터 검사
-    const skinTypeMatch = activeFilters.skinTypes.length === 0 || // 선택된 필터가 없으면 모두 통과
-      activeFilters.skinTypes.some(filterType => product.skinTypes.includes(filterType));
-
-    // 스킨고민 필터 검사
-    const skinConcernMatch = activeFilters.skinConcerns.length === 0 ||
-      activeFilters.skinConcerns.some(filterConcern => product.skinConcerns.includes(filterConcern));
-    
-    // 두 필터를 모두 만족해야 함
-    return skinTypeMatch && skinConcernMatch;
-  });
-
-  // 정렬
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortOrder) {
-      case 'newest': return new Date(b.regDate) - new Date(a.regDate); // 최신순
-      case 'priceAsc': return a.prdPrice - b.prdPrice; // 가격 낮은 순
-      case 'priceDesc': return b.prdPrice - a.prdPrice; // 가격 높은 순
-      default: return b.reviewCount - a.reviewCount; // 인기순 (기본값)
-    }
-  });
-
-  // 페이지네이션 로직
-  // 총 페이지 수 계산
-  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
-  // 현재 페이지에 보여줄 아이템 계산
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const paginatedProducts = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   // 로딩이 끝나고 상품을 화면에 그리기
   return (
@@ -629,8 +600,7 @@ function ProductListPage() {
                 {option.label}
               </FilterLabel>
             ))}
-          </FilterGroup>
-          
+          </FilterGroup> 
       </Sidebar>
 
       {/* --- 메인 상품 목록 --- */}
@@ -653,7 +623,7 @@ function ProductListPage() {
               필터
             </FilterButton>
             <ProductCount>
-              총 <strong>{filteredProducts.length}</strong>개 상품
+              총 <strong>{totalElements}</strong>개 상품
             </ProductCount>
           </TopBarControls>
           
@@ -670,10 +640,8 @@ function ProductListPage() {
 
         {/* --- 로딩 / 비어있음 / 데이터 있음 분기 --- */}
         {isLoading ? (
-          // 로딩 중일 때: 스켈레톤 렌더링
           <ProductListSkeleton />
-        ) : paginatedProducts.length === 0 ? (
-          // 로딩 끝 & 상품 0개일 때: 비어있는 상태
+        ) : products.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px', color: '#888' }}>
             <h3>검색 결과가 없습니다</h3>
             <p>필터 조건을 다시 확인해 주세요.</p>
@@ -682,7 +650,7 @@ function ProductListPage() {
           // 로딩 끝 & 상품 있음: 실제 데이터
           <>
             <ProductListGrid>
-              {paginatedProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.prdNo} to={`/products/${product.prdNo}`}>
                   <ProductImage src={product.imageUrl} alt={product.prdName} loading="lazy"/>
                   <CardContent>
@@ -691,7 +659,7 @@ function ProductListPage() {
                       ⭐ {product.averageRating} ({product.reviewCount})
                     </ProductRating>
                     <TagContainer>
-                      {product.skinTypes.map(type => (
+                      {product.skinTypes?.map(type => (
                         <Tag key={type}># {skinTypeMap[type] || type}</Tag>
                       ))}
                     </TagContainer>
