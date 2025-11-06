@@ -1,11 +1,14 @@
+import React from "react"
 import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Cart from './pages/Cart';
 import Login from './pages/Login';
 import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
 import FindAccount from './pages/FindAccount';
+
 
 function App() {
   const location = useLocation();
@@ -19,6 +22,7 @@ function App() {
         <Route path="/signup/terms" element={<SignupTerms />} />
         <Route path="/signup/info" element={<SignupInfo />} />
         <Route path="/find-account" element={<FindAccount />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>
