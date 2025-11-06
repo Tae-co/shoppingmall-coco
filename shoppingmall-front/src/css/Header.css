@@ -59,12 +59,12 @@ ul {
     padding: 25px 40px;
     min-width: 320px; 
 }
-.center {
+.header_center {
     flex: 1;
     display: flex;
     margin: 0 50px;
 }
-.right {
+.header_right {
     display: flex;
     align-items: center;
     justify-content: flex-end;
