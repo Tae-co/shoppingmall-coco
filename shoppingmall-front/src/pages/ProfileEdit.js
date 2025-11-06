@@ -122,6 +122,7 @@ function ProfileEdit() {
       <div className="section">
         <label>퍼스널 컬러</label>
         <select className="select">
+          <option value="" disabled>선택하세요</option>
           <option>여름 쿨톤 (Summer Cool)</option>
           <option>봄 웜톤 (Spring Warm)</option>
           <option>가을 웜톤 (Autumn Warm)</option>

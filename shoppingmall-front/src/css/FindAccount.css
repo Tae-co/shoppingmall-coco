@@ -1,11 +1,11 @@
 .find-account-container {
-  width: 100%;
-  height: 100vh;
-  background: linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%), white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Inter', sans-serif;
+  background-color: #f3f3f5;
+  color: #222;
+  min-height: 100vh;
+  padding: 30px 80px;
+  font-family: "Pretendard", sans-serif;
+  max-width: 1000px;
+  margin: 0 auto; 
 }
 
 .find-account-card {

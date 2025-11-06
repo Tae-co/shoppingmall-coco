@@ -1,6 +1,6 @@
 /* 전체 컨테이너 */
 .profile-edit-container {
-  background-color: #fafafa;
+  background-color: #f3f3f5;
   min-height: 100vh;
   padding: 40px 80px 80px;
   font-family: "Pretendard", sans-serif;
@@ -78,8 +78,10 @@
 .input.readonly {
   background-color: #fafafa;
   color: #888;
-  margin-top: 4px;
-  padding: 10px 16px;
+  padding: 12px 16px;   
+  margin-top: 0;        
+  flex: 1;              
+  width: 100%;
 }
 
 /* 수정 버튼 */
@@ -125,7 +127,7 @@ input[type="radio"] {
   display: grid;
   grid-template-rows: repeat(4, auto); /* 세로로 4개씩 */
   grid-auto-flow: column; /* 세로 먼저, 오른쪽으로 이동 */
-  justify-content: start; /* ✅ 왼쪽 정렬 */
+  justify-content: start; /* 왼쪽 정렬 */
   column-gap: 100px; /* 열 간격 */
   row-gap: 12px; /* 항목 간 간격 */
   width: 100%;

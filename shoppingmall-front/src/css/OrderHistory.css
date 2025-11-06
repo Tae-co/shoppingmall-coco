@@ -2,7 +2,7 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px;
-  background-color: #fafafa;
+  background-color: #f3f3f5;
   font-family: "Pretendard", sans-serif;
 }
 
@@ -145,7 +145,7 @@
 }
 
 .order-total strong {
-  color: #3563e9;
+  color: black;
   font-weight: 700;
 }
 

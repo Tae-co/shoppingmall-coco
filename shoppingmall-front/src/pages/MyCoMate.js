@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/MyCoMate.css";
 
 function MyCoMate() {
+  const navigate = useNavigate();
+
   const [tab, setTab] = useState("following");
 
   const coMates = [
@@ -29,9 +32,9 @@ function MyCoMate() {
     <div className="mycomate-container">
       {/* Header */}
       <div className="mycomate-header">
-        <a href="#" className="back-link">
-          ← 마이페이지로 돌아가기
-        </a>
+      <button className="back-btn" onClick={() => navigate("/mypage")}>
+        ← 마이페이지로 돌아가기
+      </button>
         <h1>My Co-mate</h1>
         <p>내 피부 타입에 맞는 Co-mate를 찾아보세요</p>
       </div>
