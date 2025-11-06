@@ -7,27 +7,33 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 100px;
+    padding-top: 80px;
 }
 .category_list {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 120px;
+    gap: 100px;
 }
 .clickable_area {
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    font-size: 15px;
   }
 .clickable_area img {
-    width: 70px;
+    width: 60px;
     margin-bottom: 15px;
 }
 .popular_product_wrapper, .comate_recommend_wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 100px;
+    padding-top: 80px;
+}
+.popular_title, .comate_title {
+    margin: 20px 75px;
+}
+.sub_title {
+    margin-top: 5px;
+    font-size: 15px;
+    color: #777777;
 }

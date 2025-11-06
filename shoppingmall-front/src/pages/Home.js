@@ -8,7 +8,8 @@ import facialmaskImg from '../images/category/category_facialmask.png';
 
 import '../css/Home.css';
 
-import SimpleSlider from './SimpleSlider'; // 슬라이더 컴포넌트
+import SimpleSlider from './SimpleSlider'; // 메인배너 슬라이더 컴포넌트
+import MultipleItems from './Multipletems'; // 인기상품 슬라이더 컴포넌트
 
 const Home = () => {
 
@@ -20,6 +21,9 @@ const Home = () => {
         const path = '';
         navigate(path);
     };
+
+    // co-mate 데이터 (임시)
+    const comateRecommend = [];
 
     return (
         <div>
@@ -53,17 +57,22 @@ const Home = () => {
                 </div>
                 {/* 인기 상품 영역 */}
                 <div className="popular_product_wrapper">
-                    <h2 className="popular_title">인기 상품</h2>
+                    <div className="popular_title">
+                        <h2>BEST SELLER</h2>
+                        <div className="sub_title">COCO의 베스트 아이템을 만나보세요</div>
+                    </div>
                     <div className="popular_list">
-                    {/* 인기 상품 카드 컴포넌트 추가 예정 */}
-
+                    <MultipleItems />   
                     </div>
                 </div>
                 {/* CO-MATE 추천 영역 */}
                 <div className="comate_recommend_wrapper">
-                    <h2 className="comate_title">CO-MATE 추천</h2>
+                    <div className="comate_title">
+                        <h2>CO-MATE</h2>
+                        <div className="sub_title">신뢰할 수 있는 뷰티 전문가들을 팔로우하세요</div>
+                    </div>
                     <div className="comate_list">
-                    {/* 인기 상품 카드 컴포넌트 추가 예정 */}
+                    {/* comate 관련 컴포넌트 추가 예정 */}
 
                     </div>
                 </div>
