@@ -7,34 +7,45 @@ function MyCoMate() {
 
   const [tab, setTab] = useState("following");
 
-  const coMates = [
+  const [coMates, setCoMates] = useState([
     {
       name: "스킨케어전문가",
       avatar: "스",
       tags: ["건성", "쿨톤", "주름", "건조함"],
       reviews: 42,
+      isFollowing: true,
     },
     {
       name: "민감피부구원자",
       avatar: "민",
       tags: ["민감성", "중성", "민감함", "홍조"],
       reviews: 28,
+      isFollowing: true,
     },
     {
       name: "안티에이징퀸",
       avatar: "안",
       tags: ["건성", "쿨톤", "주름", "탄력"],
       reviews: 56,
+      isFollowing: true,
     },
-  ];
+  ]);
+
+  const handleFollowToggle = (index) => {
+    setCoMates((prev) =>
+      prev.map((mate, i) =>
+        i === index ? { ...mate, isFollowing: !mate.isFollowing } : mate
+      )
+    );
+  };
 
   return (
     <div className="mycomate-container">
       {/* Header */}
       <div className="mycomate-header">
-      <button className="back-btn" onClick={() => navigate("/mypage")}>
-        ← 마이페이지로 돌아가기
-      </button>
+        <button className="back-btn" onClick={() => navigate("/mypage")}>
+          ← 마이페이지로 돌아가기
+        </button>
         <h1>My Co-mate</h1>
         <p>내 피부 타입에 맞는 Co-mate를 찾아보세요</p>
       </div>
@@ -45,7 +56,7 @@ function MyCoMate() {
           className={`mycomate-tab ${tab === "following" ? "active" : ""}`}
           onClick={() => setTab("following")}
         >
-          팔로잉 (3)
+          팔로잉 ({coMates.filter((m) => m.isFollowing).length})
         </div>
         <div
           className={`mycomate-tab ${tab === "recommended" ? "active" : ""}`}
@@ -76,7 +87,13 @@ function MyCoMate() {
                   </div>
                 </div>
               </div>
-              <button className="follow-btn">👤 팔로잉</button>
+
+              <button
+                className="follow-btn"
+                onClick={() => handleFollowToggle(idx)}
+              >
+                👤 {mate.isFollowing ? "팔로잉" : "팔로우"}
+              </button>
             </div>
           ))}
         </div>
