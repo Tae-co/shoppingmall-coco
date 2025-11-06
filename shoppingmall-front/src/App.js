@@ -12,6 +12,7 @@ import OrderHistory from "./pages/OrderHistory";
 import MyActivity from './pages/MyActivity';
 import AccountSettings from "./pages/AccountSettings";
 import MyCoMate from './pages/MyCoMate';
+import OrderDetail from "./pages/OrderDetail";
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/my-activity" element={<MyActivity />} />
         <Route path="/account-settings" element={<AccountSettings />} />
         <Route path="/my-comate" element={<MyCoMate />} />
+        <Route path="/order-detail/:id" element={<OrderDetail />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>

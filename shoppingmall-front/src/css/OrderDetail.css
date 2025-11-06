@@ -1,0 +1,85 @@
+.order-detail-container {
+  background-color: #f3f3f5;
+  color: #222;
+  min-height: 100vh;
+  padding: 30px 80px;
+  font-family: "Pretendard", sans-serif;
+  max-width: 1000px;
+  margin: 0 auto; 
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 28px;
+}
+
+.order-summary p {
+  font-size: 14px;
+  color: #666;
+  margin: 4px 0;
+}
+
+.product-list {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.product-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  margin-right: 16px;
+  object-fit: cover;
+}
+
+.product-name {
+  font-weight: 600;
+}
+
+.product-total {
+  color:black;
+  font-weight: 600;
+}
+
+.shipping-info,
+.payment-info {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.payment-row,
+.payment-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.payment-total {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.list-btn {
+  background:black;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}

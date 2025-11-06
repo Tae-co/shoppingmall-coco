@@ -29,7 +29,7 @@ function OrderHistory() {
       date: "2024.10.15",
       status: "배송중",
       expected: "2024.10.20",
-      total: 88000,
+      total: 91000,
       items: [
         {
           brand: "글로우랩",
@@ -99,7 +99,12 @@ function OrderHistory() {
             <div className="order-total">
               <span>총 주문금액</span>
               <strong>{order.total.toLocaleString()}원</strong>
-              <button className="detail-btn">상세보기 ›</button>
+             <button
+                className="detail-btn"
+                onClick={() => navigate(`/order-detail/${order.id}`)}
+             > 
+              상세보기 ›
+              </button>
             </div>
           </div>
         </div>
