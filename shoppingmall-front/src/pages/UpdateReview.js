@@ -1,11 +1,13 @@
-import react, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import react, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
+import axios from "axios";
 import '../css/review.css'
 function UpdateReview() {
 
+    const { reviewNo } = useParams();
     const [text, setText] = useState(""); // 리뷰 텍스트를 위한 state
 
     const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
@@ -90,7 +92,7 @@ function UpdateReview() {
         return new Promise((resolve, reject) => {
 
             const reader = new FileReader();
-        
+
             reader.onload = (event) => {
                 resolve({
                     id: crypto.randomUUID(), // 고유 ID
@@ -103,7 +105,7 @@ function UpdateReview() {
             // 에러가 발생시 error 메시지 만든다.
             reader.onerror = (error) => reject(error);
 
-              //파일을 읽는 작업 실행 
+            //파일을 읽는 작업 실행 
             reader.readAsDataURL(file);
 
 
@@ -175,6 +177,53 @@ function UpdateReview() {
         alert("리뷰 등록 로직이 호출되었습니다. (콘솔을 확인하세요)");
     };
 
+    const [loading, setLoading] = useState(false);
+
+    const loadData = async () => {
+        setLoading(true);
+
+        // const response = await axios.get("");
+        // console.log(response.data);
+
+        const data = {
+            starRaing: 3,
+            text: "test 데이터 입니다.",
+            goodTags: ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요", "민감성 피부 OK"],
+            badTags: ["가격이 비싸요", "용량이 적어요", "보습력이 부족해요", "끈적여요"],
+            imageURLs: ["https://placehold.co/100x100/AAB/FFF?text=Img1", "https://placehold.co/100x100/BAA/FFF?text=Img2"]
+        }
+        // 별 점수 데이터
+        setText(data.text);
+        starScore(data.starRaing - 1);
+        
+        const newPtagClicked = ptags.map((tag) => {
+            return data.goodTags.includes(tag);
+        });
+
+        setPtagsClicked(newPtagClicked);
+
+
+        const newNtagClicked = ntags.map((tag) => {
+            return data.badTags.includes(tag);
+        })
+        setNtagsClicked(newNtagClicked);
+
+        setLoading(false);
+
+        if (data.imageURLs && data.imageURLs.length > 0) {
+            const loadedImages = data.imageURLs.map(url => ({
+                id: crypto.randomUUID(),
+                url: url,
+                file: null
+            }));
+
+            setPreviewFiles(loadedImages);
+        }
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
 
     return (
@@ -197,6 +246,7 @@ function UpdateReview() {
                                     src={clicked[i] ? yellowStar : greyStar}
                                 />
                             ))}
+                            {console.log(clicked)}
                             별점 {starTotal}
                         </div>
                     </div>
@@ -237,7 +287,7 @@ function UpdateReview() {
                                 rows={30}
                                 placeholder="자세한 리뷰는 다른 분들께 큰 도움이 됩니다."
                                 value={text}
-                                minLength={1500}
+                                minLength={1000}
                                 onChange={(e) => setText(e.target.value)}
                             />
                         </div>

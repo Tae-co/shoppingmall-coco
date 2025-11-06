@@ -235,7 +235,7 @@ function Review() {
                                 rows={30}
                                 placeholder="자세한 리뷰는 다른 분들께 큰 도움이 됩니다."
                                 value={text}
-                                minLength={1500}
+                                minLength={1000}
                                 onChange={(e) => setText(e.target.value)}
                             />
                         </div>
