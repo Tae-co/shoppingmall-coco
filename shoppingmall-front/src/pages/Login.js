@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Login.css';
 import GoogleIcon from '../images/google.svg';
@@ -11,10 +11,17 @@ const Login = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
+  // 컴포넌트 마운트 시 카카오 SDK 초기화
+  useEffect(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(process.env.REACT_APP_KAKAO_JS_KEY || 'YOUR_KAKAO_JS_KEY');
+    }
+  }, []);
+
+  // 일반 로그인 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 유효성 검사
     if (!userId.trim()) {
       alert('아이디를 입력해주세요.');
       return;
@@ -25,7 +32,6 @@ const Login = () => {
     }
 
     try {
-      // 로그인 API 호출
       const response = await fetch('http://localhost:8080/api/member/login', {
         method: 'POST',
         headers: {
@@ -40,7 +46,6 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // 로그인 성공 - JWT 토큰과 사용자 정보를 localStorage에 저장
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
@@ -48,11 +53,7 @@ const Login = () => {
         localStorage.setItem('isLoggedIn', 'true');
         
         alert('로그인되었습니다.');
-        
-        // 로그인 상태 변경 이벤트 발생 (Header 컴포넌트가 감지)
         window.dispatchEvent(new Event('loginStatusChanged'));
-        
-        // 메인 페이지로 이동 (Header가 마운트되면서 자동으로 로그인 상태 체크)
         navigate('/');
       } else {
         alert(data.message || '아이디 또는 비밀번호가 일치하지 않습니다.');
@@ -63,14 +64,75 @@ const Login = () => {
     }
   };
 
+  // 아이디/비밀번호 찾기 페이지로 이동
   const handleFindAccount = (e) => {
     e.preventDefault();
     navigate('/find-account');
   };
 
+  // 회원가입 페이지로 이동
   const handleSignup = (e) => {
     e.preventDefault();
     navigate('/signup/terms');
+  };
+
+  // 카카오 소셜 로그인 처리
+  const handleKakaoLogin = async () => {
+    if (!window.Kakao || !window.Kakao.isInitialized()) {
+      alert('카카오 SDK가 초기화되지 않았습니다.');
+      return;
+    }
+
+    try {
+      window.Kakao.Auth.logout(() => {
+        setTimeout(() => {
+          window.Kakao.Auth.login({
+            success: async (authObj) => {
+              try {
+                const response = await fetch('http://localhost:8080/api/member/kakao/login', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    accessToken: authObj.access_token
+                  })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                  if (data.token) {
+                    localStorage.setItem('token', data.token);
+                  }
+                  localStorage.setItem('member', JSON.stringify(data));
+                  localStorage.setItem('isLoggedIn', 'true');
+                  
+                  if (data.needsAdditionalInfo) {
+                    navigate('/kakao/additional-info');
+                  } else {
+                    alert('카카오 로그인되었습니다.');
+                    window.dispatchEvent(new Event('loginStatusChanged'));
+                    navigate('/');
+                  }
+                } else {
+                  alert(data.message || '카카오 로그인에 실패했습니다.');
+                }
+              } catch (error) {
+                console.error('카카오 로그인 오류:', error);
+                alert('카카오 로그인 중 오류가 발생했습니다.');
+              }
+            },
+            fail: (err) => {
+              console.error('카카오 로그인 취소:', err);
+            }
+          });
+        }, 800);
+      });
+    } catch (error) {
+      console.error('카카오 로그인 오류:', error);
+      alert('카카오 로그인 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -118,13 +180,13 @@ const Login = () => {
           </div>
 
           <div className="social-buttons">
-            <button className="social-button">
+            <button type="button" className="social-button" onClick={handleKakaoLogin}>
               <img src={KakaoIcon} alt="Kakao" />
             </button>
-            <button className="social-button">
+            <button type="button" className="social-button">
               <img src={NaverIcon} alt="Naver" />
             </button>
-            <button className="social-button">
+            <button type="button" className="social-button">
               <img src={GoogleIcon} alt="Google" />
             </button>
           </div>

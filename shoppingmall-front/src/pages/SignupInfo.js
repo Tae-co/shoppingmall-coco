@@ -23,6 +23,7 @@ const SignupInfo = () => {
   const [timer, setTimer] = useState(0);
   const [isSendingCode, setIsSendingCode] = useState(false);
 
+  // 입력 필드 변경 처리 및 중복확인 상태 초기화
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -30,7 +31,6 @@ const SignupInfo = () => {
       [name]: value
     }));
     
-    // 아이디나 닉네임이 변경되면 중복확인 상태 초기화
     if (name === 'userId') {
       setIsIdChecked(false);
     }
@@ -39,6 +39,7 @@ const SignupInfo = () => {
     }
   };
 
+  // 아이디 및 닉네임 중복 확인 처리
   const handleCheckDuplicate = async (type) => {
     try {
       if (type === 'id') {
@@ -46,7 +47,6 @@ const SignupInfo = () => {
           alert('아이디는 4자 이상 입력해주세요.');
           return;
         }
-        // 중복확인 API 호출
         const response = await fetch(`http://localhost:8080/api/member/check-id/${formData.userId}`);
         const data = await response.json();
         
@@ -62,7 +62,6 @@ const SignupInfo = () => {
           alert('닉네임은 2자 이상 입력해주세요.');
           return;
         }
-        // 중복확인 API 호출
         const response = await fetch(`http://localhost:8080/api/member/check-nickname/${encodeURIComponent(formData.nickname)}`);
         const data = await response.json();
         
@@ -80,7 +79,7 @@ const SignupInfo = () => {
     }
   };
 
-  // 타이머 효과
+  // 인증번호 유효시간 타이머 관리
   useEffect(() => {
     let interval = null;
     if (timer > 0) {
@@ -93,14 +92,13 @@ const SignupInfo = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // 이메일 인증번호 전송
+  // 이메일 인증번호 전송 처리
   const handleSendVerificationCode = async () => {
     if (!formData.email) {
       alert('이메일을 입력해주세요.');
       return;
     }
 
-    // 이메일 형식 검증
     const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
     if (!emailRegex.test(formData.email)) {
       alert('올바른 이메일 형식을 입력해주세요.');
@@ -136,7 +134,7 @@ const SignupInfo = () => {
     }
   };
 
-  // 이메일 인증번호 검증
+  // 이메일 인증번호 검증 처리
   const handleVerifyCode = async () => {
     if (!formData.verificationCode) {
       alert('인증번호를 입력해주세요.');
@@ -176,42 +174,37 @@ const SignupInfo = () => {
     }
   };
 
-  // 다음 주소 API 연동
+  // 다음 주소 API를 통한 주소 검색 처리
   const handleAddressSearch = () => {
     if (window.daum && window.daum.Postcode) {
       new window.daum.Postcode({
         oncomplete: function(data) {
-          // 주소 선택 시 실행
-          let addr = ''; // 주소 변수
+          let addr = '';
           
-          // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-          if (data.userSelectedType === 'R') { // 도로명 주소를 선택했을 경우
+          if (data.userSelectedType === 'R') {
             addr = data.roadAddress;
-          } else { // 지번 주소를 선택했을 경우
+          } else {
             addr = data.jibunAddress;
           }
 
-          // 우편번호와 주소 정보를 해당 필드에 넣는다.
           setFormData(prev => ({
             ...prev,
             zipcode: data.zonecode,
             address1: addr
           }));
           
-          // 상세주소 입력 필드에 포커스
           document.getElementById('address2').focus();
         }
       }).open();
     } else {
-      // 다음 주소 API 스크립트가 로드되지 않은 경우
       alert('주소 검색 서비스를 불러올 수 없습니다. 페이지를 새로고침해주세요.');
     }
   };
 
+  // 회원가입 폼 제출 및 유효성 검증 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 유효성 검사
     if (!isIdChecked) {
       alert('아이디 중복확인을 해주세요.');
       return;
@@ -241,7 +234,6 @@ const SignupInfo = () => {
       return;
     }
 
-    // 회원가입 API 호출
     try {
       const signupData = {
         memId: formData.userId,
@@ -277,6 +269,7 @@ const SignupInfo = () => {
     }
   };
 
+  // 약관 동의 페이지로 이동
   const handleBack = () => {
     navigate('/signup/terms');
   };

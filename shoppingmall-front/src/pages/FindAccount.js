@@ -16,7 +16,7 @@ const FindAccount = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [foundId, setFoundId] = useState('');
 
-  // 타이머 효과
+  // 인증번호 유효시간 타이머 관리
   useEffect(() => {
     let interval = null;
     if (timer > 0) {
@@ -29,7 +29,7 @@ const FindAccount = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // 탭 변경 시 상태 초기화
+  // 탭 전환 시 모든 입력값 및 상태 초기화
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
     setEmail('');
@@ -43,16 +43,16 @@ const FindAccount = () => {
     setIsSendingCode(false);
   };
 
+  // 로그인 페이지로 이동
   const handleBackToLogin = () => {
     navigate('/login');
   };
 
-  // 인증번호 전송
+  // 아이디/비밀번호 찾기용 인증번호 전송 처리
   const handleSendVerificationCode = async (e) => {
     e.preventDefault();
 
     if (activeTab === 'id') {
-      // 아이디 찾기: 이메일만 필요
       if (!email.trim()) {
         alert('이메일을 입력해주세요.');
         return;
@@ -90,7 +90,6 @@ const FindAccount = () => {
         setIsSendingCode(false);
       }
     } else {
-      // 비밀번호 찾기: 아이디 + 이메일 필요
       if (!memId.trim()) {
         alert('아이디를 입력해주세요.');
         return;
@@ -134,7 +133,7 @@ const FindAccount = () => {
     }
   };
 
-  // 아이디 찾기 - 인증번호 검증
+  // 아이디 찾기 인증번호 검증 처리
   const handleFindId = async (e) => {
     e.preventDefault();
 
@@ -171,7 +170,7 @@ const FindAccount = () => {
     }
   };
 
-  // 비밀번호 재설정
+  // 비밀번호 재설정 처리
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
@@ -249,7 +248,6 @@ const FindAccount = () => {
           </div>
 
           {activeTab === 'id' ? (
-            // 아이디 찾기 폼
             <>
               {!foundId ? (
                 <form onSubmit={handleSendVerificationCode} className="find-account-form">
@@ -321,7 +319,6 @@ const FindAccount = () => {
               )}
             </>
           ) : (
-            // 비밀번호 찾기 폼
             <>
               {!isVerified ? (
                 <>
