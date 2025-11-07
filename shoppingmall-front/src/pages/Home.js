@@ -3,8 +3,8 @@ import {Link, useNavigate} from 'react-router-dom';
 
 import skincareImg from '../images/category/category_skincare.png';
 import makeupImg from '../images/category/category_makeup.png';
-import cleansingImg from '../images/category/category_cleansing.png';
-import facialmaskImg from '../images/category/category_facialmask.png';
+import bodycareImg from '../images/category/category_bodycare.png'
+import hommeImg from '../images/category/category_homme.png';
 
 import '../css/Home.css';
 
@@ -42,13 +42,13 @@ const Home = () => {
                             </div>
                         </li>
                         <li className="category_item">
-                            <div className="clickable_area" onClick={() => navigateToCategory('cleansing')}>
-                            <img src={cleansingImg} alt="category_img"/><div>CLEANSING</div>
+                            <div className="clickable_area" onClick={() => navigateToCategory('bodycare')}>
+                            <img src={bodycareImg} alt="category_img"/><div>BODY CARE</div>
                             </div>
                         </li>
                         <li className="category_item">
-                            <div className="clickable_area" onClick={() => navigateToCategory('facialmask')}>
-                            <img src={facialmaskImg} alt="category_img"/><div>FACIAL MASK</div>
+                            <div className="clickable_area" onClick={() => navigateToCategory('homme')}>
+                            <img src={hommeImg} alt="category_img"/><div>HOMME</div>
                             </div>
                         </li>
                     </ul>
