@@ -11,7 +11,6 @@ function OrderHistory() {
       id: "ORD-001",
       date: "2024.10.28",
       status: "배송완료",
-      expected: "2024.10.30",
       total: 45000,
       items: [
         {
@@ -27,7 +26,6 @@ function OrderHistory() {
       id: "ORD-002",
       date: "2024.10.15",
       status: "배송중",
-      expected: "2024.10.20",
       total: 91000,
       items: [
         {
@@ -87,11 +85,8 @@ function OrderHistory() {
 
           <hr className="divider" />
 
-          {/* 하단: 예상 날짜 + 총 금액 */}
+          {/* 하단: 총 금액 */}
           <div className="order-bottom">
-            <p className="expected">
-               예상: {order.expected}
-            </p>
             <div className="order-total">
               <span>총 주문금액</span>
               <strong>{order.total.toLocaleString()}원</strong>

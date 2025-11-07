@@ -123,15 +123,11 @@
 /* 하단 */
 .order-bottom {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   font-size: 14px;
   color: #333;
   margin-top: 10px;
-}
-
-.expected {
-  color: #555;
 }
 
 .order-total {
