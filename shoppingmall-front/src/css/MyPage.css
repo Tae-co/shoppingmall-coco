@@ -138,58 +138,117 @@
   transform: translateX(3px);
 }
 
-/* 최근 주문 */
+/* ---------------------- */
+/* 최근 주문 (새 디자인) */
+/* ---------------------- */
+
 .mypage-orders {
   background-color: #fff;
   color: #333;
   border-radius: 12px;
-  padding: 25px;
+  padding: 24px 28px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 40px;
 }
 
-.mypage-orders h4 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-.order-item {
+.orders-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 0;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 18px;
 }
 
-.order-item:last-child {
-  border-bottom: none;
+.orders-header h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
 }
 
-.order-date {
-  color: #999;
-  font-size: 12px;
+.view-all-btn {
+  background: none;
+  border: none;
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.view-all-btn:hover {
+  color: black;
+}
+
+.recent-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recent-order-item {
+  background: #f8f9fb;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.recent-order-item:hover {
+  background: #f0f2f5;
+}
+
+.order-left .order-date {
+  font-size: 13px;
+  color: #555;
+}
+
+.order-left .order-date span {
+  margin-left: 8px;
+  color: #888;
 }
 
 .order-title {
-  font-weight: 600;
   font-size: 15px;
+  color: #222;
   margin: 6px 0;
+  font-weight: 600;
 }
 
 .order-price {
-  color: #666;
-  font-size: 14px;
+  font-size: 15px;
+  color:black;
+  font-weight: 600;
 }
 
-.order-status {
-  background-color: black;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 14px;
-  cursor: pointer;
+.order-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.order-status:hover {
-  background-color: #084298;
+.status-badge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.status-badge.complete {
+  color:black;
+}
+
+.status-badge.shipping {
+  color: black;
+}
+
+.arrow {
+  font-size: 18px;
+  color: #999;
+  transition: transform 0.2s ease;
+}
+
+.recent-order-item:hover .arrow {
+  transform: translateX(3px);
 }

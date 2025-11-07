@@ -8,27 +8,27 @@ function MyPage() {
   // 메뉴 데이터
   const menuItems = [
     { icon: "👤", title: "프로필 설정", desc: "피부 프로필 및 회원 정보 수정", path: "/profile-edit" },
-    { icon: "📦", title: "주문 내역", desc: "구매한 상품 및 배송 현황 조회", path: "/order-history" }, 
-    { icon: "💬", title: "내 리뷰", desc: "작성한 리뷰 및 좋아요한 리뷰", path: "/my-activity"},
+    { icon: "📦", title: "주문 내역", desc: "구매한 상품 및 배송 현황 조회", path: "/order-history" },
+    { icon: "💬", title: "내 리뷰", desc: "작성한 리뷰 및 좋아요한 리뷰", path: "/my-activity" },
     { icon: "🤝", title: "Co-mates", desc: "나와 비슷한 피부톤/타입 사용자들", path: "/my-comate" },
     { icon: "⚙️", title: "계정 설정", desc: "비밀번호 변경 및 계정 관리", path: "/account-settings" },
   ];
 
-  // 주문 데이터 (상태별 색상 적용)
+  // 주문 데이터 (예시)
   const orders = [
     {
       id: "ORD-001",
-      date: "2024.10.18",
+      date: "2024.10.28",
       title: "히알루론산 인텐시브 세럼",
-      price: "₩45,000원",
-      status: "배송중",
+      total: 45000,
+      status: "배송완료",
     },
     {
       id: "ORD-002",
       date: "2024.10.15",
       title: "비타민C 브라이트닝 토너 외 2건",
-      price: "₩91,000원",
-      status: "배송완료",
+      total: 91000,
+      status: "배송중",
     },
   ];
 
@@ -61,7 +61,7 @@ function MyPage() {
           <div
             className="menu-item"
             key={item.title}
-            onClick={() => item.path && navigate(item.path)} 
+            onClick={() => item.path && navigate(item.path)}
           >
             <span className="menu-icon">{item.icon}</span>
             <div className="menu-text">
@@ -75,23 +75,47 @@ function MyPage() {
 
       {/* 최근 주문 */}
       <div className="mypage-orders">
-        <h4>최근 주문</h4>
+        <div className="orders-header">
+          <h4>최근 주문</h4>
+          <button
+            className="view-all-btn"
+            onClick={() => navigate("/order-history")}
+          >
+            전체보기 ›
+          </button>
+        </div>
 
         {orders.length > 0 ? (
-          orders.map((order) => (
-            <div className="order-item" key={order.id}>
-              <div>
-                <p className="order-date">
-                  {order.date} 주문번호: {order.id}
-                </p>
-                <p className="order-title">{order.title}</p>
-                <p className="order-price">{order.price}</p>
+          <div className="recent-orders-list">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="recent-order-item"
+                onClick={() => navigate(`/order-detail/${order.id}`)}
+              >
+                <div className="order-left">
+                  <p className="order-date">
+                    {order.date} <span>주문번호: {order.id}</span>
+                  </p>
+                  <p className="order-title">{order.title}</p>
+                  <p className="order-price">
+                    {order.total.toLocaleString()}원
+                  </p>
+                </div>
+
+                <div className="order-right">
+                  <span
+                    className={`status-badge ${
+                      order.status === "배송완료" ? "complete" : "shipping"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                  <span className="arrow">›</span>
+                </div>
               </div>
-              <span className={`order-status ${order.status}`}>
-                {order.status}
-              </span>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
           <p className="no-orders">최근 주문이 없습니다.</p>
         )}

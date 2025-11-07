@@ -8,8 +8,8 @@ function OrderDetail() {
 
   // 실제로는 백엔드에서 주문번호로 상세 내역 불러올 예정
   const orderData = {
-  "ORD-2024-001": {
-    id: "ORD-2024-001",
+  "ORD-001": {
+    id: "ORD-001",
     date: "2024.10.28",
     status: "배송완료",
     expected: "2024.10.30",
@@ -37,8 +37,8 @@ function OrderDetail() {
     },
   },
 
-  "ORD-2024-002": {
-    id: "ORD-2024-002",
+  "ORD-002": {
+    id: "ORD-002",
     date: "2024.10.15",
     status: "배송중",
     expected: "2024.10.20",
