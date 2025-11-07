@@ -9,7 +9,7 @@ const SignupTerms = () => {
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [marketingAgreed, setMarketingAgreed] = useState(false);
 
-  // 전체 동의 체크박스 상태 업데이트
+  // 개별 약관 동의 상태에 따라 전체 동의 체크박스 상태 업데이트
   useEffect(() => {
     if (serviceAgreed && privacyAgreed && marketingAgreed) {
       setAllAgreed(true);
@@ -18,7 +18,7 @@ const SignupTerms = () => {
     }
   }, [serviceAgreed, privacyAgreed, marketingAgreed]);
 
-  // 전체 동의 클릭 시 모든 항목 체크/해제
+  // 전체 동의 체크박스 토글 처리
   const handleAllAgreed = () => {
     const newValue = !allAgreed;
     setAllAgreed(newValue);
@@ -27,21 +27,23 @@ const SignupTerms = () => {
     setMarketingAgreed(newValue);
   };
 
-  // 필수 항목이 모두 체크되었는지 확인
+  // 필수 약관 동의 여부 확인
   const isRequiredAgreed = serviceAgreed && privacyAgreed;
 
+  // 로그인 페이지로 이동
   const handleCancel = () => {
     navigate('/login');
   };
 
+  // 다음 단계(회원정보 입력)로 이동
   const handleNext = () => {
     if (isRequiredAgreed) {
       navigate('/signup/info');
     }
   };
 
+  // 약관 상세 내용 조회 (구현 예정)
   const handleViewTerms = (type) => {
-    // 약관 보기 모달 또는 페이지 (구현 예정)
     console.log('약관 보기:', type);
   };
 
