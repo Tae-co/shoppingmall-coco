@@ -1,5 +1,5 @@
 import react, { useState, useRef, useEffect, useLayoutEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
@@ -13,6 +13,7 @@ import '../css/review.css'
 function UpdateReview() {
 
     const { reviewNo } = useParams();
+    const navigate = useNavigate();
 
     const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
         , "흡수가 빨라요", "끈적임 없어요", "피부 진정", "화이트닝 효과"
@@ -61,10 +62,15 @@ function UpdateReview() {
     const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
     const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked } = UseTag(ptags, ntags);
     const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles)
+    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate)
     const { loadData } = UseData(setText, setRating, ptags, setPtagsClicked, ntags, setNtagsClicked, setPreviewFiles);
 
     // 별 1~2개 일 떄 경고 알림
+
+    const handleCancel = () => {
+        window.alert("정말 취소 하시겠습니까?")
+        navigate(`/`);
+    };
 
     const warnStarTags = (starTotal) => {
         return 0 < starTotal && starTotal <= 2 ? "별점이 낮을 경우, 아쉬운 점을 최소 1개 이상 선택해주세요." : " ";
@@ -202,7 +208,7 @@ function UpdateReview() {
                         {/* 취소 및 리뷰등록 버튼 바꾸기  */}
                         {/* 취소 선택시 상품 페이지로 */}
                         {/* 리뷰 등록 선택시 리뷰 등록 후 상품 페이지로 */}
-                        <Link path="/coco/products/{productId}"><button>취소</button></Link>
+                        <button type="button" onClick={handleCancel}>취소</button>
                         <button type="submit">리뷰등록</button>
                     </div>
                 </form >
