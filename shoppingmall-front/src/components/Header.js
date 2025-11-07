@@ -1,49 +1,93 @@
-import React, {useState} from 'react';
-import {NavLink, Link, Routes, Route} from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {NavLink, Link, useLocation} from 'react-router-dom';
 import Logo from '../images/logo.png';
 import '../css/Header.css';
-
+import {fetchWithAuth, isLoggedIn, logout} from '../utils/api';
 
 const Header = () => {
+    const location = useLocation();
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [userName, setUserName] = useState('');
+    const [userNickname, setUserNickname] = useState('');
 
-    // 로그인 상태 관리 (임시)
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState('홍길동');
+    // 로그인 상태 확인 및 사용자 정보 조회
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            if (isLoggedIn()) {
+                try {
+                    const response = await fetchWithAuth('/member/me');
+                    if (response.ok) {
+                        const data = await response.json();
+                        setLoggedIn(true);
+                        setUserName(data.memName || '');
+                        setUserNickname(data.memNickname || '');
+                    } else {
+                        setLoggedIn(false);
+                        setUserName('');
+                        setUserNickname('');
+                    }
+                } catch (error) {
+                    setLoggedIn(false);
+                    setUserName('');
+                    setUserNickname('');
+                }
+            } else {
+                setLoggedIn(false);
+                setUserName('');
+                setUserNickname('');
+            }
+        };
+
+        checkLoginStatus();
+        
+        const handleLoginStatusChange = () => {
+            checkLoginStatus();
+        };
+        window.addEventListener('loginStatusChanged', handleLoginStatusChange);
+        
+        return () => {
+            window.removeEventListener('loginStatusChanged', handleLoginStatusChange);
+        };
+    }, [location.pathname]);
+
+    // 로그아웃 처리 및 상태 초기화
+    const handleLogout = () => {
+        logout();
+        setLoggedIn(false);
+        setUserName('');
+        setUserNickname('');
+    };
 
     return (
         <div>
             <header className="header">
-                {/* 헤더 상단 영역 */}
                 <div className="header_top">
                     <div className="top_inner">
                         <ul className="top_list">
-                            {/* 로그인 시 사용자 이름 표시 */}
-                            {isLoggedIn && (
+                            {loggedIn && (userName || userNickname) && (
                                 <li className="top_item greet">
-                                    <b>{userName}</b>님, 안녕하세요!
+                                    <b>{userName || userNickname}</b>님, 안녕하세요!
                                 </li>
                             )}
                             <li className="top_item">고객센터</li>
-                            <li className="top_item">마이페이지</li>
                             <li className="top_item">알림</li>
                             <li className="top_item">
-                                {/* 로그인 여부에 따라 로그인/로그아웃 버튼 분기 */}
-                                {/* 로그아웃 기능 추후 연동 예정 */}
-                                {isLoggedIn ? (<div>로그아웃</div>) : (<Link to="/login" className="top_item">로그인</Link>)}
+                                {loggedIn ? (
+                                    <div onClick={handleLogout} style={{cursor: 'pointer'}}>로그아웃</div>
+                                ) : (
+                                    <Link to="/login" className="top_item">로그인</Link>
+                                )}
                             </li>
                         </ul>
                     </div>
                 </div>
-                {/* 헤더 메인 영역 */}
                 <div className="header_main">
                     <div className="main_inner">
-                        {/* 로고 */}
                         <h1>
                             <NavLink to="/">
                                 <img src={Logo} alt="logo.png" className="logo"/>
                             </NavLink>
                         </h1>
-                        {/* 네비게이션 메뉴 */}
                         <div className="center">
                             <nav id="gnb_container" className="gnb">
                                 <ul id="gnb_list" className="gnb_list">
@@ -63,9 +107,7 @@ const Header = () => {
                                 </ul>
                             </nav>
                         </div>
-                        {/* 우측 기능 버튼 */}
                         <div className="right">  
-                            {/* 검색 폼 : 임시 검색어 콘솔 출력 ~ 추후 연동 예정 */}
                             <div className="search_container">
                                 <form onSubmit={(e) => {
                                                 e.preventDefault(); 
@@ -85,13 +127,11 @@ const Header = () => {
                                     </button>
                                 </form>
                             </div>
-                            {/* 장바구니 버튼 */}
                             <a className="btn_cart">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
                                     <path fill="#222" fillRule="evenodd" d="M16.192 5.2h3.267a1 1 0 0 1 .998.938l.916 14.837a.4.4 0 0 1-.399.425H3.025a.4.4 0 0 1-.4-.425l.917-14.837A1 1 0 0 1 4.54 5.2h3.267a4.251 4.251 0 0 1 8.385 0ZM7.75 6.7H5.01l-.815 13.2h15.61l-.816-13.2h-2.74v2.7h-1.5V6.7h-5.5v2.7h-1.5V6.7Zm1.59-1.5h5.32a2.751 2.751 0 0 0-5.32 0Z" clipRule="evenodd"></path>
                                 </svg>
                             </a>
-                            {/* 카테고리 버튼 */}
                             <a className="btn_category">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
                                     <path fill="#222" d="M3 5.61h18v1.8H3v-1.8ZM3 11.1h18v1.8H3v-1.8ZM21 16.595H3v1.8h18v-1.8Z"></path>
@@ -101,15 +141,6 @@ const Header = () => {
                     </div>
                 </div>
             </header>
-            
-            {/* 라우트 매핑 */}
-            <Routes>
-                <Route path="/" />
-                <Route path="/login" />
-                <Route path="/shop" />
-                <Route path="/comate" />
-                <Route path="/cart" />
-            </Routes>
         </div>
     );
 }
