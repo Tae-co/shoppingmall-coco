@@ -8,7 +8,8 @@ import Login from './pages/Login';
 import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
 import FindAccount from './pages/FindAccount';
-
+import Review from './pages/Review.js';
+import UpdateReview from './pages/UpdateReview.js';
 
 function App() {
   const location = useLocation();
@@ -23,6 +24,8 @@ function App() {
         <Route path="/signup/info" element={<SignupInfo />} />
         <Route path="/find-account" element={<FindAccount />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/reviews" element={<Review />} />
+        <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>
