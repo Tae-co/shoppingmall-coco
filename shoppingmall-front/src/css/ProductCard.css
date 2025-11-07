@@ -52,3 +52,17 @@
 .btn_add_cart:hover {
     background-color: #999;
 }
+
+.product_skin_types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+}
+.product_skin_types span {
+    background-color: #EFEFEF;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #555;
+}

@@ -4,19 +4,24 @@ import '../css/ProductCard.css';
 
 import starIcon from '../images/review_rate_icon_star.png';
 
-const ProductCard = ({ name, price, image, star_avg, reviewCount, onClick, onAddToCart }) => {
+const ProductCard = ({ name, productSkinType, price, image, star_avg, reviewCount, onClick, onAddToCart }) => {
     return (
         <div className="product_card">
             <div className="to_product_detail" onClick={onClick}>
                 <img src={image} alt="product_img" className="product_image" />
                 <div className="product_info">
-                  <div className="product_name"><span>{name}</span></div>
-                  <div className="product_reviewInfo">
-                      <img src={starIcon} alt="star_icon_error" className="star_icon" />
-                      <span className="product_star_avg">{star_avg} </span>
-                      <span className="product_reviewCount">({reviewCount})</span>
-                  </div>
-                  <div className="product_price">{price}원</div>
+                    <div className="product_name"><span>{name}</span></div>
+                    <div className="product_skin_types">
+                        {productSkinType?.map((type, index) => (
+                            <span key={index}>{type}</span>
+                        ))}
+                    </div>
+                    <div className="product_reviewInfo">
+                        <img src={starIcon} alt="star_icon_error" className="star_icon" />
+                        <span className="product_star_avg">{star_avg} </span>
+                        <span className="product_reviewCount">({reviewCount})</span>
+                    </div>
+                    <div className="product_price">{price}원</div>
                 </div>
             </div>
 

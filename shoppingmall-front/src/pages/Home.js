@@ -9,7 +9,7 @@ import hommeImg from '../images/category/category_homme.png';
 import '../css/Home.css';
 
 import SimpleSlider from './SimpleSlider'; // 메인배너 슬라이더 컴포넌트
-import MultipleItems from './Multipletems'; // 인기상품 슬라이더 컴포넌트
+import BestSeller from './BestSeller'; // 인기상품 슬라이더 컴포넌트
 import ComateCardList from './ComateCardList';
 
 const Home = () => {
@@ -60,7 +60,7 @@ const Home = () => {
                         <div className="sub_title">COCO의 베스트 아이템을 만나보세요</div>
                     </div>
                     <div className="popular_list">
-                    <MultipleItems />   
+                    <BestSeller />   
                     </div>
                 </div>
                 {/* CO-MATE 추천 영역 */}
