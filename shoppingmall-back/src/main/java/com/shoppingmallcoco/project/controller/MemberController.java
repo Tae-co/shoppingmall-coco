@@ -1,0 +1,167 @@
+package com.shoppingmallcoco.project.controller;
+
+import com.shoppingmallcoco.project.dto.FindIdDto;
+import com.shoppingmallcoco.project.dto.MemberSignupDto;
+import com.shoppingmallcoco.project.service.EmailVerificationService;
+import com.shoppingmallcoco.project.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/member")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
+public class MemberController {
+
+    private final MemberService memberService;
+    private final EmailVerificationService emailVerificationService;
+
+    // 회원가입
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody MemberSignupDto signupDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(memberService.signup(signupDto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+
+    // 중복 확인 공통 메서드
+    private ResponseEntity<Map<String, Object>> checkDuplicate(boolean isDuplicate, String type) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("available", !isDuplicate);
+        response.put("message", isDuplicate ? 
+            "이미 사용 중인 " + type + "입니다." : 
+            "사용 가능한 " + type + "입니다.");
+        return ResponseEntity.ok(response);
+    }
+
+    // 아이디 중복 확인
+    @GetMapping("/check-id/{memId}")
+    public ResponseEntity<Map<String, Object>> checkIdDuplicate(@PathVariable String memId) {
+        return checkDuplicate(memberService.checkIdDuplicate(memId), "아이디");
+    }
+
+    // 닉네임 중복 확인
+    @GetMapping("/check-nickname/{memNickname}")
+    public ResponseEntity<Map<String, Object>> checkNicknameDuplicate(@PathVariable String memNickname) {
+        return checkDuplicate(memberService.checkNicknameDuplicate(memNickname), "닉네임");
+    }
+
+    // 이메일 중복 확인
+    @GetMapping("/check-email/{memMail}")
+    public ResponseEntity<Map<String, Object>> checkEmailDuplicate(@PathVariable String memMail) {
+        return checkDuplicate(memberService.checkEmailDuplicate(memMail), "이메일");
+    }
+
+    // 이메일 인증번호 전송
+    @PostMapping("/email/send")
+    public ResponseEntity<Map<String, Object>> sendEmailVerificationCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "이메일을 입력해주세요."));
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "올바른 이메일 형식을 입력해주세요."));
+        }
+
+        try {
+            emailVerificationService.generateVerificationCode(email);
+            return ResponseEntity.ok(Map.of("success", true, "message", "인증번호가 이메일로 전송되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "인증번호 전송 중 오류가 발생했습니다."));
+        }
+    }
+
+    // 이메일 인증번호 검증
+    @PostMapping("/email/verify")
+    public ResponseEntity<Map<String, Object>> verifyEmailCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+
+        if (email == null || code == null || email.trim().isEmpty() || code.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "이메일과 인증번호를 입력해주세요."));
+        }
+
+        boolean isValid = emailVerificationService.verifyCode(email, code);
+        
+        if (isValid) {
+            return ResponseEntity.ok(Map.of("success", true, "message", "인증이 완료되었습니다."));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "인증번호가 일치하지 않거나 만료되었습니다."));
+        }
+    }
+
+    // 아이디 찾기 - 인증번호 전송
+    @PostMapping("/find-id/send")
+    public ResponseEntity<Map<String, Object>> sendFindIdVerificationCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "이메일을 입력해주세요."));
+        }
+        try {
+            memberService.sendFindIdVerificationCode(email);
+            return ResponseEntity.ok(Map.of("success", true, "message", "인증번호가 이메일로 전송되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    // 아이디 찾기 - 인증번호 검증 후 아이디 반환
+    @PostMapping("/find-id/verify")
+    public ResponseEntity<Map<String, Object>> findId(@RequestBody FindIdDto findIdDto) {
+        try {
+            String memId = memberService.findId(findIdDto);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("memId", memId);
+            response.put("message", "아이디 찾기가 완료되었습니다.");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    // 비밀번호 찾기 - 인증번호 전송
+    @PostMapping("/find-password/send")
+    public ResponseEntity<Map<String, Object>> sendResetPasswordVerificationCode(@RequestBody Map<String, String> request) {
+        String memId = request.get("memId");
+        String email = request.get("email");
+
+        if (memId == null || memId.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "아이디를 입력해주세요."));
+        }
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", "이메일을 입력해주세요."));
+        }
+        try {
+            memberService.sendResetPasswordVerificationCode(memId, email);
+            return ResponseEntity.ok(Map.of("success", true, "message", "인증번호가 이메일로 전송되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+
+}
+
+
