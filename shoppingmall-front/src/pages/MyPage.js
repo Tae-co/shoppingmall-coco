@@ -27,7 +27,7 @@ function MyPage() {
       id: "ORD-002",
       date: "2024.10.15",
       title: "비타민C 브라이트닝 토너 외 2건",
-      price: "₩98,000원",
+      price: "₩91,000원",
       status: "배송완료",
     },
   ];

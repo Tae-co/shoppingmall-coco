@@ -170,10 +170,8 @@ input:checked + .slider:before {
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
-  transform: none;
 }
 
 .delete-btn:hover {
   background: #E2E2E2;
-  transform: none;
 }

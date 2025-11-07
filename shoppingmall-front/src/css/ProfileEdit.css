@@ -37,9 +37,9 @@
 
 .section h3 {
   font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #222;
+  font-weight: 700; 
+  margin-bottom: 16px;
+  color: #111;
 }
 
 /* 라벨 */
@@ -126,11 +126,11 @@ input[type="radio"] {
 /* 피부 고민 : 세로 4개씩 + 왼쪽 정렬 */
 .option-grid.checkbox {
   display: grid;
-  grid-template-rows: repeat(4, auto); /* 세로로 4개씩 */
-  grid-auto-flow: column; /* 세로 먼저, 오른쪽으로 이동 */
-  justify-content: start; /* 왼쪽 정렬 */
-  column-gap: 100px; /* 열 간격 */
-  row-gap: 12px; /* 항목 간 간격 */
+  grid-template-rows: repeat(4, auto);
+  grid-auto-flow: column; 
+  justify-content: start; 
+  column-gap: 100px; 
+  row-gap: 12px; 
   width: 100%;
   min-height: 220px;
   background-color: transparent;
@@ -139,17 +139,6 @@ input[type="radio"] {
   box-shadow: none;
   margin-top: 12px;
   box-sizing: border-box;
-}
-
-/* 각 항목 라벨 */
-.option-grid.checkbox label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  color: #333;
-  font-weight: 600;
-  white-space: nowrap;
 }
 
 /* 섹션 구분선 (중복 방지) */
@@ -180,18 +169,6 @@ input[type="radio"] {
   gap: 6px;
   font-size: 15px;
   color: #333;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* 각 항목 */
-.option-grid.checkbox label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  color: #333;
-  font-weight: 600;
   white-space: nowrap;
 }
 

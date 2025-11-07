@@ -152,7 +152,6 @@ function AccountSettings() {
         <div className="privacy-btns">
           <button>개인정보 처리방침</button>
           <button>이용약관</button>
-          <button>내 데이터 다운로드</button>
         </div>
       </section>
 

@@ -5,11 +5,9 @@ import "../css/MyActivity.css";
 function MyActivity() {
   const navigate = useNavigate();
 
-  // 더미 리뷰 데이터 (추후 Axios로 교체 가능)
   const reviews = [
     {
       id: 1,
-      brand: "더마코스메틱",
       name: "히알루론산 인텐시브 세럼",
       rating: 5,
       date: "2024.10.28",
@@ -20,7 +18,6 @@ function MyActivity() {
     },
     {
       id: 2,
-      brand: "글로우랩",
       name: "비타민C 브라이트닝 토너",
       rating: 4,
       date: "2024.10.20",
@@ -30,7 +27,6 @@ function MyActivity() {
     },
     {
       id: 3,
-      brand: "카밍솔루션",
       name: "센텔라 진정 크림",
       rating: 5,
       date: "2024.10.15",
@@ -55,7 +51,6 @@ function MyActivity() {
             <div className="review-header">
               <img src={review.image} alt={review.name} className="review-img" />
               <div className="review-info">
-                <p className="review-brand">{review.brand}</p>
                 <p className="review-name">{review.name}</p>
 
                 {/* 별점 표시 */}

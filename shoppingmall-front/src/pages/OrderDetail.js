@@ -7,8 +7,7 @@ function OrderDetail() {
   const { id } = useParams(); // 주문번호 URL에서 가져오기
 
   // 실제로는 백엔드에서 주문번호로 상세 내역 불러올 예정
-  
- const orderData = {
+  const orderData = {
   "ORD-2024-001": {
     id: "ORD-2024-001",
     date: "2024.10.28",
@@ -17,7 +16,6 @@ function OrderDetail() {
     products: [
       {
         name: "히알루론산 인텐시브 세럼",
-        brand: "더마코스메틱",
         price: 45000,
         qty: 1,
         total: 45000,
@@ -47,7 +45,6 @@ function OrderDetail() {
     products: [
       {
         name: "비타민C 브라이트닝 토너",
-        brand: "글로우랩",
         price: 32000,
         qty: 1,
         total: 32000,
@@ -55,7 +52,6 @@ function OrderDetail() {
       },
       {
         name: "센텔라 진정 크림",
-        brand: "카밍솔루션",
         price: 28000,
         qty: 2,
         total: 56000,
@@ -63,7 +59,6 @@ function OrderDetail() {
       },
       {
         name: "센텔라 마스크팩",
-        brand: "카밍솔루션",
         price: 1500,
         qty: 2,
         total: 3000,
@@ -79,7 +74,6 @@ function OrderDetail() {
     },
     payment: {
       orderTotal: 91000,
-      coupon: 0,
       point: 0,
       final: 91000,
       method: "신용카드",

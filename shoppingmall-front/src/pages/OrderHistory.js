@@ -15,7 +15,6 @@ function OrderHistory() {
       total: 45000,
       items: [
         {
-          brand: "더마코스메틱",
           name: "히알루론산 인텐시브 세럼",
           price: 45000,
           qty: 1,
@@ -32,14 +31,12 @@ function OrderHistory() {
       total: 91000,
       items: [
         {
-          brand: "글로우랩",
           name: "비타민C 브라이트닝 토너",
           price: 32000,
           qty: 1,
           img: "/images/toner.jpg",
         },
         {
-          brand: "카밍솔루션",
           name: "센텔라 진정 크림",
           price: 28000,
           qty: 2,
@@ -76,7 +73,6 @@ function OrderHistory() {
               <div key={idx} className="order-item">
                 <img src={item.img} alt={item.name} className="item-img" />
                 <div className="item-info">
-                  <p className="item-brand">{item.brand}</p>
                   <p className="item-name">{item.name}</p>
                   <p className="item-detail">
                     {item.price.toLocaleString()}원 × {item.qty}개
