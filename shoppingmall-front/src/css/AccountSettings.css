@@ -1,11 +1,11 @@
 .account-settings-container {
-  background-color: #f3f3f5;
   color: #222;
   min-height: 100vh;
   padding: 30px 80px;
   font-family: "Pretendard", sans-serif;
   max-width: 1000px;
-  margin: 0 auto; 
+  margin: 0 auto;
+  background-color: #fff;
 }
 
 /* 뒤로가기 */
@@ -18,18 +18,25 @@
   margin-bottom: 18px;
 }
 
+.back-btn:hover {
+  color: #000;
+}
+
 /* 제목 */
 .page-title {
   font-size: 26px;
   font-weight: 700;
   margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #000;
+  color: #000;
 }
 
 /* 섹션 */
 .setting-section {
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #000;
+  border-radius: 8px;
   padding: 24px 28px;
   margin-bottom: 28px;
 }
@@ -38,34 +45,46 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 6px;
+  color: #000;
 }
 
 .section-desc {
   font-size: 13px;
-  color: #777;
+  color: #444;
   margin-bottom: 18px;
 }
 
 /* 인풋 */
 .input-group input {
   width: 100%;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #000;
+  border-radius: 6px;
   padding: 10px 12px;
   margin-bottom: 10px;
   font-size: 14px;
 }
 
+.input-group input:focus {
+  outline: none;
+  border-color: #000;
+}
+
+/* 변경 버튼 */
 .change-btn {
   width: 100%;
-  background: black;
+  background: #000;
   color: #fff;
-  border: none;
-  border-radius: 10px;
+  border: 1px solid #000;
+  border-radius: 6px;
   padding: 12px 0;
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
+  transition: opacity 0.2s ease;
+}
+
+.change-btn:hover {
+  opacity: 0.9;
 }
 
 /* 알림 토글 */
@@ -73,21 +92,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #000;
   padding: 14px 0;
   position: relative;
 }
 
+.notify-item:first-of-type {
+  border-top: none;
+}
+
 .notify-item span {
   font-weight: 600;
-  color: #222;
+  color: #000;
 }
 
 .notify-item p {
   position: absolute;
   left: 140px;
   font-size: 13px;
-  color: #777;
+  color: #555;
 }
 
 /* 토글 스위치 */
@@ -109,7 +132,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #fff;
+  border: 1px solid #000;
   transition: 0.3s;
   border-radius: 22px;
 }
@@ -119,19 +143,21 @@
   content: "";
   height: 16px;
   width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
+  left: 2px;
+  bottom: 2px;
+  background-color: #000;
   transition: 0.3s;
   border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: black;
+  background-color: #fff;
+  border-color: #000;
 }
 
 input:checked + .slider:before {
   transform: translateX(20px);
+  background-color: #000;
 }
 
 /* 개인정보 버튼 */
@@ -142,36 +168,39 @@ input:checked + .slider:before {
 }
 
 .privacy-btns button {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #000;
+  border-radius: 6px;
   padding: 10px 0;
-  background: white;
+  background: #fff;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .privacy-btns button:hover {
-  background: #E2E2E2;
+  background: #f5f5f5;
 }
 
-/* 계정 삭제 */
+/* 계정 삭제 섹션 */
 .setting-section.danger {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  border: 1px solid #000;
 }
 
 .delete-btn {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #000;
+  border-radius: 6px;
   padding: 10px 0;
-  background: white;
+  background: #fff;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s ease;
+  color: #000;
 }
 
 .delete-btn:hover {
-  background: #E2E2E2;
+  background: #f5f5f5;
 }
+

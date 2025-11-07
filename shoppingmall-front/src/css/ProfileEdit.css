@@ -1,6 +1,5 @@
 /* 전체 컨테이너 */
 .profile-edit-container {
-  background-color: #f3f3f5;
   color: #222;
   min-height: 100vh;
   padding: 30px 80px;
@@ -24,11 +23,13 @@
   font-size: 26px;
   font-weight: 700;
   margin-bottom: 28px;
+  padding-bottom: 12px;         
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .section {
   background-color: #fff;
-  border: 1px solid #eee;
+  border: 1px solid black;
   border-radius: 12px;
   padding: 32px 40px;
   margin-bottom: 40px;
@@ -40,6 +41,11 @@
   font-weight: 700; 
   margin-bottom: 16px;
   color: #111;
+}
+.sub-section {
+  margin-bottom: 32px;  
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;  
 }
 
 /* 라벨 */
@@ -139,27 +145,6 @@ input[type="radio"] {
   box-shadow: none;
   margin-top: 12px;
   box-sizing: border-box;
-}
-
-/* 섹션 구분선 (중복 방지) */
-.section {
-  margin-bottom: 42px;
-  padding-bottom: 28px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-/* 피부 고민 다음 섹션(퍼스널 컬러)은 구분선 제거 */
-.section:last-of-type {
-  border-bottom: none;
-}
-
-/* 반응형 (모바일) */
-@media (max-width: 768px) {
-  .option-grid.checkbox {
-    grid-template-rows: repeat(2, auto);
-    column-gap: 50px;
-    min-height: auto;
-  }
 }
 
 /* 각 항목 라벨 */

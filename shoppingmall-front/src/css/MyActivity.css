@@ -1,111 +1,175 @@
-/* 전체 컨테이너 */
-.profile-edit-container {
-  background-color: #f3f3f5;
+.review-activity-container {
   color: #222;
   min-height: 100vh;
-  padding: 20px 80px;
+  padding: 40px 80px;
   font-family: "Pretendard", sans-serif;
   max-width: 1000px;
   margin: 0 auto;
-}
-
-/* section */
-.section {
+  box-sizing: border-box;
   background-color: #fff;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 32px 40px;
-  margin-bottom: 40px;
 }
 
-/* section 제목 */
-.section h3 {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 10px;
+/* 뒤로가기 버튼 */
+.back-btn {
+  border: none;
+  background: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s ease;
+}
+
+.back-btn:hover {
   color: #111;
 }
 
-/* section 설명 */
-.section-desc {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 25px;
-}
-
-/* sub-section (피부 타입, 고민, 컬러) */
-.sub-section {
+/* 제목 */
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
   margin-bottom: 28px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #000;
+  color: #000;
 }
 
-.sub-section:first-of-type {
-  border-top: none;
-  padding-top: 0;
+/* 리뷰 리스트 */
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.sub-section h4 {
-  font-size: 16px;
+/* 리뷰 카드 */
+.review-card {
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 28px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.review-card:hover {
+  background-color: #f5f5f5;
+}
+
+/* 리뷰 헤더 */
+.review-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.review-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #000;
+}
+
+.review-info {
+  flex: 1;
+}
+
+.review-name {
   font-weight: 600;
-  margin-bottom: 14px;
-  color: #222;
+  font-size: 16px;
+  color: #111;
+  margin-bottom: 8px;
 }
 
-/* 라디오 / 체크박스 옵션 */
-.option-grid {
+/* 별점 + 날짜 */
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.star {
+  color: #ccc;
+  font-size: 16px;
+}
+
+.star.filled {
+  color: rgb(222, 197, 11);
+}
+
+.review-date {
+  color: #444;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+/* 태그 */
+.review-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px 40px;
-  margin-top: 12px;
+  gap: 8px;
 }
 
-/* 체크박스 옵션 (피부 고민용) */
-.option-grid.checkbox {
-  display: grid;
-  grid-template-rows: repeat(4, auto);
-  grid-auto-flow: column;
-  justify-content: start;
-  column-gap: 100px;
-  row-gap: 12px;
+.review-tag {
+  background-color: #fff;
+  color: #000;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #000;
+  transition: background-color 0.2s ease;
 }
 
-.option-grid.checkbox label {
-  font-weight: 400;
+.review-tag:hover {
+  background-color: #f5f5f5;
+}
+
+/* 리뷰 내용 */
+.review-content {
   font-size: 15px;
-  color: #333;
+  color: #222;
+  line-height: 1.6;
+  margin-top: 6px;
 }
 
-/* select */
-.select {
-  width: 100%;
-  padding: 10px 11px;
-  border: 1px solid #e0e0e0;
-  border-radius: 9px;
-  background: #fff;
-  font-size: 14px;
-  margin-top: 14px;
+/* 수정 / 삭제 버튼 */
+.review-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
 }
 
-/* 저장 버튼 */
-.save-btn {
-  width: 100%;
-  max-width: 700px;
-  margin: 40px auto 0;
-  background: black;
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 15px;
-  padding: 14px 0;
-  display: block;
-  text-align: center;
+.edit-btn,
+.delete-btn {
+  border: 1px solid #000;
+  background: none;
   cursor: pointer;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.12);
-  transition: opacity 0.2s ease;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 10px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.save-btn:hover {
-  opacity: 0.95;
+.edit-btn {
+  color: #000;
+}
+
+.edit-btn:hover {
+  background-color: #f5f5f5;
+  transform: scale(1.05);
+}
+
+.delete-btn {
+  color: #000;
+}
+
+.delete-btn:hover {
+  background-color: #f5f5f5;
+  transform: scale(1.05);
 }

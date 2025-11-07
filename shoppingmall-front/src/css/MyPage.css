@@ -1,22 +1,22 @@
 .mypage-container {
-  background-color: #f3f3f5;
   color: #222;
   min-height: 100vh;
   padding: 30px 80px;
   font-family: "Pretendard", sans-serif;
   max-width: 1000px;
-  margin: 0 auto; 
+  margin: 0 auto;
+  background-color: #fff;
 }
 
 /* 상단 헤더 */
 .mypage-header {
   background-color: #fff;
   color: #000;
-  padding: 50px 40px;
-  border-radius: 12px;
+  padding: 40px;
+  border: 1px solid #000;
+  border-radius: 8px;
   margin-bottom: 30px;
   text-align: left;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .mypage-header h2 {
@@ -35,14 +35,13 @@
 .mypage-user {
   background-color: #fff;
   color: #000;
-  border-radius: 16px;
+  border: 1px solid #000;
+  border-radius: 8px;
   padding: 25px 35px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
 }
 
 .user-info {
@@ -52,10 +51,11 @@
 }
 
 .user-avatar {
-  background-color: #ececec;
+  background-color: #fafafa;
   color: #333;
   font-weight: bold;
   font-size: 18px;
+  border: 1px solid #000;
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -82,27 +82,24 @@
 
 .menu-item {
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 18px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #e6e6e6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease;
+  border: 1px solid #000;
 }
 
 .menu-item:hover {
-  background-color: #f3f3f3;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  background-color: #f5f5f5;
 }
 
 .menu-icon {
   font-size: 22px;
-  color: #6a00ff;
+  color: #000;
   flex-shrink: 0;
 }
 
@@ -129,25 +126,21 @@
 /* 꺾쇠 아이콘 */
 .menu-arrow {
   font-size: 18px;
-  color: #aaa;
-  transition: transform 0.2s ease, color 0.2s ease;
+  color: #000;
+  transition: transform 0.2s ease;
 }
 
 .menu-item:hover .menu-arrow {
-  color: #000;
   transform: translateX(3px);
 }
 
-/* ---------------------- */
-/* 최근 주문 (새 디자인) */
-/* ---------------------- */
-
+/* 최근 주문 */
 .mypage-orders {
   background-color: #fff;
   color: #333;
-  border-radius: 12px;
+  border-radius: 8px;
+  border: 1px solid #000;
   padding: 24px 28px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-top: 40px;
 }
 
@@ -167,15 +160,15 @@
 .view-all-btn {
   background: none;
   border: none;
-  color: black;
+  color: #000;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: text-decoration 0.2s ease;
 }
 
 .view-all-btn:hover {
-  color: black;
+  text-decoration: underline;
 }
 
 .recent-orders-list {
@@ -185,8 +178,9 @@
 }
 
 .recent-order-item {
-  background: #f8f9fb;
-  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 8px;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -196,7 +190,7 @@
 }
 
 .recent-order-item:hover {
-  background: #f0f2f5;
+  background: #f5f5f5;
 }
 
 .order-left .order-date {
@@ -206,19 +200,19 @@
 
 .order-left .order-date span {
   margin-left: 8px;
-  color: #888;
+  color: #777;
 }
 
 .order-title {
   font-size: 15px;
-  color: #222;
+  color: #111;
   margin: 6px 0;
   font-weight: 600;
 }
 
 .order-price {
   font-size: 15px;
-  color:black;
+  color: #000;
   font-weight: 600;
 }
 
@@ -233,19 +227,13 @@
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 20px;
-}
-
-.status-badge.complete {
-  color:black;
-}
-
-.status-badge.shipping {
-  color: black;
+  border: 1px solid #000;
+  color: #000;
 }
 
 .arrow {
   font-size: 18px;
-  color: #999;
+  color: #000;
   transition: transform 0.2s ease;
 }
 
