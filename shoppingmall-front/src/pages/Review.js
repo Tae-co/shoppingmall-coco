@@ -158,7 +158,7 @@ function Review() {
                             {reviewGuide}
                         </div>
                     </div>
-
+                    
                     <div className="fileBox">
                         <div className="scrollable-container">
                             {/* 이미지 미리보기 컴포넌트 리스트 */}
@@ -215,6 +215,7 @@ function Review() {
                 </form >
             </div>
         </div >
+        
     )
 }
 
