@@ -4,9 +4,13 @@ import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
 import '../css/review.css'
+import UseStarRating from '../features/UseStarRating.js'
+import UseTag from '../features/UseTag.js'
+import Usefile from '../features/UseFile.js'
+import UseSubmut from '../features/UseSubmit.js'
 function Review() {
 
-    const [text, setText] = useState(""); // 리뷰 텍스트를 위한 state
+
 
     const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
         , "흡수가 빨라요", "끈적임 없어요", "피부 진정", "화이트닝 효과"
@@ -18,22 +22,55 @@ function Review() {
         , "피부 트러블", "가격이 비싸요", "용량이 적어요", "제품이 변질됐어요"
     ]
 
-    const [clicked, setClicked] = useState([false, false, false, false, false]); // 별 초기 상태
-    const starArray = [1, 2, 3, 4, 5]; // 별 인덱스 
-    const [starTotal, setStar] = useState(0); // 별 점수 초기 상태
+    const reviewGuide = `1. 제품의 '첫인상'과 '사용감'을 자세히 알려주세요
 
-    // 별 개수
-    const starScore = index => {
-        let stars = [...starArray];
+    제형/질감: 묽은 물 토너, 쫀쫀한 콧물 제형, 꾸덕한 크림, 가벼운 젤 타입 등
+    발림성/흡수력: 부드럽게 발린다, 흡수가 빠르다, 겉도는 느낌이다, 백탁 현상이 있다/없다
+    향: 무향, 은은한 꽃향, 상큼한 시트러스 향, 호불호 갈릴 듯한 OO 향
+    색상 (색조): 화면보다 핑크/오렌지 기가 돈다, 생각보다 펄이 자글자글하다
+    용기/패키징: 펌프형이라 편하다, 스패출러가 내장되어 있다, 입구가 좁아 양 조절이 어렵다
 
-        for (let i = 0; i < 5; i++) {
-            stars[i] = i <= index ? true : false;
-        }
-        setClicked(stars);
+2. '그래서, 효과는 어땠나요?' (사용 후기)
 
-        let total = index + 1;
-        setStar(total);
-    }
+    사용 기간: "방금 1회 사용해봤어요" (첫인상 리뷰) vs "2주간 아침저녁으로 꾸준히 썼어요" (효과 리뷰)
+    느낀 효과 (장점):
+        (스킨케어) "속건조가 잡혔어요", "트러블이 확실히 진정됐어요", "피부결이 매끈해졌어요"
+        (메이크업) "다크닝 없이 6시간 지속됐어요", "끼임이나 무너짐이 예뻐요", "묻어남이 적어요"
+    아쉬운 점 (단점): "눈 시림이 약간 있었어요", "제 피부엔 너무 유분기가 돌았어요", "향이 너무 강해요"
+
+3. '요약'과 '추천'으로 마무리하기
+
+    바쁜 분들을 위해 리뷰를 요약해주세요.
+    장점: (예: 빠른 진정, 좋은 성분)
+    단점: (예: 비싼 가격, 작은 용량)
+    재구매 의사: O / X / △ (고민됨)
+    이런 분께 추천해요: "저처럼 트러블 자주 나는 지성 피부에게 추천!", "자연스러운 톤업 크림 찾는 분들께 비추천"
+
+4. 사진 첨부는 큰 도움이 됩니다!
+
+    제형 샷: 손등이나 손바닥에 덜어 질감을 보여주세요.
+    발색 샷 (색조): 팔목이나 입술에 발색한 사진 (실제 색감과 비슷하게)
+    Before & After: 사용 전/후 피부 상태나 메이크업 비교 샷
+    사용 팁: 메이크업 직후 vs 5시간 후 지속력 비교 샷
+    `;
+
+    const textGuide = `1. 제품의 '첫인상'과 '사용감'을 자세히 알려주세요
+
+2. '그래서, 효과는 어땠나요?' (사용 후기)
+
+3. '요약'과 '추천'으로 마무리하기
+
+4. 사진 첨부는 큰 도움이 됩니다!
+
+    `;
+
+
+    const [text, setText] = useState(textGuide); // 리뷰 텍스트를 위한 state
+
+    const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
+    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked } = UseTag(ptags, ntags);
+    const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = Usefile();
+    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles)
 
     // 별 1~2개 일 떄 경고 알림
 
@@ -41,139 +78,7 @@ function Review() {
         return 0 < starTotal && starTotal <= 2 ? "별점이 낮을 경우, 아쉬운 점을 최소 1개 이상 선택해주세요." : " ";
     }
 
-    const [ptagsClicked, setPtagsClicked] = useState(Array(ptags.length).fill(false));
-    const [ntagsClicked, setNtagsClicked] = useState(Array(ntags.length).fill(false));
-    const [pWarnMsg, pSetWarnMsg] = useState("");
-    const [nWarnMsg, nSetWarnMsg] = useState("");
 
-    const ptoggleActive = (indexTogle) => {
-
-        setPtagsClicked((prevStates) => {
-
-            const currentState = prevStates.filter(Boolean).length;
-            const isAdding = !prevStates[indexTogle];
-
-            if (isAdding && currentState >= 4) {
-                pSetWarnMsg("최대 4개 까지 선택할 수 있습니다.");
-                return prevStates;
-            }
-
-            pSetWarnMsg("");
-            return prevStates.map((currentState, index) => {
-                return indexTogle == index ? !currentState : currentState;
-            })
-        })
-    };
-
-    const ntoggleActive = (indexTogle) => {
-        setNtagsClicked((prevStates) => {
-            const currentState = prevStates.filter(Boolean).length; // true 개수
-            const isAdding = !prevStates[indexTogle]// isAdding이 true면 추가 , false면 취소 
-
-            if (isAdding && currentState >= 4) {
-                nSetWarnMsg("최대 4개 까지 선택할 수 있습니다.");
-                return prevStates;
-            }
-            nSetWarnMsg("");
-            return prevStates.map((currentState, index) => {
-                return indexTogle == index ? !currentState : currentState;
-            })
-        })
-    };
-
-    const ref = useRef(null);
-    const [previewFiles, setPreviewFiles] = useState([]); // {id, url} 객체 배열
-    const [fileError, setFileError] = useState("");
-
-    const processFile = (file) => {
-
-        return new Promise((resolve, reject) => {
-
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-                resolve({
-                    id: crypto.randomUUID(), // 고유 ID
-                    url: event.target.result, // 미리보기 URL
-                    file: file
-                });
-            };
-            // 파일이 성공적으로 입력이 되었을 때 id, url, file를 만든다.
-
-            // 에러가 발생시 error 메시지 만든다.
-            reader.onerror = (error) => reject(error);
-
-            //파일을 읽는 작업 실행 
-            reader.readAsDataURL(file);
-
-
-        });
-    };
-
-    const handleFileChange = async (e) => {
-        const newFiles = Array.from(e.target.files);
-        if (newFiles.length === 0) return;
-
-        const currentCount = previewFiles.length;
-        const remainingSlots = 5 - currentCount;
-
-        if (newFiles.length > remainingSlots) {
-            setFileError(`최대 5개까지만 첨부할 수 있습니다. ${remainingSlots}개만 추가됩니다.`);
-            newFiles.splice(remainingSlots);
-        } else {
-            setFileError("");
-        }
-        const newFileObjects = await Promise.all(newFiles.map(processFile));
-        setPreviewFiles(prevFiles => [...prevFiles, ...newFileObjects]);
-
-        e.target.value = null;
-    };
-
-    const handleDelete = (idToDelete) => {
-        setPreviewFiles(prevFiles =>
-            prevFiles.filter(file => file.id !== idToDelete)
-        );
-        if (previewFiles.length - 1 < 5) {
-            setFileError("");
-        }
-    };
-
-    const handleAddImageClick = () => {
-        if (previewFiles.length < 5) {
-            setFileError("");
-            ref.current.click();
-        } else {
-            setFileError("최대 5개까지만 첨부할 수 있습니다.");
-        }
-    };
-
-
-    const handleSubmit = (event) => {
-
-        event.preventDefault();
-        const formData = new FormData();
-
-        formData.append("starRating", starTotal);
-        formData.append("reviewText", text);
-
-        const positiveTags = ptags.filter((tag, index) => ptagsClicked[index]);
-        const negativeTags = ntags.filter((tag, index) => ntagsClicked[index]);
-
-        formData.append("goodTags", JSON.stringify(positiveTags));
-        formData.append("badTags", JSON.stringify(negativeTags));
-
-        previewFiles.forEach((pf, index) => {
-            formData.append(`images`, pf.file);
-        });
-
-        console.log("--- 폼 제출 데이터 ---");
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-        }
-        console.log("----------------------");
-
-        alert("리뷰 등록 로직이 호출되었습니다. (콘솔을 확인하세요)");
-    };
 
     return (
         <div className="reviewBox">
@@ -232,12 +137,20 @@ function Review() {
                             <textarea
                                 className="textarea"
                                 id="postText"
+                                placeholder={reviewGuide}
                                 rows={30}
-                                placeholder="자세한 리뷰는 다른 분들께 큰 도움이 됩니다."
                                 value={text}
-                                minLength={1000}
                                 onChange={(e) => setText(e.target.value)}
                             />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            * 리뷰 가이드 라인!
+                        </div> <br/>
+                        <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
+                            {reviewGuide}
                         </div>
                     </div>
 
