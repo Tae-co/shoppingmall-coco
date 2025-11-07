@@ -1,4 +1,4 @@
-function useSubmut (ptags,ptagsClicked,ntags,ntagsClicked,text,starTotal,previewFiles) {
+function useSubmut (ptags,ptagsClicked,ntags,ntagsClicked,text,starTotal,previewFiles, navigate) {
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData();
@@ -30,7 +30,8 @@ function useSubmut (ptags,ptagsClicked,ntags,ntagsClicked,text,starTotal,preview
             }
             console.log("----------------------");
 
-            alert("리뷰 등록 로직이 호출되었습니다. (콘솔을 확인하세요)"); 
+            alert("리뷰 등록 로직이 호출되었습니다. (콘솔을 확인하세요)");
+            navigate("/");
         }
     };
 

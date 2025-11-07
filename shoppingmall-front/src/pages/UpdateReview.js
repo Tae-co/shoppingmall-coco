@@ -62,7 +62,7 @@ function UpdateReview() {
     const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
     const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked } = UseTag(ptags, ntags);
     const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles)
+    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate)
     const { loadData } = UseData(setText, setRating, ptags, setPtagsClicked, ntags, setNtagsClicked, setPreviewFiles);
 
     // 별 1~2개 일 떄 경고 알림
