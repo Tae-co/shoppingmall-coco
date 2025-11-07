@@ -8,7 +8,7 @@ function OrderHistory() {
   const orders = [
     // 이후 백엔드 연동 시 Axios로 주문 내역 불러오기
     {
-      id: "ORD-2024-001",
+      id: "ORD-001",
       date: "2024.10.28",
       status: "배송완료",
       expected: "2024.10.30",
@@ -24,7 +24,7 @@ function OrderHistory() {
       extraItems: 0,
     },
     {
-      id: "ORD-2024-002",
+      id: "ORD-002",
       date: "2024.10.15",
       status: "배송중",
       expected: "2024.10.20",
