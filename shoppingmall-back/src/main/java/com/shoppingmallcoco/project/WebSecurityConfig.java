@@ -1,6 +1,5 @@
 package com.shoppingmallcoco.project;
 
-import com.shoppingmallcoco.project.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +19,6 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-	
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,7 +45,6 @@ public class WebSecurityConfig {
 				.requestMatchers("/api/member/me", "/api/member/update").authenticated()
 				.anyRequest().permitAll()
 			)
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.headers(headerConfig -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
 		return http.build();
 	}

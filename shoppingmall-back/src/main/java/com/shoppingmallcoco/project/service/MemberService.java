@@ -9,8 +9,6 @@ import com.shoppingmallcoco.project.dto.ResetPasswordDto;
 import com.shoppingmallcoco.project.entity.Member;
 import com.shoppingmallcoco.project.repository.MemberRepository;
 import com.shoppingmallcoco.project.service.EmailVerificationService;
-import com.shoppingmallcoco.project.service.KakaoService;
-import com.shoppingmallcoco.project.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,10 +23,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
     private final EmailVerificationService emailVerificationService;
-    private final KakaoService kakaoService;
-
     // 일반 회원가입 처리
     public MemberResponseDto signup(MemberSignupDto signupDto) {
         if (memberRepository.existsByMemId(signupDto.getMemId())) {
