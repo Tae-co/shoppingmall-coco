@@ -17,6 +17,8 @@ import MyCoMate from './pages/MyCoMate';
 import OrderDetail from "./pages/OrderDetail";
 import Review from './pages/Review.js';
 import UpdateReview from './pages/UpdateReview.js';
+import ProductListPage from './pages/ProductListPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 
 function App() {
   const location = useLocation();
@@ -40,6 +42,8 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/reviews" element={<Review />} />
         <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
+        <Route path="/product" element={<ProductListPage />} />
+        <Route path="/products/:productId" element={<ProductDetailPage />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>
