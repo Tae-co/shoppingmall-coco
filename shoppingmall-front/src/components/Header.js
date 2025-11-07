@@ -4,6 +4,7 @@ import Logo from '../images/logo.png';
 import '../css/Header.css';
 
 
+
 const Header = () => {
 
     // 로그인 상태 관리 (임시)

@@ -1,7 +1,9 @@
+import React from "react"
 import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Cart from './pages/Cart';
 import Login from './pages/Login';
 import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
@@ -13,7 +15,8 @@ import MyActivity from './pages/MyActivity';
 import AccountSettings from "./pages/AccountSettings";
 import MyCoMate from './pages/MyCoMate';
 import OrderDetail from "./pages/OrderDetail";
-
+import Review from './pages/Review.js';
+import UpdateReview from './pages/UpdateReview.js';
 
 function App() {
   const location = useLocation();
@@ -34,6 +37,9 @@ function App() {
         <Route path="/account-settings" element={<AccountSettings />} />
         <Route path="/my-comate" element={<MyCoMate />} />
         <Route path="/order-detail/:id" element={<OrderDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/reviews" element={<Review />} />
+        <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
       </Routes>
       {!hideHeaderFooter && <Footer />}
     </div>
