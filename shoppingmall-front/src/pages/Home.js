@@ -10,7 +10,7 @@ import '../css/Home.css';
 
 import SimpleSlider from './SimpleSlider'; // 메인배너 슬라이더 컴포넌트
 import BestSeller from './BestSeller'; // 인기상품 슬라이더 컴포넌트
-import ComateCardList from './ComateCardList';
+import Home_Comate from './Home_Comate';
 
 const Home = () => {
 
@@ -73,8 +73,7 @@ const Home = () => {
                         </div>
                     </div>
                     <div className="comate_list">
-                    {/* comate 관련 컴포넌트 추가 예정 */}
-                    <ComateCardList/>
+                    <Home_Comate/>
                     </div>
                 </div>
             </div>

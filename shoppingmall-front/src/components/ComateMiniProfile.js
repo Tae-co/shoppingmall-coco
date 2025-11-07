@@ -1,10 +1,10 @@
 import React from "react";
 
-import '../css/ComateCard.css';
+import '../css/ComateMiniProfile.css';
 import sampleImg_profile from '../images/sampleImg_profile.png'; // 임시 프로필 이미지
 
 
-const ComateCard = ({nickname, skinTypes, followers, reviews, onFollowClick, onClick, isFollowing}) => {
+const ComateMiniProfile = ({nickname, skinTypes, followers, reviews, onFollowClick, onClick, isFollowing}) => {
     return (
         <div className="comate_card" onClick={onClick}>
             <div className="profile_section">
@@ -39,4 +39,4 @@ const ComateCard = ({nickname, skinTypes, followers, reviews, onFollowClick, onC
     );
 };
 
-export default ComateCard;
+export default ComateMiniProfile;

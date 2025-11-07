@@ -26,8 +26,12 @@
     width: 60px;
     margin-bottom: 15px;
 }
-.popular_product_wrapper, .comate_recommend_wrapper {
-    padding-top: 80px;
+.popular_product_wrapper,
+.comate_recommend_wrapper {
+    padding-top: 60px;
+}
+.comate_recommend_wrapper {
+    padding-bottom: 100px;
 }
 .popular_title, .comate_title {
     margin: 20px 75px;
