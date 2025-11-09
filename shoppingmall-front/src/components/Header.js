@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
 import {NavLink, Link, Routes, Route} from 'react-router-dom';
+
 import Logo from '../images/logo.png';
+
 import '../css/Header.css';
 
+import Home from '../pages/Home';
 
 
 const Header = () => {
@@ -45,7 +48,7 @@ const Header = () => {
                             </NavLink>
                         </h1>
                         {/* 네비게이션 메뉴 */}
-                        <div className="center">
+                        <div className="header_center">
                             <nav id="gnb_container" className="gnb">
                                 <ul id="gnb_list" className="gnb_list">
                                     <li className="gnb_item"><NavLink 
@@ -65,7 +68,7 @@ const Header = () => {
                             </nav>
                         </div>
                         {/* 우측 기능 버튼 */}
-                        <div className="right">  
+                        <div className="header_right">  
                             {/* 검색 폼 : 임시 검색어 콘솔 출력 ~ 추후 연동 예정 */}
                             <div className="search_container">
                                 <form onSubmit={(e) => {
@@ -105,10 +108,10 @@ const Header = () => {
             
             {/* 라우트 매핑 */}
             <Routes>
-                <Route path="/" />
+                <Route path="/" element={<Home/>}/>
                 <Route path="/login" />
                 <Route path="/shop" />
-                <Route path="/comate" />
+                <Route path="/comate"/>
                 <Route path="/cart" />
             </Routes>
         </div>

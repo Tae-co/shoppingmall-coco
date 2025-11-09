@@ -1,0 +1,16 @@
+.slide {    
+    height: 450px;
+    margin: 20px 0;
+}
+.page1 {
+    background-color: orange;
+}
+.page2 {
+    background-color: pink;
+}
+.page3 {
+    background-color: skyblue;
+}
+.page4 {
+    background-color: greenyellow;
+}
