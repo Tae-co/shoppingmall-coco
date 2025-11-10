@@ -1,6 +1,8 @@
 import React from "react"
 import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import theme from './styles/admintheme';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Cart from './pages/Cart';
@@ -19,34 +21,51 @@ import Review from './pages/Review.js';
 import UpdateReview from './pages/UpdateReview.js';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+// 관리자 페이지
+import AdminLayout from './components/admin/AdminLayout';
+import AdminHome from './pages/admin/AdminHome';
+import AdminProductList from './pages/admin/AdminProductList';
+import AdminProductNew from './pages/admin/AdminProductNew';
+import AdminProductEdit from './pages/admin/AdminProductEdit';
+import AdminCategoryList from './pages/admin/AdminCategoryList';
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = ['/login', '/signup/terms', '/signup/info', '/find-account'].includes(location.pathname);
+  const hideHeaderFooter = ['/login', '/signup/terms', '/signup/info', '/find-account'].includes(location.pathname) || location.pathname.startsWith('/admin');;
 
   return (
-    <div className="App">
-      {!hideHeaderFooter && <Header />}
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup/terms" element={<SignupTerms />} />
-        <Route path="/signup/info" element={<SignupInfo />} />
-        <Route path="/find-account" element={<FindAccount />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/profile-edit" element={<ProfileEdit />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/my-activity" element={<MyActivity />} />
-        <Route path="/account-settings" element={<AccountSettings />} />
-        <Route path="/my-comate" element={<MyCoMate />} />
-        <Route path="/order-detail/:id" element={<OrderDetail />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/reviews" element={<Review />} />
-        <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
-        <Route path="/product" element={<ProductListPage />} />
-        <Route path="/products/:productId" element={<ProductDetailPage />} />
-      </Routes>
-      {!hideHeaderFooter && <Footer />}
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        {!hideHeaderFooter && <Header />}
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup/terms" element={<SignupTerms />} />
+          <Route path="/signup/info" element={<SignupInfo />} />
+          <Route path="/find-account" element={<FindAccount />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/my-activity" element={<MyActivity />} />
+          <Route path="/account-settings" element={<AccountSettings />} />
+          <Route path="/my-comate" element={<MyCoMate />} />
+          <Route path="/order-detail/:id" element={<OrderDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/reviews" element={<Review />} />
+          <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
+          <Route path="/product" element={<ProductListPage />} />
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
+
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminHome />} />
+            <Route path="products" element={<AdminProductList />} />
+            <Route path="product/new" element={<AdminProductNew />} />
+            <Route path="product/edit/:productId" element={<AdminProductEdit />} />
+            <Route path="categories" element={<AdminCategoryList />} />
+          </Route>
+        </Routes>
+        {!hideHeaderFooter && <Footer />}
+      </div>
+    </ThemeProvider>
   );
 }
 
