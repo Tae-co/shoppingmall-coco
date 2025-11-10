@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 취소 버튼에 필요
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { createAdminProduct } from '../../api/mockApi';
+
+import {
+  Title,
+  FormGroup,
+  Label,
+  Input,
+  Textarea,
+  Select,
+  ButtonContainer,
+  Button,
+  Card
+} from '../../styles/admincommon';
 
 // 임시 카테고리 (DB에서 불러와야 함)
 const categories = [
@@ -10,114 +23,23 @@ const categories = [
   { id: 4, name: '선케어' },
 ];
 
-// ---------------------------------
-
-// --- 스타일 컴포넌트 정의 ---
-
-// (기존 styles.container)
-const Container = styled.div`
-  padding: 20px;
+const Form = styled(Card).attrs({ as: 'form' })`
+  padding: ${props => props.theme.spacing.xlarge};
   max-width: 800px;
   margin: auto;
 `;
 
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-`;
-
-// (기존 styles.form)
-const Form = styled.form`
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-`;
-
-// (기존 styles.formGroup)
-const FormGroup = styled.div`
-  margin-bottom: 20px;
-`;
-
-// (기존 styles.label)
-const Label = styled.label`
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  font-size: 14px;
-`;
-
-// 폼 요소들의 공통 스타일
-const CommonInputStyle = `
-  width: 100%; /* 부모 너비의 100% */
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box; /* padding이 width를 넘치지 않게 함 */
-`;
-
-// (기존 styles.input)
-const Input = styled.input`
-  ${CommonInputStyle} /* 공통 스타일 적용 */
-`;
-
-// (기존 styles.textarea)
-const Textarea = styled.textarea`
-  ${CommonInputStyle} /* 공통 스타일 적용 */
-  min-height: 100px;
-  resize: vertical; /* 세로로만 크기 조절 허용 */
-`;
-
-const Select = styled.select`
-  ${CommonInputStyle} /* 공통 스타일 적용 */
-`;
-
-// (기존 styles.buttonContainer)
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
-`;
-
-// (기존 styles.button)
-const Button = styled.button`
-  padding: 12px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  transition: background 0.2s;
-
-  /* 'props.primary'가 true이면 파란색, 아니면 회색 */
-  background: ${props => (props.primary ? '#333' : '#eee')};
-  color: ${props => (props.primary ? 'white' : '#333')};
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-
-// ---------------------------------
-
 function AdminProductNew() {
-  const navigate = useNavigate(); // '취소' 시 뒤로 가기 위한 훅
-
-  // 폼의 각 항목을 state로 관리
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     prdName: '',
     description: '',
     imageUrl: '',
-    categoryNo: '', // 카테고리 ID
+    categoryNo: '',
     prdPrice: 0,
     stock: 0
   });
 
-  // input 값이 변경될 때 state를 업데이트하는 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
@@ -126,31 +48,33 @@ function AdminProductNew() {
     }));
   };
 
-  // '등록' 버튼 클릭 시 실행될 핸들러
-  const handleSubmit = (e) => {
-    e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await createAdminProduct(formData);
 
-    // (실제로는 여기서 API로 formData를 서버에 전송)
-    console.log('[관리자] 새 상품 등록 데이터:', formData);
+      console.log('[관리자] 새 상품 등록 데이터:', formData);
+      alert(`상품이 등록되었습니다: ${formData.prdName}`);
+      navigate(`/admin/products`);
 
-    // (성공 시)
-    alert(`상품이 등록되었습니다: ${formData.prdName}`);
-        navigate(`/admin/products`); // 등록 완료 후 관리자 목록 페이지로 이동
-    };
+    } catch (error) {
+      console.error("상품 등록 실패:", error);
+      alert("상품 등록 중 오류가 발생했습니다.");
+    }
+  };
 
-    // '취소' 버튼 클릭 시
-    const handleCancel = () => {
-        if (window.confirm('작성을 취소하시겠습니까? 변경 사항이 저장되지 않습니다.')) {
-        navigate('/admin/products'); // 관리자 목록 페이지로 이동
-        }
-    };
+  const handleCancel = () => {
+    if (window.confirm('작성을 취소하시겠습니까? 변경 사항이 저장되지 않습니다.')) {
+      navigate('/admin/products');
+    }
+  };
 
-    return (
-    <Container>
+  return (
+    <>
       <Title>새 상품 등록</Title>
-      
+
       <Form onSubmit={handleSubmit}>
-        
+
         {/* 상품명 */}
         <FormGroup>
           <Label htmlFor="prdName">상품명 *</Label>
@@ -174,7 +98,7 @@ function AdminProductNew() {
             onChange={handleChange}
           />
         </FormGroup>
-        
+
         {/* 이미지 URL */}
         <FormGroup>
           <Label htmlFor="imageUrl">이미지 URL</Label>
@@ -246,7 +170,7 @@ function AdminProductNew() {
         </ButtonContainer>
 
       </Form>
-    </Container>
+    </>
   );
 }
 
