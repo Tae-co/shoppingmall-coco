@@ -1,18 +1,48 @@
-import React, {useState} from 'react';
-import {NavLink, Link, Routes, Route} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {NavLink, Link, Routes, Route, useNavigate} from 'react-router-dom';
 
 import Logo from '../images/logo.png';
 
 import '../css/Header.css';
 
 import Home from '../pages/Home';
+import { getStoredMember, isLoggedIn, logout } from '../utils/api';
 
 
 const Header = () => {
 
-    // 로그인 상태 관리 (임시)
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState('홍길동');
+    const navigate = useNavigate();
+
+    // 로그인 상태 관리
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const syncLoginStatus = () => {
+            const status = isLoggedIn();
+            setLoggedIn(status);
+
+            if (status) {
+                const memberData = getStoredMember();
+                const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
+                setUserName(fallbackName);
+            } else {
+                setUserName('');
+            }
+        };
+
+        syncLoginStatus();
+        window.addEventListener('loginStatusChanged', syncLoginStatus);
+
+        return () => {
+            window.removeEventListener('loginStatusChanged', syncLoginStatus);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <div>
@@ -22,9 +52,9 @@ const Header = () => {
                     <div className="top_inner">
                         <ul className="top_list">
                             {/* 로그인 시 사용자 이름 표시 */}
-                            {isLoggedIn && (
+                                {loggedIn && (
                                 <li className="top_item greet">
-                                    <b>{userName}</b>님, 안녕하세요!
+                                    <b>{userName}</b>님 환영합니다!
                                 </li>
                             )}
                             <li className="top_item">고객센터</li>
@@ -32,8 +62,13 @@ const Header = () => {
                             <li className="top_item">알림</li>
                             <li className="top_item">
                                 {/* 로그인 여부에 따라 로그인/로그아웃 버튼 분기 */}
-                                {/* 로그아웃 기능 추후 연동 예정 */}
-                                {isLoggedIn ? (<div>로그아웃</div>) : (<Link to="/login" className="top_item">로그인</Link>)}
+                                {loggedIn ? (
+                                    <button type="button" className="top_item logout_button" onClick={handleLogout}>
+                                        로그아웃
+                                    </button>
+                                ) : (
+                                    <Link to="/login" className="top_item">로그인</Link>
+                                )}
                             </li>
                         </ul>
                     </div>

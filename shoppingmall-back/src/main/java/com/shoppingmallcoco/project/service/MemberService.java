@@ -26,6 +26,7 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailVerificationService emailVerificationService;
+    private final KakaoService kakaoService;
 
     // 일반 회원가입 처리
     public MemberResponseDto signup(MemberSignupDto signupDto) {
@@ -44,7 +45,7 @@ public class MemberService {
         }
 
         String encodedPassword = passwordEncoder.encode(signupDto.getMemPwd());
-        
+
         Member member = Member.toEntity(signupDto);
         member = member.toBuilder()
                 .memPwd(encodedPassword)
@@ -148,7 +149,7 @@ public class MemberService {
         }
 
         Member member = memberOpt.get();
-        
+
         if (member.getMemMail() == null || !member.getMemMail().equals(email)) {
             throw new RuntimeException("아이디와 이메일이 일치하지 않습니다.");
         }
@@ -159,7 +160,7 @@ public class MemberService {
     // 비밀번호 재설정 처리
     public void resetPassword(ResetPasswordDto resetPasswordDto) {
         boolean isValid = emailVerificationService.verifyCode(
-                resetPasswordDto.getEmail(), 
+                resetPasswordDto.getEmail(),
                 resetPasswordDto.getCode()
         );
         if (!isValid) {
@@ -172,7 +173,7 @@ public class MemberService {
         }
 
         Member member = memberOpt.get();
-        
+
         if (member.getMemMail() == null || !member.getMemMail().equals(resetPasswordDto.getEmail())) {
             throw new RuntimeException("아이디와 이메일이 일치하지 않습니다.");
         }
@@ -181,8 +182,98 @@ public class MemberService {
         member = member.toBuilder()
                 .memPwd(encodedPassword)
                 .build();
-        
+
         memberRepository.save(member);
+    }
+    // 카카오 소셜 로그인 처리
+    public MemberResponseDto kakaoLogin(String accessToken) {
+        KakaoService.KakaoUserInfo kakaoUserInfo = kakaoService.getUserInfo(accessToken);
+
+        String kakaoMemId = "KAKAO_" + kakaoUserInfo.getKakaoId();
+        Optional<Member> memberOpt = memberRepository.findByMemId(kakaoMemId);
+
+        Member member;
+        if (memberOpt.isPresent()) {
+            member = memberOpt.get();
+        } else {
+            String nickname = kakaoUserInfo.getNickname() != null
+                    ? kakaoUserInfo.getNickname()
+                    : "카카오사용자_" + kakaoUserInfo.getKakaoId();
+
+            String finalNickname = nickname;
+            int suffix = 1;
+            while (memberRepository.existsByMemNickname(finalNickname)) {
+                finalNickname = nickname + "_" + suffix;
+                suffix++;
+            }
+
+            member = Member.builder()
+                    .memId(kakaoMemId)
+                    .memPwd(passwordEncoder.encode("KAKAO_" + kakaoUserInfo.getKakaoId() + "_NO_PASSWORD"))
+                    .memNickname(finalNickname)
+                    .memName(kakaoUserInfo.getName())
+                    .memMail(kakaoUserInfo.getEmail())
+                    .role(Member.Role.USER)
+                    .point(0L)
+                    .build();
+
+            member = memberRepository.save(member);
+        }
+
+        String token = jwtUtil.generateToken(member.getMemId(), member.getMemNo());
+        MemberResponseDto response = toResponseDto(member);
+        response.setToken(token);
+
+        boolean needsAdditionalInfo = (member.getMemMail() == null || member.getMemMail().trim().isEmpty()) ||
+                (member.getMemName() == null || member.getMemName().trim().isEmpty()) ||
+                (member.getMemHp() == null || member.getMemHp().trim().isEmpty());
+        response.setNeedsAdditionalInfo(needsAdditionalInfo);
+
+        return response;
+    }
+
+    // 회원 정보 업데이트 처리 (카카오 로그인 후 추가 정보 입력)
+    public MemberResponseDto updateMember(Long memNo, MemberUpdateDto updateDto) {
+        Member member = memberRepository.findById(memNo)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+
+        if (updateDto.getMemNickname() != null && !updateDto.getMemNickname().trim().isEmpty()
+                && !updateDto.getMemNickname().equals(member.getMemNickname())) {
+            if (memberRepository.existsByMemNickname(updateDto.getMemNickname())) {
+                throw new RuntimeException("이미 사용 중인 닉네임입니다.");
+            }
+        }
+
+        if (updateDto.getMemMail() != null && !updateDto.getMemMail().trim().isEmpty()) {
+            Optional<Member> existingMember = memberRepository.findByMemMail(updateDto.getMemMail());
+            if (existingMember.isPresent() && !existingMember.get().getMemNo().equals(memNo)) {
+                throw new RuntimeException("이미 사용 중인 이메일입니다.");
+            }
+        }
+
+        member = member.toBuilder()
+                .memNickname(updateDto.getMemNickname() != null && !updateDto.getMemNickname().trim().isEmpty()
+                        ? updateDto.getMemNickname()
+                        : member.getMemNickname())
+                .memName(updateDto.getMemName() != null ? updateDto.getMemName() : member.getMemName())
+                .memMail(updateDto.getMemMail() != null ? updateDto.getMemMail() : member.getMemMail())
+                .memHp(updateDto.getMemHp() != null ? updateDto.getMemHp() : member.getMemHp())
+                .memZipcode(updateDto.getMemZipcode() != null ? updateDto.getMemZipcode() : member.getMemZipcode())
+                .memAddress1(updateDto.getMemAddress1() != null ? updateDto.getMemAddress1() : member.getMemAddress1())
+                .memAddress2(updateDto.getMemAddress2() != null ? updateDto.getMemAddress2() : member.getMemAddress2())
+                .build();
+
+        Member updatedMember = memberRepository.save(member);
+        MemberResponseDto response = toResponseDto(updatedMember);
+        response.setNeedsAdditionalInfo(false);
+        return response;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponseDto getMemberByMemId(String memId) {
+        Member member = memberRepository.findByMemId(memId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        return toResponseDto(member);
     }
 }
 
