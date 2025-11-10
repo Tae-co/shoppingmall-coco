@@ -9,6 +9,7 @@ import com.shoppingmallcoco.project.dto.ResetPasswordDto;
 import com.shoppingmallcoco.project.entity.Member;
 import com.shoppingmallcoco.project.repository.MemberRepository;
 import com.shoppingmallcoco.project.service.EmailVerificationService;
+import com.shoppingmallcoco.project.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
     private final EmailVerificationService emailVerificationService;
+
     // 일반 회원가입 처리
     public MemberResponseDto signup(MemberSignupDto signupDto) {
         if (memberRepository.existsByMemId(signupDto.getMemId())) {
@@ -52,6 +55,27 @@ public class MemberService {
         Member savedMember = memberRepository.save(member);
 
         return toResponseDto(savedMember);
+    }
+
+    // 일반 로그인 처리
+    @Transactional(readOnly = true)
+    public MemberResponseDto login(MemberLoginDto loginDto) {
+        Optional<Member> memberOpt = memberRepository.findByMemId(loginDto.getMemId());
+
+        if (memberOpt.isEmpty()) {
+            throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        Member member = memberOpt.get();
+
+        if (!passwordEncoder.matches(loginDto.getMemPwd(), member.getMemPwd())) {
+            throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        String token = jwtUtil.generateToken(member.getMemId(), member.getMemNo());
+        MemberResponseDto response = toResponseDto(member);
+        response.setToken(token);
+        return response;
     }
 
 

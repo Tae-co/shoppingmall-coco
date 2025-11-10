@@ -1,6 +1,7 @@
 package com.shoppingmallcoco.project.controller;
 
 import com.shoppingmallcoco.project.dto.FindIdDto;
+import com.shoppingmallcoco.project.dto.MemberLoginDto;
 import com.shoppingmallcoco.project.dto.MemberSignupDto;
 import com.shoppingmallcoco.project.service.EmailVerificationService;
 import com.shoppingmallcoco.project.service.MemberService;
@@ -31,6 +32,15 @@ public class MemberController {
         }
     }
 
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody MemberLoginDto loginDto) {
+        try {
+            return ResponseEntity.ok(memberService.login(loginDto));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        }
+    }
 
     // 중복 확인 공통 메서드
     private ResponseEntity<Map<String, Object>> checkDuplicate(boolean isDuplicate, String type) {
