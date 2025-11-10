@@ -28,6 +28,11 @@ import AdminProductList from './pages/admin/AdminProductList';
 import AdminProductNew from './pages/admin/AdminProductNew';
 import AdminProductEdit from './pages/admin/AdminProductEdit';
 import AdminCategoryList from './pages/admin/AdminCategoryList';
+import OrderPage from './pages/Orderpage/OrderPage';
+import PaymentPage from './pages/PaymentPage/PaymentPage';
+import OrderSuccessPage from './pages/OrderSuccessPage/OrderSuccessPage'; // 주문 성공 페이지
+import OrderFailPage from './pages/OrderFailPage/OrderFailPage';
+import { OrderProvider } from './pages/OrderContext';
 
 function App() {
   const location = useLocation();
@@ -54,19 +59,30 @@ function App() {
           <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
           <Route path="/product" element={<ProductListPage />} />
           <Route path="/products/:productId" element={<ProductDetailPage />} />
-
+          
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminHome />} />
             <Route path="products" element={<AdminProductList />} />
             <Route path="product/new" element={<AdminProductNew />} />
             <Route path="product/edit/:productId" element={<AdminProductEdit />} />
             <Route path="categories" element={<AdminCategoryList />} />
+           
           </Route>
         </Routes>
+        <OrderProvider>
+            <Routes>
+          <Route path="/order" element={<OrderPage />} />
+          <Route path="/payment" element={<PaymentPage />} />
+
+          <Route path="/order-success" element={<OrderSuccessPage />} />
+          <Route path="/order-fail" element={<OrderFailPage />} />
+          </Routes>
+          </OrderProvider>
         {!hideHeaderFooter && <Footer />}
       </div>
     </ThemeProvider>
   );
 }
+
 
 export default App;
