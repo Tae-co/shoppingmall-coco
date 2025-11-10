@@ -18,7 +18,7 @@ export function OrderProvider({ children }) {
   const [deliveryMessage, setDeliveryMessage] = useState('');
   
   // --- 2. PaymentPage (금액) state ---
-  const [orderSubtotal, setOrderSubtotal] = useState(35000); // (임시) 상품 금액
+  const [orderSubtotal, setOrderSubtotal] = useState(1000); // (임시) 상품 금액
   const [userPoints, setUserPoints] = useState(5000);       // (임시) 보유 포인트
   const [pointsToUse, setPointsToUse] = useState(0);        // 사용할 포인트
 

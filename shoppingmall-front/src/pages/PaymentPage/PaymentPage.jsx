@@ -1,6 +1,6 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../css/PaymentPage.css'; 
+import '../../css/PaymentPage.css';
 import { useOrder } from '../OrderContext'; // 전역 주문 상태(Context) 훅
 import TermsPopup from './TermsPopup'; // 약관 상세 보기 팝업 컴포넌트
 
@@ -8,12 +8,15 @@ import TermsPopup from './TermsPopup'; // 약관 상세 보기 팝업 컴포넌�
 function PaymentPage() {
   const navigate = useNavigate();
 
-  // 전역 주문 상태(OrderContext)에서 필요한 금액 및 포인트 정보를 가져옵니다.
+
+  // OrderContext에서 배송지 정보(lastName, phone 등)까지 모두 가져옴
+  // (OrderContext.jsx에 정의된 모든 값)
   const {
     orderSubtotal, // 상품 총액
     shippingFee,   // 배송비
     userPoints,    // 사용자 보유 포인트
-    pointsToUse, setPointsToUse // 사용할 포인트 상태
+    pointsToUse, setPointsToUse, // 사용할 포인트 상태
+    lastName, firstName, phone, postcode, address, addressDetail // 배송지 정보
   } = useOrder();
 
   // 로컬 상태 관리: 결제 수단, 약관 동의, 약관 팝업 표시 여부
@@ -23,7 +26,7 @@ function PaymentPage() {
     info: false      // 개인정보 처리 동의
   });
   const [isTermsPopupOpen, setIsTermsPopupOpen] = useState(false);
-  
+
   // 카드 정보 직접 입력을 위한 로컬 상태
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
@@ -33,54 +36,83 @@ function PaymentPage() {
   // 약관 팝업 열기/닫기 핸들러
   const handleOpenTermsPopup = () => setIsTermsPopupOpen(true);
   const handleCloseTermsPopup = () => setIsTermsPopupOpen(false);
-  
+
   // 금액 계산: 총 주문 금액과 최종 결제 금액
-  const totalAmount = orderSubtotal + shippingFee; 
-  const finalAmount = totalAmount - pointsToUse;   
-  
+  const totalAmount = orderSubtotal + shippingFee;
+  const finalAmount = totalAmount - pointsToUse;
+
   // 포인트 입력 필드 변경 핸들러
   const handlePointsChange = (e) => {
     let value = Number(e.target.value);
     if (value < 0) value = 0;
     if (value > userPoints) value = userPoints;       // 보유 포인트 초과 방지
     if (value > totalAmount) value = totalAmount;     // 결제 금액 초과 방지
-    setPointsToUse(value); 
+    setPointsToUse(value);
   };
-  
+
   // '모두 사용' 버튼 핸들러
   const handleUseAllPoints = () => {
     // 사용할 수 있는 최대 포인트 (보유 포인트와 결제 금액 중 작은 값)
     const maxUsablePoints = Math.min(userPoints, totalAmount);
-    setPointsToUse(maxUsablePoints); 
+    setPointsToUse(maxUsablePoints);
   };
-  
+
   // 약관 동의 체크박스 변경 핸들러
   const handleAgreementChange = (e) => {
     const { name, checked } = e.target;
     setAgreements(prev => ({ ...prev, [name]: checked }));
   };
 
-  // '결제하기' 버튼 클릭 시 최종 유효성 검사 및 결제 처리
+
+  // '결제하기' 버튼 클릭 시 최종 유효성 검사 및 '진짜' 결제 처리
   const handlePaymentSubmit = () => {
     // 1. 필수 약관 동의 검사
     if (!agreements.purchase || !agreements.info) {
       alert("필수 약관에 모두 동의해주세요.");
       return;
     }
-    
+
     if (paymentMethod === 'api') {
-      // 2-1. 'API 간편결제'일 경우: 성공 페이지로 모의 이동
-      console.log("결제를 진행합니다... (테스트 대기)");
-      setTimeout(() => {
-        navigate('/order-success');
-      }, 2000); // 2초 딜레이
+      // 2-1. 'API 간편결제'일 경우: '포트원' 실제 결제 로직
+      
+      const { IMP } = window; // index.html에서 로드한 IMP 객체
+      IMP.init("iamport"); // 테스트용 아이디
+
+      // 결제 요청 데이터 정의
+      const data = {
+        pg: "kakaopay", // PG사 (예: 카카오페이)
+        pay_method: "card", // 결제 방식
+        merchant_uid: `coco_order_${new Date().getTime()}`, // 고유한 주문번호
+        name: "Coco 뷰티 상품 외 1건", // 주문명 (상품명이 길면 요약)
+        amount: finalAmount, // ★★★ 실제 최종 결제 금액 ★★★
+        buyer_name: `${lastName}${firstName}`, // 구매자 이름 (Context에서)
+        buyer_tel: phone,                      // 구매자 연락처 (Context에서)
+        buyer_addr: `${address} ${addressDetail}`, // 구매자 주소 (Context에서)
+        buyer_postcode: postcode,               // 구매자 우편번호 (Context에서)
+      };
+
+      // 포트원 결제 창 호출
+      IMP.request_pay(data, (rsp) => {
+        if (rsp.success) {
+          // --- 결제 성공 ---
+          console.log("결제 성공:", rsp);
+          
+          
+          // 검증 성공 후, 성공 페이지로 이동
+          navigate('/order-success');
+        } else {
+          // --- 결제 실패 ---
+          console.log("결제 실패:", rsp.error_msg);
+          navigate('/order-fail'); // 실패 페이지로 이동
+        }
+      });
 
     } else if (paymentMethod === 'card') {
       // 2-2. '신용/체크카드' 직접 입력일 경우: 카드 정보 필수값 검사
       
       if (!cardNumber || !cardName || !cardExpiry || !cardCvc) {
         alert("카드 정보를 모두 입력해주세요.");
-        return; 
+        return;
       }
 
       // 카드 정보 유효성 검사 통과 후: 모의 실패 처리
@@ -88,7 +120,7 @@ function PaymentPage() {
       navigate('/order-fail'); // 실패 페이지로 이동
     }
   };
-  
+
   return (
     <div className="payment-page">
       
