@@ -1,55 +1,88 @@
-// src/App.js
-
-import React from 'react';
-// 라우팅 관련 기능 import: 경로 정의(Routes), 개별 경로(Route), 페이지 이동 링크(Link)
-import { Routes, Route, Link } from 'react-router-dom';
-import './App.css'; 
-
-// 주문 프로세스를 구성하는 페이지 컴포넌트 import
+import React from "react"
+import './App.css';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import theme from './styles/admintheme';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Cart from './pages/Cart';
+import Login from './pages/Login';
+import SignupTerms from './pages/SignupTerms';
+import SignupInfo from './pages/SignupInfo';
+import FindAccount from './pages/FindAccount';
+import MyPage from './pages/MyPage';
+import ProfileEdit from "./pages/ProfileEdit";
+import OrderHistory from "./pages/OrderHistory";
+import MyActivity from './pages/MyActivity';
+import AccountSettings from "./pages/AccountSettings";
+import MyCoMate from './pages/MyCoMate';
+import OrderDetail from "./pages/OrderDetail";
+import Review from './pages/Review.js';
+import UpdateReview from './pages/UpdateReview.js';
+import ProductListPage from './pages/ProductListPage';
+import ProductDetailPage from './pages/ProductDetailPage';
+// 관리자 페이지
+import AdminLayout from './components/admin/AdminLayout';
+import AdminHome from './pages/admin/AdminHome';
+import AdminProductList from './pages/admin/AdminProductList';
+import AdminProductNew from './pages/admin/AdminProductNew';
+import AdminProductEdit from './pages/admin/AdminProductEdit';
+import AdminCategoryList from './pages/admin/AdminCategoryList';
 import OrderPage from './pages/Orderpage/OrderPage';
 import PaymentPage from './pages/PaymentPage/PaymentPage';
 import OrderSuccessPage from './pages/OrderSuccessPage/OrderSuccessPage'; // 주문 성공 페이지
-import OrderFailPage from './pages/OrderFailPage/OrderFailPage';       // 주문 실패 페이지
-
-// 전역 주문 상태(Context) 관리 Provider import
+import OrderFailPage from './pages/OrderFailPage/OrderFailPage';
 import { OrderProvider } from './pages/OrderContext';
 
-// 기본 홈 페이지 컴포넌트
-function HomePage() {
-  return (
-    <div>
-      <h1>홈 페이지</h1>
-      <p>메인 페이지입니다.</p>
-    </div>
-  );
-}
-
-// 애플리케이션의 메인 라우팅 및 레이아웃을 정의하는 컴포넌트
 function App() {
-  return (
-    <div className="App">
-      
-      {/* --- 1. 상단 네비게이션 --- */}
-      <nav>
-                <Link to="/">홈으로</Link> | <Link to="/order">주문하기</Link>
-      </nav>
+  const location = useLocation();
+  const hideHeaderFooter = ['/login', '/signup/terms', '/signup/info', '/find-account'].includes(location.pathname) || location.pathname.startsWith('/admin');;
 
-      {/* --- 2. 라우팅 및 전역 상태 관리 --- */}
-      
-      <OrderProvider>
-        {/* URL 경로에 따라 표시할 컴포넌트를 정의하는 영역 */}
+  return (
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        {!hideHeaderFooter && <Header />}
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup/terms" element={<SignupTerms />} />
+          <Route path="/signup/info" element={<SignupInfo />} />
+          <Route path="/find-account" element={<FindAccount />} />
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/my-activity" element={<MyActivity />} />
+          <Route path="/account-settings" element={<AccountSettings />} />
+          <Route path="/my-comate" element={<MyCoMate />} />
+          <Route path="/order-detail/:id" element={<OrderDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/reviews" element={<Review />} />
+          <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
+          <Route path="/product" element={<ProductListPage />} />
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
+          
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminHome />} />
+            <Route path="products" element={<AdminProductList />} />
+            <Route path="product/new" element={<AdminProductNew />} />
+            <Route path="product/edit/:productId" element={<AdminProductEdit />} />
+            <Route path="categories" element={<AdminCategoryList />} />
+           
+          </Route>
+        </Routes>
+        <OrderProvider>
+            <Routes>
           <Route path="/order" element={<OrderPage />} />
           <Route path="/payment" element={<PaymentPage />} />
 
-          {/* 주문 결과 페이지 경로 추가 */}
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/order-fail" element={<OrderFailPage />} />
-        </Routes>
-      </OrderProvider>
-    </div>
+          </Routes>
+          </OrderProvider>
+        {!hideHeaderFooter && <Footer />}
+      </div>
+    </ThemeProvider>
   );
 }
+
 
 export default App;
