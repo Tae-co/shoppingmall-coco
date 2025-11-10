@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import ProductReviews from '../../../features/ProductReviews';
 
 const shippingInfo = (
   <div>
@@ -100,7 +101,7 @@ const ProductTabs = ({ product }) => {
         {currentTab === 'reviews' && (
           <div>
             <h3>상품 리뷰</h3>
-            <p>[리뷰 담당] 리뷰 컴포넌트가 연동될 영역입니다.</p>
+            <ProductReviews />
           </div>
         )}
         {currentTab === 'howToUse' && (

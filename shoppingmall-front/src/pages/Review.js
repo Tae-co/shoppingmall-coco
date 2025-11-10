@@ -9,7 +9,7 @@ import UseTag from '../features/UseTag.js'
 import Usefile from '../features/UseFile.js'
 import UseSubmut from '../features/UseSubmit.js'
 function Review() {
-    
+
     const navigate = useNavigate();
 
     const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
@@ -66,17 +66,24 @@ function Review() {
 
 
     const [text, setText] = useState(textGuide); // 리뷰 텍스트를 위한 state
-
+    const [date, setDate] = useState(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    });
+    const [userNmae, setUserName] = useState("테스트아이디");
     const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
     const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked } = UseTag(ptags, ntags);
     const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = Usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate)
+    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate, date, userNmae)
 
     // 별 1~2개 일 떄 경고 알림
 
     const handleCancel = () => {
         window.alert("정말 취소 하시겠습니까?")
-        navigate(`/`); 
+        navigate(`/`);
     };
 
     const warnStarTags = (starTotal) => {
@@ -153,7 +160,7 @@ function Review() {
                     <div>
                         <div>
                             * 리뷰 가이드 라인!
-                        </div> <br/>
+                        </div> <br />
                         <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
                             {reviewGuide}
                         </div>
@@ -209,12 +216,13 @@ function Review() {
                         {/* 취소 및 리뷰등록 버튼 바꾸기  */}
                         {/* 취소 선택시 상품 페이지로 */}
                         {/* 리뷰 등록 선택시 리뷰 등록 후 상품 페이지로 */}
-                        <button type="button"onClick={handleCancel}>취소</button>
+                        <button type="button" onClick={handleCancel}>취소</button>
                         <button type="submit">리뷰등록</button>
                     </div>
                 </form >
             </div>
         </div >
+
     )
 }
 

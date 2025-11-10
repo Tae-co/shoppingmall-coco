@@ -7,6 +7,9 @@ function useTag (ptags,ntags) {
     const [pWarnMsg, pSetWarnMsg] = useState("");
     const [nWarnMsg, nSetWarnMsg] = useState("");
 
+    const [ptagArr, setPtagArr] = useState([]);
+    const [ntagArr, setNtagArr] = useState([]);
+
     const ptoggleActive = (indexTogle) => {
 
         setPtagsClicked((prevStates) => {
@@ -50,7 +53,11 @@ function useTag (ptags,ntags) {
         ptoggleActive,
         ntoggleActive,
         setPtagsClicked,
-        setNtagsClicked
+        setNtagsClicked,
+        setPtagArr,
+        setNtagArr,
+        ptagArr,
+        ntagArr
 
     }
 }
