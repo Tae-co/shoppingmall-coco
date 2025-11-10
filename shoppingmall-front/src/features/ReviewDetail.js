@@ -12,7 +12,7 @@ import yellowStar from '../images/yellowStar.svg'
 import detailIcon from '../images/detailIcon.svg'
 import love from '../images/love.png'
 import '../css/ReviewDetail.css'
-function ReviewDetail() {
+function ReviewDetail({reviewData, onDelete}) {
     const navigate = useNavigate();
 
     const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
@@ -25,18 +25,25 @@ function ReviewDetail() {
         , "피부 트러블", "가격이 비싸요", "용량이 적어요", "제품이 변질됐어요"
     ]
 
-    const [text, setText] = useState("");
+     const {
+        reviewNo,
+        userName,
+        date,
+        starRating,
+        text,
+        goodTags,
+        badTags,
+        images
+    } = reviewData;
+
     const [like, setlike] = useState(0);
+    
 
     const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
     const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked, ptagArr, ntagArr, setPtagArr, setNtagArr } = UseTag(ptags, ntags);
     const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate)
-    const { loadData } = UseData(setText, setRating, ptags, setPtagsClicked, ntags, setNtagsClicked, setPreviewFiles, setPtagArr, setNtagArr);
-    // 자신이 리뷰한 내용에만 수정 삭제 아이콘 보이기
 
-    const date = "2025.11.01"
-    const name = "스킨매니아"
+    // 자신이 리뷰한 내용에만 수정 삭제 아이콘 보이기 
 
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -45,19 +52,23 @@ function ReviewDetail() {
     };
 
     useEffect(() => {
-        loadData();
+        setRating(starRating);
     }, []);
 
     const updateReview = () => {
-        navigate("/update-reviews/:reviewNo");
+        navigate("/update-reviews/${reviewNo}");
     }
 
     const deleteReview = () => {
-        // product 상세 페이지 리렌더링
-        const confirm = window.confirm("정말 삭제하시겠습니까?");
-        confirm ? navigate("/") // 삭제 후 리 렌더링
-            : navigate("/") // 삭제 하지 않고 리 렌더링
-
+        const confirmDelete = window.confirm("정말 삭제하시겠습니까?");
+        if (confirmDelete) {
+            // (TODO: 실제 API DELETE /api/reviews/{reviewNo} 호출)
+            console.log("삭제 API 호출:", reviewNo);
+            
+            // ⬇️ [FIX] navigate(0) 대신, 부모(ProductReviews)로부터
+            // 받은 onDelete 함수를 호출하여 '상태'를 업데이트합니다.
+            onDelete(reviewNo); 
+        }
     }
 
     const addLike = () => {
@@ -70,7 +81,7 @@ function ReviewDetail() {
             <div className="reviewBox">
                 <div className="headBox">
                     <div className="name-star">
-                        <span className='username'>{name}</span>
+                        <span className='username'>{userName}</span>
                         <div className='stars'>
                             {starArray.map((stars, i) => (
                                 <img
@@ -87,18 +98,17 @@ function ReviewDetail() {
                     </div>
                 </div>
                 <div className='imgBox'>
-                    {previewFiles.map((img, i) => (
-                        <img className="tag" key={i} src={img}/>
-                    ))}
+                    {images && images.map((imgUrl, i) => (
+                    <img className="tag" key={i} src={imgUrl} alt="리뷰 이미지"/>
+                ))}
                 </div>
                 <div className="tagBox">
-                    {ptagArr.map((ptag, i) => (
-                        <span key={i}>{ptag}</span>
-                    ))}
-                
-                    {ntagArr.map((ntag, i) => (
-                        <span key={i}>{ntag}</span>
-                    ))}
+                    {goodTags && goodTags.map((ptag, i) => (
+                    <span key={`p-${i}`}>{ptag}</span>
+                ))}
+                {badTags && badTags.map((ntag, i) => (
+                    <span key={`n-${i}`}>{ntag}</span>
+                ))}
                 </div>
                 <div className="textBox">
                     <p className={isExpanded ? 'expanded' : 'clamped'}>

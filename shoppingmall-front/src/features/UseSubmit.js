@@ -1,4 +1,4 @@
-function useSubmut (ptags,ptagsClicked,ntags,ntagsClicked,text,starTotal,previewFiles, navigate) {
+function useSubmut (ptags,ptagsClicked,ntags,ntagsClicked,text,starTotal,previewFiles, navigate, date, userName) {
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData();
@@ -15,7 +15,8 @@ function useSubmut (ptags,ptagsClicked,ntags,ntagsClicked,text,starTotal,preview
             window.alert("태그를 눌러주세요!")
         } else {
             formData.append("starRating", starTotal);
-
+            formData.append("date", date)
+            formData.append("userName", userName);
             formData.append("reviewText", text);
             formData.append("goodTags", JSON.stringify(positiveTags));
             formData.append("badTags", JSON.stringify(negativeTags));
