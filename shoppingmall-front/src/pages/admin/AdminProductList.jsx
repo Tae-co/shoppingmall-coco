@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchAdminProducts, deleteAdminProduct } from '../../api/mockApi';
+import Pagination from '../../components/admin/Pagination';
 
 import {
   Input, Select,
@@ -12,15 +13,17 @@ import {
   ContentHeader,
   ContentTitle,
   Card,
-  ButtonLink, // + 상품 등록 버튼
-  Button,     // 새로고침 버튼
-  TableWrapper, Table, Th, Td // 테이블 관련
+  ButtonLink,
+  Button,
+  TableWrapper, Table, Th, Td
 } from '../../styles/admincommon';
 
+const LIMIT = 6;
+
 const categories = [
-  '스킨케어', 
-  '메이크업', 
-  '클렌징', 
+  '스킨케어',
+  '메이크업',
+  '클렌징',
   '선케어'
 ];
 
@@ -34,11 +37,14 @@ const FilterContainer = styled.div`
 
 const SearchInput = styled(Input)`
   flex: 1;
+  width: auto;
   padding: 10px;
   font-size: 14px;
 `;
 
 const FilterSelect = styled(Select)`
+  width: auto;
+  min-width: 160px;
   padding: 10px;
   font-size: 14px;
 `;
@@ -98,12 +104,33 @@ function AdminProductList() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+
+  const [dashboardCounts, setDashboardCounts] = useState({
+    inStock: 0,
+    outOfStock: 0,
+    totalStock: 0
+  });
+
   useEffect(() => {
     const loadProducts = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchAdminProducts();
-        setProducts(data);
+        const data = await fetchAdminProducts({
+          page: currentPage,
+          limit: LIMIT,
+          searchTerm,
+          selectedCategory,
+          selectedStatus
+        });
+
+        setProducts(data.products);
+        setTotalPages(data.totalPages);
+        setTotalProducts(data.totalProducts);
+        setDashboardCounts(data.dashboardCounts);
+
       } catch (error) {
         console.error("상품 목록 로드 실패:", error);
         alert("상품 목록을 불러오는 데 실패했습니다.");
@@ -111,14 +138,34 @@ function AdminProductList() {
       setIsLoading(false);
     };
     loadProducts();
-  }, []);
+  }, [currentPage, searchTerm, selectedCategory, selectedStatus]);
+
+  const handleFilterChange = (setter) => (e) => {
+    setter(e.target.value);
+    setCurrentPage(1);
+  };
 
   const handleDelete = async (product) => {
-    if (window.confirm(`상품을 삭제하시겠습니까?\n\n${product.prdName}\n\n이 작업은 취소할 수 없습니다.`)) {
+    if (window.confirm(`...`)) {
       try {
-        await deleteAdminProduct(product.prdNo); 
-        console.log(`[관리자] ${product.prdName} (ID: ${product.prdNo}) 삭제 실행`);
-        setProducts(prevProducts => prevProducts.filter(p => p.prdNo !== product.prdNo));
+        await deleteAdminProduct(product.prdNo);
+        console.log(`[관리자] ${product.prdName} 삭제 실행`);
+
+        const data = await fetchAdminProducts({
+          page: currentPage,
+          limit: LIMIT,
+          searchTerm,
+          selectedCategory,
+          selectedStatus
+        });
+        setProducts(data.products);
+        setTotalPages(data.totalPages);
+        setTotalProducts(data.totalProducts);
+        setDashboardCounts(data.dashboardCounts);
+
+        if (data.products.length === 0 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        }
       } catch (error) {
         console.error("상품 삭제 실패:", error);
         alert("상품 삭제 중 오류가 발생했습니다.");
@@ -126,22 +173,11 @@ function AdminProductList() {
     }
   };
 
-  const filteredProducts = products
-    .filter(product => {
-      return product.prdName.toLowerCase().includes(searchTerm.toLowerCase());
-    })
-    .filter(product => {
-      return selectedCategory === '' || product.categoryName === selectedCategory;
-      })
-      .filter(product => {
-      return selectedStatus === '' || product.status === selectedStatus;
-    });
-
   const dashboardData = {
-    totalProducts: products.length,
-    inStockProducts: products.filter(p => p.status === '판매중').length,
-    outOfStockProducts: products.filter(p => p.status === '품절').length,
-    totalStockCount: products.reduce((sum, p) => sum + p.stock, 0)
+    totalProducts: totalProducts,
+    inStockProducts: dashboardCounts.inStock,
+    outOfStockProducts: dashboardCounts.outOfStock,
+    totalStockCount: dashboardCounts.totalStock
   };
 
   if (isLoading) {
@@ -149,7 +185,7 @@ function AdminProductList() {
   }
 
   return (
-    <>      
+    <>
       {/* --- 대시보드 --- */}
       <Dashboard>
         <DashCard>
@@ -175,25 +211,25 @@ function AdminProductList() {
         <ContentHeader>
           <ContentTitle>상품 목록</ContentTitle>
           <div>
-            <Button onClick={() => window.location.reload()} style={{marginRight: '10px'}}>🔄 새로고침</Button>
+            <Button onClick={() => window.location.reload()} style={{ marginRight: '10px' }}>🔄 새로고침</Button>
             <ButtonLink to="/admin/product/new" primary>
               + 상품 등록
             </ButtonLink>
-            </div>
+          </div>
         </ContentHeader>
 
         {/* 검색 / 필터 */}
         <FilterContainer>
-          <SearchInput 
-            type="text" 
-            placeholder="상품명으로 검색..." 
+          <SearchInput
+            type="text"
+            placeholder="상품명으로 검색..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleFilterChange(setSearchTerm)}
           />
-          
-          <FilterSelect 
+
+          <FilterSelect
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={handleFilterChange(setSelectedCategory)}
           >
             <option value="">전체 카테고리</option>
             {categories.map(categoryName => (
@@ -202,10 +238,10 @@ function AdminProductList() {
               </option>
             ))}
           </FilterSelect>
-          
-          <FilterSelect 
+
+          <FilterSelect
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={handleFilterChange(setSelectedStatus)}
           >
             <option value="">전체 상태</option>
             {statuses.map(statusName => (
@@ -232,7 +268,7 @@ function AdminProductList() {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => (
+              {products.map((product) => (
                 <tr key={product.prdNo}>
                   <Td>{product.prdNo}</Td>
                   <Td><ProductImage src={product.imageUrl} alt={product.prdName} /></Td>
@@ -258,10 +294,17 @@ function AdminProductList() {
             </tbody>
           </Table>
         </TableWrapper>
-        
+
         <TableFooter>
-          총 {filteredProducts.length}개의 상품
+          총 {totalProducts}개의 상품
         </TableFooter>
+
+        {/* 페이지네이션*/}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
 
       </Content>
     </>
