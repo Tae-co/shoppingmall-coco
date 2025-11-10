@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchAdminProductById, updateAdminProduct } from '../../api/mockApi';
+import { fetchAdminProductById, updateAdminProduct, fetchCategories } from '../../api/mockApi';
 import Spinner from '../../components/admin/Spinner';
 import { toast } from 'react-toastify';
 import {
@@ -21,13 +21,6 @@ const Form = styled(Card).attrs({ as: 'form' })`
   max-width: 800px;
   margin: auto;
 `;
-
-const categories = [
-  { id: 1, name: '스킨케어' },
-  { id: 2, name: '메이크업' },
-  { id: 3, name: '클렌징' },
-  { id: 4, name: '선케어' },
-];
 
 const CurrentImage = styled.img`
   width: 80px;
@@ -68,6 +61,28 @@ function AdminProductEdit() {
 
     loadProduct();
 
+  }, [productId, navigate]);
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const foundProduct = await fetchAdminProductById(productId);
+        setFormData(foundProduct);
+        
+        const categoryData = await fetchCategories();
+        setCategories(categoryData);
+
+      } catch (error) {
+        console.error(error);
+        toast.error('데이터 로드에 실패했습니다.');
+        navigate('/admin/products');
+      }
+      setIsLoading(false);
+    };
+    loadData();
   }, [productId, navigate]);
 
   const handleChange = (e) => {

@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { createAdminProduct } from '../../api/mockApi';
+import { createAdminProduct, fetchCategories } from '../../api/mockApi';
 import { toast } from 'react-toastify';
-
 import {
   Title,
   FormGroup,
@@ -15,14 +14,6 @@ import {
   Button,
   Card
 } from '../../styles/admincommon';
-
-// 임시 카테고리 (DB에서 불러와야 함)
-const categories = [
-  { id: 1, name: '스킨케어' },
-  { id: 2, name: '메이크업' },
-  { id: 3, name: '클렌징' },
-  { id: 4, name: '선케어' },
-];
 
 const Form = styled(Card).attrs({ as: 'form' })`
   padding: ${props => props.theme.spacing.xlarge};
@@ -39,6 +30,20 @@ function AdminProductNew() {
     prdPrice: 0,
     stock: 0
   });
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        setCategories(data);
+      } catch (error) {
+        toast.error('카테고리 목록을 불러오지 못했습니다.');
+      }
+    };
+    loadCategories();
+  }, []); // [] : 페이지 로드 시 1회 실행
 
   const [imageFile, setImageFile] = useState(null);
 

@@ -216,3 +216,70 @@ export const deleteAdminProduct = (productId) => {
     }, 500);
   });
 };
+
+// ===========================================
+// 카테고리 API
+// ===========================================
+
+// 카테고리 Mock 데이터
+const mockCategories = [
+  { id: 1, name: '스킨케어' },
+  { id: 2, name: '메이크업' },
+  { id: 3, name: '클렌징' },
+  { id: 4, name: '선케어' },
+];
+
+// (GET /api/admin/categories) - 카테고리 목록 조회
+export const fetchCategories = () => {
+  console.log('[Mock API] 카테고리 목록 조회');
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockCategories);
+    }, 300);
+  });
+};
+
+// (POST /api/admin/categories) - 카테고리 생성
+export const createCategory = (categoryName) => {
+  console.log('[Mock API] 새 카테고리 생성:', categoryName);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const newId = Math.max(...mockCategories.map(c => c.id)) + 1;
+      const newCategory = { id: newId, name: categoryName };
+      mockCategories.push(newCategory);
+      resolve(newCategory);
+    }, 300);
+  });
+};
+
+// (PUT /api/admin/categories/:id) - 카테고리 수정
+export const updateCategory = (categoryId, newName) => {
+  console.log(`[Mock API] ${categoryId}번 카테고리 수정:`, newName);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const category = mockCategories.find(c => c.id === categoryId);
+      if (category) {
+        category.name = newName;
+        resolve(category);
+      } else {
+        reject(new Error('카테고리를 찾을 수 없습니다.'));
+      }
+    }, 300);
+  });
+};
+
+// (DELETE /api/admin/categories/:id) - 카테고리 삭제
+export const deleteCategory = (categoryId) => {
+  console.log(`[Mock API] ${categoryId}번 카테고리 삭제`);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const index = mockCategories.findIndex(c => c.id === categoryId);
+      if (index > -1) {
+        mockCategories.splice(index, 1);
+        resolve({ success: true });
+      } else {
+        reject(new Error('카테고리를 찾을 수 없습니다.'));
+      }
+    }, 300);
+  });
+};
