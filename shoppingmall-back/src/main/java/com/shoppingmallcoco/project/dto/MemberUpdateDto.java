@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MemberUpdateDto {
+    private String memNickname;
     private String memName;
     private String memMail;
     private String memHp;
