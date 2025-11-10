@@ -5,9 +5,6 @@ import Logo from '../images/logo.png';
 
 import '../css/Header.css';
 
-import Home from '../pages/Home';
-
-
 const Header = () => {
 
     // 로그인 상태 관리 (임시)
@@ -28,7 +25,7 @@ const Header = () => {
                                 </li>
                             )}
                             <li className="top_item">고객센터</li>
-                            <li className="top_item">마이페이지</li>
+                            <li className="top_item"><Link to="/mypage" className="top_item">마이페이지</Link></li>
                             <li className="top_item">알림</li>
                             <li className="top_item">
                                 {/* 로그인 여부에 따라 로그인/로그아웃 버튼 분기 */}
@@ -56,7 +53,7 @@ const Header = () => {
                                                             className={({isActive}) => 
                                                                 isActive ? 'gnb_link active' : 'gnb_link'}>HOME</NavLink></li>
                                     <li className="gnb_item"><NavLink 
-                                                            to="/shop" 
+                                                            to="/product" 
                                                             className={({isActive}) => 
                                                                 isActive ? 'gnb_link active' : 'gnb_link'}>SHOP</NavLink></li>
                                     <li className="gnb_item"><NavLink 
@@ -90,11 +87,11 @@ const Header = () => {
                                 </form>
                             </div>
                             {/* 장바구니 버튼 */}
-                            <a className="btn_cart">
+                            <Link to="/cart" className="btn_cart">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
                                     <path fill="#222" fillRule="evenodd" d="M16.192 5.2h3.267a1 1 0 0 1 .998.938l.916 14.837a.4.4 0 0 1-.399.425H3.025a.4.4 0 0 1-.4-.425l.917-14.837A1 1 0 0 1 4.54 5.2h3.267a4.251 4.251 0 0 1 8.385 0ZM7.75 6.7H5.01l-.815 13.2h15.61l-.816-13.2h-2.74v2.7h-1.5V6.7h-5.5v2.7h-1.5V6.7Zm1.59-1.5h5.32a2.751 2.751 0 0 0-5.32 0Z" clipRule="evenodd"></path>
                                 </svg>
-                            </a>
+                            </Link>
                             {/* 카테고리 버튼 */}
                             <a className="btn_category">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
@@ -105,15 +102,6 @@ const Header = () => {
                     </div>
                 </div>
             </header>
-            
-            {/* 라우트 매핑 */}
-            <Routes>
-                <Route path="/" element={<Home/>}/>
-                <Route path="/login" />
-                <Route path="/shop" />
-                <Route path="/comate"/>
-                <Route path="/cart" />
-            </Routes>
         </div>
     );
 }
