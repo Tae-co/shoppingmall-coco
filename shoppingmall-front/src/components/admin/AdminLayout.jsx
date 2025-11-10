@@ -2,6 +2,8 @@ import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from '../../styles/admincommon';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminWrapper = styled.div`
   display: flex;
@@ -99,6 +101,7 @@ function AdminLayout() {
         </Content>
         
       </PageWrapper>
+      <ToastContainer autoClose={3000} />
     </AdminWrapper>
   );
 }

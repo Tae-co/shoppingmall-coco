@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchAdminProducts, deleteAdminProduct } from '../../api/mockApi';
 import Pagination from '../../components/admin/Pagination';
+import Spinner from '../../components/admin/Spinner';
+import { toast } from 'react-toastify';
 
 import {
   Input, Select,
@@ -61,7 +63,7 @@ const StatusTag = styled.span`
   border-radius: 12px;
   color: white;
   font-size: 12px;
-  background: ${props => (props.status === '판매중' ? 'green' : 'red')};
+  background: ${props => (props.$status === '판매중' ? 'green' : 'red')};
 `;
 
 const EditLink = styled(Link)`
@@ -133,7 +135,7 @@ function AdminProductList() {
 
       } catch (error) {
         console.error("상품 목록 로드 실패:", error);
-        alert("상품 목록을 불러오는 데 실패했습니다.");
+        toast.error("상품 목록을 불러오는 데 실패했습니다.");
       }
       setIsLoading(false);
     };
@@ -146,9 +148,11 @@ function AdminProductList() {
   };
 
   const handleDelete = async (product) => {
-    if (window.confirm(`...`)) {
+    const confirmMessage = `상품을 삭제하시겠습니까?\n\n상품명: ${product.prdName}\n\n이 작업은 취소할 수 없습니다.`;
+    if (window.confirm(confirmMessage)) {
       try {
         await deleteAdminProduct(product.prdNo);
+        toast.success(`'${product.prdName}' 상품이 삭제되었습니다.`);
         console.log(`[관리자] ${product.prdName} 삭제 실행`);
 
         const data = await fetchAdminProducts({
@@ -168,7 +172,7 @@ function AdminProductList() {
         }
       } catch (error) {
         console.error("상품 삭제 실패:", error);
-        alert("상품 삭제 중 오류가 발생했습니다.");
+        toast.error("상품 삭제 중 오류가 발생했습니다.");
       }
     }
   };
@@ -181,7 +185,7 @@ function AdminProductList() {
   };
 
   if (isLoading) {
-    return <h2>관리자 페이지 로딩 중...</h2>;
+    return <Spinner />;
   }
 
   return (
@@ -212,7 +216,7 @@ function AdminProductList() {
           <ContentTitle>상품 목록</ContentTitle>
           <div>
             <Button onClick={() => window.location.reload()} style={{ marginRight: '10px' }}>🔄 새로고침</Button>
-            <ButtonLink to="/admin/product/new" primary>
+            <ButtonLink to="/admin/product/new" $primary>
               + 상품 등록
             </ButtonLink>
           </div>
@@ -277,7 +281,7 @@ function AdminProductList() {
                   <Td>{product.prdPrice.toLocaleString()}원</Td>
                   <Td>{product.stock}개</Td>
                   <Td>
-                    <StatusTag status={product.status}>
+                    <StatusTag $status={product.status}>
                       {product.status}
                     </StatusTag>
                   </Td>

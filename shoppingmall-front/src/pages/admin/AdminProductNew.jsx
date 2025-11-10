@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { createAdminProduct } from '../../api/mockApi';
+import { toast } from 'react-toastify';
 
 import {
   Title,
@@ -34,11 +35,12 @@ function AdminProductNew() {
   const [formData, setFormData] = useState({
     prdName: '',
     description: '',
-    imageUrl: '',
     categoryNo: '',
     prdPrice: 0,
     stock: 0
   });
+
+  const [imageFile, setImageFile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,18 +50,57 @@ function AdminProductNew() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await createAdminProduct(formData);
 
-      console.log('[관리자] 새 상품 등록 데이터:', formData);
-      alert(`상품이 등록되었습니다: ${formData.prdName}`);
+    const { prdName, prdPrice, stock } = formData;
+
+    if (!prdName || prdName.trim() === "") {
+      toast.warn('상품명을 입력해주세요.');
+      return;
+    }
+
+    const priceNum = Number(prdPrice);
+    const stockNum = Number(stock);
+
+if (priceNum <= 0) {
+      toast.warn('가격은 0보다 커야 합니다.');
+      return;
+    }
+
+    if (stockNum < 0) {
+      toast.warn('재고는 0개 이상이어야 합니다.');
+      return;
+    }
+    
+    if (!imageFile) {
+      toast.warn('상품 이미지를 등록해주세요.');
+      return;
+    }
+
+    const newProductData = new FormData();
+    newProductData.append('prdName', prdName);
+    newProductData.append('description', formData.description);
+    newProductData.append('categoryNo', formData.categoryNo);
+    newProductData.append('prdPrice', priceNum);
+    newProductData.append('stock', stockNum);
+    newProductData.append('imageFile', imageFile);
+    
+    try {
+      await createAdminProduct(newProductData); 
+      
+      toast.success(`상품이 등록되었습니다: ${prdName}`);
       navigate(`/admin/products`);
 
     } catch (error) {
       console.error("상품 등록 실패:", error);
-      alert("상품 등록 중 오류가 발생했습니다.");
+      toast.error("상품 등록 중 오류가 발생했습니다.");
     }
   };
 
@@ -99,16 +140,16 @@ function AdminProductNew() {
           />
         </FormGroup>
 
-        {/* 이미지 URL */}
+        {/* 이미지 파일 */}
         <FormGroup>
-          <Label htmlFor="imageUrl">이미지 URL</Label>
+          <Label htmlFor="imageFile">이미지 파일 *</Label>
           <Input
-            type="text"
-            id="imageUrl"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            placeholder="https://example.com/image.jpg"
+            type="file"
+            id="imageFile"
+            name="imageFile"
+            onChange={handleFileChange}
+            accept="image/png, image/jpeg, image/gif"
+            required
           />
         </FormGroup>
 
@@ -164,7 +205,7 @@ function AdminProductNew() {
             취소
           </Button>
           {/* '등록' 버튼 (primary prop 전달) */}
-          <Button type="submit" primary>
+          <Button type="submit" $primary>
             등록
           </Button>
         </ButtonContainer>

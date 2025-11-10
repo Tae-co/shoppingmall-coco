@@ -146,17 +146,17 @@ function AdminHome() {
         <DashCard>
           <DashCardTitle>오늘 매출</DashCardTitle>
           <DashCardValue>₩19.5M</DashCardValue>
-          <DashCardTrend up>▲ +12.5%</DashCardTrend>
+          <DashCardTrend $up>▲ +12.5%</DashCardTrend>
         </DashCard>
         <DashCard>
           <DashCardTitle>총 주문</DashCardTitle>
           <DashCardValue>389</DashCardValue>
-          <DashCardTrend up>▲ +8.2%</DashCardTrend>
+          <DashCardTrend $up>▲ +8.2%</DashCardTrend>
         </DashCard>
         <DashCard>
           <DashCardTitle>신규 고객</DashCardTitle>
           <DashCardValue>52</DashCardValue>
-          <DashCardTrend up>▲ +15.3%</DashCardTrend>
+          <DashCardTrend $up>▲ +15.3%</DashCardTrend>
         </DashCard>
         <DashCard>
           <DashCardTitle>전환율</DashCardTitle>

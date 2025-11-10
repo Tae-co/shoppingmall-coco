@@ -61,8 +61,8 @@ export const Button = styled.button`
   font-weight: 600;
   transition: background 0.2s;
 
-  background: ${props => (props.primary ? props.theme.colors.primary : '#eee')};
-  color: ${props => (props.primary ? props.theme.colors.surface : props.theme.colors.text)};
+  background: ${props => (props.$primary ? props.theme.colors.primary : '#eee')};
+  color: ${props => (props.$primary ? props.theme.colors.surface : props.theme.colors.text)};
 
   &:hover {
     opacity: 0.8;
@@ -79,8 +79,8 @@ export const ButtonLink = styled(Link)`
   text-decoration: none;
   transition: background 0.2s;
 
-  background: ${props => (props.primary ? props.theme.colors.primary : '#eee')};
-  color: ${props => (props.primary ? props.theme.colors.surface : props.theme.colors.text)};
+  background: ${props => (props.$primary ? props.theme.colors.primary : '#eee')};
+  color: ${props => (props.$primary ? props.theme.colors.surface : props.theme.colors.text)};
 
   &:hover {
     opacity: 0.8;
@@ -169,7 +169,7 @@ export const DashCardTrend = styled.p`
   margin-top: ${props => props.theme.spacing.small};
   margin-bottom: 0;
   
-  color: ${props => (props.up ? props.theme.colors.success : props.theme.colors.danger)};
+  color: ${props => (props.$up ? props.theme.colors.success : props.theme.colors.danger)};
 `;
 
 // ------------------------------

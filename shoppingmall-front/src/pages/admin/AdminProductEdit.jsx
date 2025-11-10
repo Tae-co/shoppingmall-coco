@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchAdminProductById, updateAdminProduct } from '../../api/mockApi';
+import Spinner from '../../components/admin/Spinner';
+import { toast } from 'react-toastify';
 import {
   Title,
   FormGroup,
@@ -27,6 +29,14 @@ const categories = [
   { id: 4, name: '선케어' },
 ];
 
+const CurrentImage = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 10px;
+`;
+
 function AdminProductEdit() {
   const navigate = useNavigate();
   const { productId } = useParams();
@@ -38,6 +48,7 @@ function AdminProductEdit() {
     prdPrice: 0,
     stock: 0
   });
+  const [newImageFile, setNewImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -49,7 +60,7 @@ function AdminProductEdit() {
         setFormData(foundProduct);
       } catch (error) {
         console.error(error);
-        alert('존재하지 않는 상품이거나 로드에 실패했습니다.');
+        toast.error('존재하지 않는 상품이거나 로드에 실패했습니다.');
         navigate('/admin/products');
       }
       setIsLoading(false);
@@ -67,19 +78,57 @@ function AdminProductEdit() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setNewImageFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-    
+    e.preventDefault();
+
+    const { prdName, prdPrice, stock } = formData;
+
+    if (!prdName || prdName.trim() === "") {
+      toast.error('상품명을 입력해주세요.');
+      return;
+    }
+
+    const priceNum = Number(prdPrice);
+    const stockNum = Number(stock);
+
+    if (priceNum <= 0) {
+      toast.error('가격은 0보다 커야 합니다.');
+      return;
+    }
+
+    if (stockNum < 0) {
+      toast.error('재고는 0개 이상이어야 합니다.');
+      return;
+    }
+
+    const productData = new FormData();
+    productData.append('prdName', prdName);
+    productData.append('description', formData.description);
+    productData.append('categoryNo', formData.categoryNo);
+    productData.append('prdPrice', priceNum);
+    productData.append('stock', stockNum);
+
+    if (newImageFile) {
+      productData.append('imageFile', newImageFile);
+    } else {
+      productData.append('imageUrl', formData.imageUrl);
+    }
+
     try {
-      await updateAdminProduct(productId, formData); 
-      
-      console.log(`[관리자] ${productId}번 상품 수정 데이터:`, formData);
-      alert(`상품이 수정되었습니다: ${formData.prdName}`);
+      await updateAdminProduct(productId, productData);
+
+      toast.success(`상품이 수정되었습니다: ${prdName}`);
       navigate('/admin/products');
-      
+
     } catch (error) {
       console.error("상품 수정 실패:", error);
-      alert("상품 수정 중 오류가 발생했습니다.");
+      toast.error("상품 수정 중 오류가 발생했습니다.");
     }
   };
 
@@ -90,7 +139,7 @@ function AdminProductEdit() {
   };
 
   if (isLoading) {
-    return <h2>상품 정보 로딩 중...</h2>;
+    return <Spinner />;
   }
 
   return (
@@ -123,16 +172,29 @@ function AdminProductEdit() {
           />
         </FormGroup>
 
-        {/* 이미지 URL */}
+        {/* 이미지 폼 */}
         <FormGroup>
-          <Label htmlFor="imageUrl">이미지 URL</Label>
+          <Label htmlFor="imageFile">상품 이미지</Label>
+          {/* 기존 이미지 미리보기 */}
+          {formData.imageUrl && !newImageFile && (
+            <div>
+              <CurrentImage src={formData.imageUrl} alt="기존 이미지" />
+              <p style={{ fontSize: '12px', color: '#777' }}>
+                (현재 이미지)
+              </p>
+            </div>
+          )}
+
+          {/* 새 이미지 파일 선택 */}
+          <Label htmlFor="imageFile" style={{ fontSize: '12px', fontWeight: 'normal' }}>
+            {formData.imageUrl ? '이미지 교체' : '새 이미지 등록 *'}
+          </Label>
           <Input
-            type="text"
-            id="imageUrl"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            placeholder="https://example.com/image.jpg"
+            type="file"
+            id="imageFile"
+            name="imageFile"
+            onChange={handleFileChange}
+            accept="image/png, image/jpeg, image/gif"
           />
         </FormGroup>
 
@@ -186,7 +248,7 @@ function AdminProductEdit() {
           <Button type="button" onClick={handleCancel}>
             취소
           </Button>
-          <Button type="submit" primary>
+          <Button type="submit" $primary>
             수정 완료
           </Button>
         </ButtonContainer>

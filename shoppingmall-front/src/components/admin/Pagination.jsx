@@ -11,8 +11,8 @@ const Nav = styled.nav`
 
 const PageButton = styled.button`
   border: 1px solid ${props => props.theme.colors.border};
-  background: ${props => (props.active ? props.theme.colors.primary : props.theme.colors.surface)};
-  color: ${props => (props.active ? props.theme.colors.surface : props.theme.colors.text)};
+  background: ${props => (props.$active ? props.theme.colors.primary : props.theme.colors.surface)};
+  color: ${props => (props.$active ? props.theme.colors.surface : props.theme.colors.text)};
   padding: 8px 12px;
   margin: 0 2px;
   cursor: pointer;
@@ -53,7 +53,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         <PageButton
           key={number}
           onClick={() => onPageChange(number)}
-          active={number === currentPage}
+          $active={number === currentPage}
         >
           {number}
         </PageButton>

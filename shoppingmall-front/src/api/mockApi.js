@@ -158,22 +158,51 @@ export const fetchAdminProductById = (productId) => {
 };
 
 // (POST /api/admin/products) - 신규 등록 (AdminProductNew)
-export const createAdminProduct = (formData) => {
-  console.log('[Mock API] 새 상품 등록:', formData);
+export const createAdminProduct = (productData) => {
+  if (productData instanceof FormData) {
+    console.log('[Mock API] 새 상품 등록 (FormData 받음)');
+    
+    console.log('상품명:', productData.get('prdName'));
+    console.log('파일:', productData.get('imageFile'));
+    
+  } else {
+    console.error('[Mock API] 오류: FormData 형식이 아닙니다.');
+  }
+
   return new Promise((resolve) => {
     setTimeout(() => {
-      // (실제로는 DB에 저장 후 반환)
-      resolve({ ...formData, prdNo: 999 }); // 임시 ID
+      resolve({ 
+        prdNo: 999, 
+        prdName: productData.get('prdName'),
+      });
     }, 500);
   });
 };
 
 // (PUT /api/admin/products/:id) - 수정 (AdminProductEdit)
-export const updateAdminProduct = (productId, formData) => {
-  console.log(`[Mock API] ${productId}번 상품 수정:`, formData);
+export const updateAdminProduct = (productId, productData) => {
+  console.log(`[Mock API] ${productId}번 상품 수정:`);
+
+  const newImageFile = productData.get('imageFile');
+  const existingImageUrl = productData.get('imageUrl');
+
+  let finalImageUrl = '';
+
+  if (newImageFile) {
+    console.log('[Mock API] 새 이미지 파일 감지:', newImageFile.name);
+    finalImageUrl = 'https://picsum.photos/id/999/100/100';
+  } else {
+    console.log('[Mock API] 기존 이미지 URL 사용:', existingImageUrl);
+    finalImageUrl = existingImageUrl;
+  }
+
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(formData);
+      resolve({
+        prdNo: productId,
+        prdName: productData.get('prdName'),
+        imageUrl: finalImageUrl,
+      });
     }, 500);
   });
 };
