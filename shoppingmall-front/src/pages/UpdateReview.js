@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
-import axios from "axios";
+//import axios from "axios";
 import UseStarRating from '../features/UseStarRating.js'
 import UseTag from '../features/UseTag.js'
 import usefile from '../features/UseFile.js'
@@ -58,12 +58,22 @@ function UpdateReview() {
     `;
 
     const [text, setText] = useState(""); // 리뷰 텍스트를 위한 state
+    const [date, setDate] = useState(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    });
+
+    const [userNmae, setUserName] = useState("테스트아이디");
 
     const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
-    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked } = UseTag(ptags, ntags);
+    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked, setPtagArr,
+        setNtagArr, } = UseTag(ptags, ntags);
     const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate)
-    const { loadData } = UseData(setText, setRating, ptags, setPtagsClicked, ntags, setNtagsClicked, setPreviewFiles);
+    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate, date, userNmae)
+    const { loadData } = UseData(setText, setRating, ptags, setPtagsClicked, ntags, setNtagsClicked, setPreviewFiles, setPtagArr, setNtagArr);
 
     // 별 1~2개 일 떄 경고 알림
 
