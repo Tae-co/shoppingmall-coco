@@ -10,6 +10,8 @@ public class ProductOptionEntity {
 	
 	@Id
 	@Column(name = "OPTIONNO")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productoptiontable_seq_generator")
+    @SequenceGenerator(name="productoptiontable_seq_generator", sequenceName="PRODUCTOPTIONTABLE_SEQ", allocationSize=1)
 	private Long optionNo;
 	
 	@Column(name = "OPTIONNAME")
