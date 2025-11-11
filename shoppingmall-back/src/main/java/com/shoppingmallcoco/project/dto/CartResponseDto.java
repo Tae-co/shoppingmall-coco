@@ -33,7 +33,6 @@ public class CartResponseDto {
                 .cartQty(cart.getCartQty())
                 .productName(product.getPrdName() + " " + option.getOptionValue())
                 .productPrice(product.getPrdPrice() + (option.getAddPrice() != null ? option.getAddPrice() : 0))
-                .productImage(product.getPrdImage())
                 .build();
     }
 }

@@ -26,6 +26,6 @@ public class Product {
     @Column(name = "prdPrice", nullable = false)
     private Integer prdPrice;
 
-    @Column(name = "prdImage")
-    private String prdImage;
+    //@Column(name = "prdImage")
+    //private String prdImage;
 }

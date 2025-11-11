@@ -8,18 +8,18 @@ import lombok.*;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "CartTable")
+@Table(name = "Cart")
 public class Cart {
 
     @Id
     @SequenceGenerator(
-            name = "seq_cartTable_cartNo",
-            sequenceName = "seq_cartTable_cartNo",
+            name = "cart_seq_gen",
+            sequenceName = "Cart_SEQ",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "seq_cartTable_cartNo"
+            generator = "cart_seq_gen"
     )
     @Column(name = "cartNo")
     private Long cartNo;
@@ -47,6 +47,7 @@ public class Cart {
     public void addQuantity(int qty) {
         this.cartQty += qty;
     }
+
     // cart 생성
     public static Cart create(Member member, ProductOption option, int qty) {
         Cart cart = new Cart();
