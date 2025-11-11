@@ -18,7 +18,7 @@ import com.shoppingmallcoco.project.dto.MemberSignupDto;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert // DB 컬럼의 기본값 적용 가능하도록 필드값이 null인 경우 insert에서 제외
-@Table(name = "memberTable")
+@Table(name = "member")
 public class Member {
 
     @Id

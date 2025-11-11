@@ -11,7 +11,7 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
-@Table(name = "ProductTable")
+@Table(name = "Product")
 public class Product {
 
     @Id
