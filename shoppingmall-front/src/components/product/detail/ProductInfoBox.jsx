@@ -64,6 +64,34 @@ const ButtonGroup = styled.div`
   margin-top: 10px;
 `;
 
+const TagContainer = styled.div`
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+`;
+
+const Tag = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  background: #f0f0f0;
+  color: #555;
+  padding: 4px 8px;
+  border-radius: 4px;
+`;
+
+const skinTypeMap = { dry: '건성', oily: '지성', combination: '복합성', sensitive: '민감성' };
+const skinConcernMap = {
+  hydration: '수분', moisture: '보습', brightening: '미백', tone: '피부톤',
+  soothing: '진정', sensitive: '민감', uv: '자외선차단', wrinkle: '주름',
+  elasticity: '탄력', pores: '모공'
+};
+const personalColorMap = {
+  cool: '쿨톤',
+  warm: '웜톤',
+  neutral: '뉴트럴톤'
+};
+
 const ProductInfoBox = ({
   product,
   selectedOption,
@@ -77,40 +105,51 @@ const ProductInfoBox = ({
     <InfoBox>
       <ProductName>{product.prdName}</ProductName>
       <ProductRating>⭐ {product.averageRating} ({product.reviewCount})</ProductRating>
+      <TagContainer>
+        {product.skinTypes?.map(type => (
+          <Tag key={type}># {skinTypeMap[type] || type}</Tag>
+        ))}
+        {product.skinConcerns?.map(concern => (
+          <Tag key={concern}># {skinConcernMap[concern] || concern}</Tag>
+        ))}
+        {product.personalColors?.map(color => (
+          <Tag key={color}># {personalColorMap[color] || color}</Tag>
+        ))}
+      </TagContainer>
       <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
-      
+
       {/* --- 옵션 선택 --- */}
       {product.options && product.options.length > 0 && (
         <div>
-        <VisuallyHiddenLabel htmlFor="product-option">상품 옵션 선택</VisuallyHiddenLabel>
-        <SelectBox 
-          id="product-option"
-          value={selectedOption} 
-          onChange={(e) => setSelectedOption(e.target.value)}>
-          <option value="">옵션을 선택하세요</option>
-          {product.options.map((opt) => (
-            <option key={opt.optionNo} value={opt.optionNo}>
-              {opt.optionValue} 
-              {opt.addPrice > 0 ? ` (+${opt.addPrice.toLocaleString()}원)` : ''} 
-              (재고: {opt.stock})
-            </option>
-          ))}
-        </SelectBox>
-      </div>
+          <VisuallyHiddenLabel htmlFor="product-option">상품 옵션 선택</VisuallyHiddenLabel>
+          <SelectBox
+            id="product-option"
+            value={selectedOption}
+            onChange={(e) => setSelectedOption(e.target.value)}>
+            <option value="">옵션을 선택하세요</option>
+            {product.options.map((opt) => (
+              <option key={opt.optionNo} value={opt.optionNo}>
+                {opt.optionValue}
+                {opt.addPrice > 0 ? ` (+${opt.addPrice.toLocaleString()}원)` : ''}
+                (재고: {opt.stock})
+              </option>
+            ))}
+          </SelectBox>
+        </div>
       )}
 
       {/* --- 수량 --- */}
-      <div> 
+      <div>
         <VisuallyHiddenLabel htmlFor="product-quantity">상품 수량</VisuallyHiddenLabel>
-        <QuantityInput 
+        <QuantityInput
           id="product-quantity"
-          type="number" 
-          value={quantity} 
+          type="number"
+          value={quantity}
           onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
           min="1"
         />
       </div>
-    
+
       <ButtonGroup>
         <ProductButton onClick={handleAddToCart}>
           장바구니
