@@ -36,6 +36,12 @@ public class ProductEntity {
 	@Column(name = "SKINTYPE")
     private String skinType;
 	
+    @Column(name = "SKINCONCERN")
+    private String skinConcern;
+    
+    @Column(name = "PERSONALCOLOR")
+    private String personalColor;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CATEGORY_NO", nullable = false)
 	private CategoryEntity category;

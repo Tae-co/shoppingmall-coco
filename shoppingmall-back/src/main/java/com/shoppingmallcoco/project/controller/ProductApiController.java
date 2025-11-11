@@ -10,6 +10,7 @@ import com.shoppingmallcoco.project.dto.product.ProductDetailResponseDTO;
 import com.shoppingmallcoco.project.dto.product.ProductListResponseDTO;
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
 import com.shoppingmallcoco.project.service.ProductService;
+import com.shoppingmallcoco.project.service.ProductService;
 
 @RestController
 @CrossOrigin("*")
@@ -29,15 +30,16 @@ public class ProductApiController {
 			@RequestParam(value = "q",required = false) String q,
 			@RequestParam(value = "skinType", required = false) List<String> skinType,
 			@RequestParam(value = "skinConcern", required = false) List<String> skinConcern,
+			@RequestParam(value = "personalColor", required = false) List<String> personalColor,
 			@RequestParam(value = "sort", required = false, defaultValue = "popularity") String sort,
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "size", required = false, defaultValue = "6") int size
 			) {
 				// Service 호출
-				Page<ProductEntity> productPage = prdService.getProductList(q, skinType, skinConcern, sort, page, size);
+				Page<ProductEntity> productPage = prdService.getProductList(q, skinType, skinConcern, personalColor, sort, page, size);
 				
 				// page -> DTO 변환
-				return new ProductListResponseDTO(productPage);
+				return new ProductListResponseDTO(productPage, prdService);
 						
 	}
 	
@@ -54,8 +56,11 @@ public class ProductApiController {
 		if (productEntity == null) {
             return null; 
         }
+		
+		int reviewCount = prdService.getReviewCount(productEntity);
+		double averageRating = prdService.getAverageRating(productEntity);
         
-        ProductDetailResponseDTO responseDTO = new ProductDetailResponseDTO(productEntity);
+        ProductDetailResponseDTO responseDTO = new ProductDetailResponseDTO(productEntity, reviewCount, averageRating);
 		
 		// JSON으로 반환된 DTO를 React에 반환
 		return responseDTO;

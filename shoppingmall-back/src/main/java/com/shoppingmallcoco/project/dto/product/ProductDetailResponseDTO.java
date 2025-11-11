@@ -8,6 +8,8 @@ import com.shoppingmallcoco.project.entity.product.ProductEntity;
 import com.shoppingmallcoco.project.entity.product.ProductImageEntity;
 
 import lombok.Data;
+
+import java.util.Arrays;
 import java.util.Collections;
 
 @Data
@@ -22,11 +24,16 @@ public class ProductDetailResponseDTO {
     private double averageRating; 
     private int reviewCount;
     
-    // 옵션 목록 (ProductOption -> DTO 변환 로직 필요)
+    // 옵션 목록
     private List<ProductOptionDTO> options;
     
+    // 태그
+    private List<String> skinTypes;
+    private List<String> skinConcerns;
+    private List<String> personalColors;
+    
     // 생성자: Entity -> DTO 변환
-    public ProductDetailResponseDTO(ProductEntity product) {
+    public ProductDetailResponseDTO(ProductEntity product, int reviewCount, double averageRating) {
     	this.prdNo = product.getPrdNo();
         this.prdName = product.getPrdName();
         this.prdPrice = product.getPrdPrice();
@@ -42,10 +49,9 @@ public class ProductDetailResponseDTO {
             this.imageUrls = Collections.emptyList();
         }
         
-        // (임시) 리뷰 통계
-        double randomRating = (Math.random() * 2.0 + 3.0);
-        this.averageRating = Math.round(randomRating * 100.0) / 100.0; 
-        this.reviewCount = (int) (Math.random() * 1000 + 1);
+        // 리뷰 통계
+        this.averageRating = averageRating; 
+        this.reviewCount = reviewCount;
         
         // 상품 옵션 변환 로직
         if (product.getOptions() != null) {
@@ -54,6 +60,24 @@ public class ProductDetailResponseDTO {
                                     .collect(Collectors.toList());
         } else {
             this.options = Collections.emptyList();
+        }
+        
+        if (product.getSkinType() != null && !product.getSkinType().isEmpty()) {
+            this.skinTypes = Arrays.asList(product.getSkinType().split("\\s*,\\s*"));
+        } else {
+            this.skinTypes = Collections.emptyList();
+        }
+        
+        if (product.getSkinConcern() != null && !product.getSkinConcern().isEmpty()) {
+            this.skinConcerns = Arrays.asList(product.getSkinConcern().split("\\s*,\\s*"));
+        } else {
+            this.skinConcerns = Collections.emptyList();
+        }
+        
+        if (product.getPersonalColor() != null && !product.getPersonalColor().isEmpty()) {
+            this.personalColors = Arrays.asList(product.getPersonalColor().split("\\s*,\\s*"));
+        } else {
+            this.personalColors = Collections.emptyList();
         }
     }
 }
