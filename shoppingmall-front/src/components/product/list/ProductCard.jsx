@@ -91,6 +91,19 @@ const ProductPrice = styled.p`
   padding-top: 10px; /* 리뷰와의 간격 */
 `;
 
+const skinConcernMap = {
+  hydration: '수분',
+  moisture: '보습',
+  brightening: '미백',
+  tone: '피부톤',
+  soothing: '진정',
+  sensitive: '민감',
+  uv: '자외선차단',
+  wrinkle: '주름',
+  elasticity: '탄력',
+  pores: '모공'
+};
+
 const skinTypeMap = {
   dry: '건성',
   oily: '지성',
@@ -108,8 +121,13 @@ const ProductCard = ({ product, onAddToCart }) => {
           ⭐ {product.averageRating} ({product.reviewCount})
         </ProductRating>
         <TagContainer>
+          {/* SkinType 태그 */}
           {product.skinTypes?.map(type => (
             <Tag key={type}># {skinTypeMap[type] || type}</Tag>
+          ))}
+          {/* SkinConcern 태그 */}
+          {product.skinConcerns?.map(concern => (
+            <Tag key={concern}># {skinConcernMap[concern] || concern}</Tag>
           ))}
         </TagContainer>
         <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
