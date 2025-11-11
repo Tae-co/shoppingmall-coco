@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @RequestMapping("/coco/members/cart")
 public class CartController {
-
     private final CartService cartService;
 
     // 장바구니 추가
