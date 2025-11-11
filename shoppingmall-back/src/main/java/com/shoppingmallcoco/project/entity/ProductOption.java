@@ -20,7 +20,7 @@ public class ProductOption {
     @Column(name = "optionNo")
     private Long optionNo;
 
-    // ✅ 상품 FK 연결 (CartResponseDto에서 product 사용하려면 반드시 필요)
+    // 상품 FK 연결
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prdNo", nullable = false)
     private Product product;

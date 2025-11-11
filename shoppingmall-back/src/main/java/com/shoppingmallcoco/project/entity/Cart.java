@@ -26,17 +26,17 @@ public class Cart {
     @Column(name = "cartNo")
     private Long cartNo;
 
-    // 🔹 회원 (FK)
+    // 회원 (FK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memNo", nullable = false)
     private Member member;
 
-    // 🔹 상품 옵션 (FK)
+    // 상품 옵션 (FK)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "optionNo", nullable = false)
     private ProductOption productOption;
 
-    // 🔹 수량
+    // 수량
     @Column(name = "cartQty", nullable = false)
     private Integer cartQty;
 

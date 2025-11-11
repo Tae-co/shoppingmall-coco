@@ -15,4 +15,10 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     // 특정 회원이 특정 옵션 상품을 이미 장바구니에 담았는지 확인
     Optional<Cart> findByMember_MemNoAndProductOption_OptionNo(Long memNo, Long optionNo);
+
+    // 장바구니 항목 삭제
+    void deleteByCartNo(Long cartNo);
+
+    // 회원의 장바구니 전체 비우기
+    void deleteAllByMember_MemNo(Long memNo);
 }

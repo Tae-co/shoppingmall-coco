@@ -23,17 +23,25 @@ public class CartService {
     private final MemberRepository memberRepository;
     private final ProductOptionRepository productOptionRepository;
 
-    //장바구니 추가
+    // 공통 조회 메서드 (중복 제거)
+    private Member getMember(Long memNo) {
+        return memberRepository.findById(memNo)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. memNo=" + memNo));
+    }
+
+    private ProductOption getProductOption(Long optionNo) {
+        return productOptionRepository.findById(optionNo)
+                .orElseThrow(() -> new IllegalArgumentException("상품 옵션이 존재하지 않습니다. optionNo=" + optionNo));
+    }
+
+    // 장바구니 추가
     @Transactional
     public CartResponseDto addToCart(CartRequestDto dto) {
-        Member member = memberRepository.findById(dto.getMemNo())
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다. memNo=" + dto.getMemNo()));
+        Member member = getMember(dto.getMemNo());
+        ProductOption option = getProductOption(dto.getOptionNo());
 
-        ProductOption option = productOptionRepository.findById(dto.getOptionNo())
-                .orElseThrow(() -> new IllegalArgumentException("상품 옵션이 존재하지 않습니다. optionNo=" + dto.getOptionNo()));
-
-        // Optional → Cart 처리 수정
-        Cart existing = cartRepository.findByMember_MemNoAndProductOption_OptionNo(dto.getMemNo(), dto.getOptionNo())
+        Cart existing = cartRepository
+                .findByMember_MemNoAndProductOption_OptionNo(dto.getMemNo(), dto.getOptionNo())
                 .orElse(null);
 
         if (existing != null) {
@@ -41,17 +49,11 @@ public class CartService {
             return CartResponseDto.fromEntity(cartRepository.save(existing));
         }
 
-        // Cart.create() → 직접 빌더 사용
-        Cart cart = Cart.builder()
-                .member(member)
-                .productOption(option)
-                .cartQty(dto.getCartQty())
-                .build();
-
+        Cart cart = Cart.create(member, option, dto.getCartQty());
         return CartResponseDto.fromEntity(cartRepository.save(cart));
     }
 
-    //장바구니 목록 조회
+    // 장바구니 목록 조회
     public List<CartResponseDto> getCartItems(Long memNo) {
         return cartRepository.findByMember_MemNo(memNo).stream()
                 .map(CartResponseDto::fromEntity)
@@ -67,9 +69,18 @@ public class CartService {
         return CartResponseDto.fromEntity(cartRepository.save(cart));
     }
 
-    //장바구니 삭제
+    // 장바구니 삭제
     @Transactional
     public void deleteCart(Long cartNo) {
         cartRepository.deleteById(cartNo);
+    }
+    // 장바구니 전체 비우기
+    @Transactional
+    public void clearCart(Long memNo) {
+        List<Cart> carts = cartRepository.findByMember_MemNo(memNo);
+        if (carts.isEmpty()) {
+            throw new IllegalArgumentException("비울 장바구니가 없습니다. memNo=" + memNo);
+        }
+        cartRepository.deleteAllByMember_MemNo(memNo);
     }
 }

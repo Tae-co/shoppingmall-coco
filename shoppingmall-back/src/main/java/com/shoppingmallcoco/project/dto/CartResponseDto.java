@@ -1,11 +1,15 @@
 package com.shoppingmallcoco.project.dto;
 
 import com.shoppingmallcoco.project.entity.Cart;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CartResponseDto {
 
     private Long cartNo;
@@ -13,7 +17,7 @@ public class CartResponseDto {
     private Long optionNo;
     private Integer cartQty;
 
-    // 조회용 상품 정보 (옵션/상품 조인 시만 사용)
+    // 조회용 상품 정보
     private String productName;
     private Integer productPrice;
     private String productImage;

@@ -38,4 +38,10 @@ public class CartController {
     public void deleteItem(@PathVariable Long cartNo) {
         cartService.deleteCart(cartNo);
     }
+
+    // 장바구니 전체 비우기
+    @DeleteMapping("/items/clear/{memNo}")
+    public void clearCart(@PathVariable Long memNo) {
+        cartService.clearCart(memNo);
+    }
 }
