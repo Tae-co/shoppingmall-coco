@@ -86,6 +86,11 @@ const skinConcernMap = {
   soothing: '진정', sensitive: '민감', uv: '자외선차단', wrinkle: '주름',
   elasticity: '탄력', pores: '모공'
 };
+const personalColorMap = {
+  cool: '쿨톤',
+  warm: '웜톤',
+  neutral: '뉴트럴톤'
+};
 
 const ProductInfoBox = ({
   product,
@@ -106,6 +111,9 @@ const ProductInfoBox = ({
         ))}
         {product.skinConcerns?.map(concern => (
           <Tag key={concern}># {skinConcernMap[concern] || concern}</Tag>
+        ))}
+        {product.personalColors?.map(color => (
+          <Tag key={color}># {personalColorMap[color] || color}</Tag>
         ))}
       </TagContainer>
       <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>

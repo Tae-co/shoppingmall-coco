@@ -111,6 +111,12 @@ const skinTypeMap = {
   sensitive: '민감성'
 };
 
+const personalColorMap = {
+  cool: '쿨톤',
+  warm: '웜톤',
+  neutral: '뉴트럴톤'
+};
+
 const ProductCard = ({ product, onAddToCart }) => {
   return (
     <CardLink key={product.prdNo} to={`/products/${product.prdNo}`}>
@@ -128,6 +134,10 @@ const ProductCard = ({ product, onAddToCart }) => {
           {/* SkinConcern 태그 */}
           {product.skinConcerns?.map(concern => (
             <Tag key={concern}># {skinConcernMap[concern] || concern}</Tag>
+          ))}
+          {/* personalColor 태그 */}
+          {product.personalColors?.map(color => (
+            <Tag key={color}># {personalColorMap[color] || color}</Tag>
           ))}
         </TagContainer>
         <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
