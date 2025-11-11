@@ -1,14 +1,13 @@
-package com.shoppingmallcoco.project.service;
+package com.shoppingmallcoco.project.service.auth;
 
-import com.shoppingmallcoco.project.dto.MemberLoginDto;
-import com.shoppingmallcoco.project.dto.MemberResponseDto;
-import com.shoppingmallcoco.project.dto.MemberSignupDto;
-import com.shoppingmallcoco.project.dto.MemberUpdateDto;
-import com.shoppingmallcoco.project.dto.FindIdDto;
-import com.shoppingmallcoco.project.dto.ResetPasswordDto;
-import com.shoppingmallcoco.project.entity.Member;
-import com.shoppingmallcoco.project.repository.MemberRepository;
-import com.shoppingmallcoco.project.service.EmailVerificationService;
+import com.shoppingmallcoco.project.dto.auth.MemberLoginDto;
+import com.shoppingmallcoco.project.dto.auth.MemberResponseDto;
+import com.shoppingmallcoco.project.dto.auth.MemberSignupDto;
+import com.shoppingmallcoco.project.dto.auth.MemberUpdateDto;
+import com.shoppingmallcoco.project.dto.auth.FindIdDto;
+import com.shoppingmallcoco.project.dto.auth.ResetPasswordDto;
+import com.shoppingmallcoco.project.entity.auth.Member;
+import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

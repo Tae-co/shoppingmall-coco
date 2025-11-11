@@ -1,8 +1,8 @@
 package com.shoppingmallcoco.project.controller;
 
-import com.shoppingmallcoco.project.dto.*;
-import com.shoppingmallcoco.project.service.EmailVerificationService;
-import com.shoppingmallcoco.project.service.MemberService;
+import com.shoppingmallcoco.project.dto.auth.*;
+import com.shoppingmallcoco.project.service.auth.EmailVerificationService;
+import com.shoppingmallcoco.project.service.auth.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

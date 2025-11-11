@@ -1,6 +1,6 @@
-package com.shoppingmallcoco.project.repository;
+package com.shoppingmallcoco.project.repository.auth;
 
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
