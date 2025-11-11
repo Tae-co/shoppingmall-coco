@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.repository;
+package com.shoppingmallcoco.project.repository.product;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

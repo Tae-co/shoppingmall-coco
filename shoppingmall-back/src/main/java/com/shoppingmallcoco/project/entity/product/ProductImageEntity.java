@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "PRODUCTIMAGETABLE")
+@Table(name = "PRODUCTIMAGE")
 public class ProductImageEntity {
 	
 	@Id

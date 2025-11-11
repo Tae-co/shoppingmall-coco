@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "PRODUCTTABLE")
+@Table(name = "PRODUCT")
 public class ProductEntity {
 	
 	@Id

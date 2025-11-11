@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "CATEGORYTABLE")
+@Table(name = "CATEGORY")
 public class CategoryEntity {
 	
 	@Id
