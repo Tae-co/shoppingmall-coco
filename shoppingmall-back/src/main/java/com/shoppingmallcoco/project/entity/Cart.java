@@ -2,14 +2,12 @@ package com.shoppingmallcoco.project.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 @Table(name = "CartTable")
 public class Cart {
 
@@ -51,10 +49,10 @@ public class Cart {
     }
     // cart 생성
     public static Cart create(Member member, ProductOption option, int qty) {
-        return Cart.builder()
-                .member(member)
-                .productOption(option)
-                .cartQty(qty)
-                .build();
+        Cart cart = new Cart();
+        cart.member = member;
+        cart.productOption = option;
+        cart.cartQty = qty;
+        return cart;
     }
 }

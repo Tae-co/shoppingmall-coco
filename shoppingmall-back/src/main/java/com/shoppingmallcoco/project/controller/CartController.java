@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class CartController {
     private final CartService cartService;
 
     // 장바구니 추가
-    @PostMapping("/cartform")
+    @PostMapping("/items")
     public CartResponseDto addCart(@RequestBody CartRequestDto dto) {
         return cartService.addToCart(dto);
     }
@@ -28,8 +29,9 @@ public class CartController {
     }
 
     // 수량 변경
-    @PatchMapping("/items/{cartNo}/{qty}")
-    public CartResponseDto updateQty(@PathVariable Long cartNo, @PathVariable Integer qty) {
+    @PatchMapping("/items/{cartNo}")
+    public CartResponseDto updateQty(@PathVariable Long cartNo, @RequestBody Map<String, Integer> body) {
+        Integer qty = body.get("qty");
         return cartService.updateCartQty(cartNo, qty);
     }
 

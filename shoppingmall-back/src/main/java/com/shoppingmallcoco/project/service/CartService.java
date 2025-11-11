@@ -72,15 +72,11 @@ public class CartService {
     // 장바구니 삭제
     @Transactional
     public void deleteCart(Long cartNo) {
-        cartRepository.deleteById(cartNo);
+        cartRepository.deleteByCartNo(cartNo);
     }
     // 장바구니 전체 비우기
     @Transactional
     public void clearCart(Long memNo) {
-        List<Cart> carts = cartRepository.findByMember_MemNo(memNo);
-        if (carts.isEmpty()) {
-            throw new IllegalArgumentException("비울 장바구니가 없습니다. memNo=" + memNo);
-        }
         cartRepository.deleteAllByMember_MemNo(memNo);
     }
 }
