@@ -1,0 +1,10 @@
+.comate_wrapper {
+    display: flex;
+    max-width: 1280px;
+    margin: 30px auto;
+    gap: 50px;
+}
+.comate_card_wrapper {
+    margin-left: 80px;
+    text-align: center;
+}

@@ -1,17 +1,7 @@
-.comate_card_list {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    padding-top: 20px;
-}
 .comate_card {
-    width: 180px;
-    padding: 25px 15px;
     border: 1px solid #eee;
-    border-radius: 12px;
     text-align: center;
     background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -21,14 +11,11 @@
     align-items: center;
 }
 .profile_img {
-    width: 72px;
-    height: 72px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
 }
 .nickname {
-    font-size: 16px;
     font-weight: 600;
     margin-bottom: 8px;
 }
@@ -57,27 +44,86 @@
 }
 .stat_value {
     font-weight: 600;
-    font-size: 14px;
 }
 .stat_label {
     font-size: 12px;
     color: #888;
 }
 .follow_btn {
-    background-color: #ff6b81;
-    color: #fff;
     border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
 }
-.follow_btn:hover {
+
+.comate_card.mini {
+    width: 180px;
+    padding: 25px 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.profile_img.mini {
+    width: 72px;
+    height: 72px;
+}
+.nickname.mini {
+    font-size: 16px;
+}
+.stats_section.mini {
+    gap: 24px;
+}
+.stat_value.mini {
+    font-size: 14px;
+}
+.follow_btn.mini {
+    background-color: #ff6b81;
+    border-radius: 20px;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500px;
+}
+.follow_btn.mini:hover {
     background-color: #ff5570;
 }
-.follow_btn.active {
+.follow_btn.mini.active {
     background-color: #FFFFFF;
     color: #BFBFBF;
     border: 1px solid #BFBFBF;
+}
+
+.comate_card.full {
+    width: 250px;
+    padding: 25px 20px;
+    border-radius: 8px;
+}
+.profile_img.full {
+    width: 100px;
+    height: 100px;
+}
+.nickname.full {
+    font-size: 18px;
+}
+.stats_section.full {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    gap: 30px;
+    
+}
+.stat_value.full {
+    font-size: 16px;
+}
+.follow_btn.full {
+    width: 100%;
+    background-color: #000000;
+    border-radius: 5px;
+    color: #fff;
+    padding: 13px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+}
+.follow_btn.full.active {
+    background-color: #FFF;
+    color: #000;
+    border: 1px solid #000;
 }
