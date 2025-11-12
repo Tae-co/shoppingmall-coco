@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 
 import '../css/Comate.css';
 
@@ -6,10 +7,18 @@ import ComateFullProfile from './ComateFullProfile';
 import ComateContent from './ComateContent';
 
 const Comate = () => {
-    const [activeTab, setActiveTab] = useState('review');
+    const {tab} = useParams();
+    const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState(tab ||  'review');
     const handleTabChange = (tabName) => {
         setActiveTab(tabName);
+        navigate(`/comate/${tabName}`)
     };
+    
+    useEffect(() => {
+        if (tab && tab !== activeTab) setActiveTab(tab);
+    }, [tab]);
 
     // co-mate 데이터 (임시)
     const profile = {nickname: "뷰티소연", skinTypes: ["건성", "민감성"], likes: 152, followers: 1280, following: 340, isFollowing: false,
