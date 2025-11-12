@@ -2,21 +2,22 @@
     display: flex;
     max-width: 1280px;
     margin: 30px auto;
-    gap: 50px;
+    gap: 80px;
 }
 .comate_card_wrapper {
-    margin-left: 80px;
+    margin-left: 100px;
     text-align: center;
 }
 
 .comate_content_wrapper {
     width: 100%;
-    margin-right: 80px;
+    margin-right: 100px;
 }
 .content_top {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 25px;
 }
 .content_title_wrapper {
     display: flex;
@@ -27,10 +28,9 @@
     font-size: 25px;
     font-weight: bold;
 }
-
 .content_count {
     color: #777;
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
 }
 .sort_selector {
