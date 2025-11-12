@@ -81,8 +81,7 @@ function App() {
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/order-fail" element={<OrderFailPage />} />
           {/* COMATE 관련 */}
-          <Route path="/comate" element={<Comate />} />
-          <Route path="/comate/:tab" element={<Comate />} />
+          <Route path="/comate/:tab?" element={<Comate />} />
         </Routes>
         {!hideHeaderFooter && <Footer />}
       </div>
