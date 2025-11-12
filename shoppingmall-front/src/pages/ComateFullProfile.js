@@ -9,8 +9,9 @@ const ComateFullProfile = ({nickname, skinTypes, likes, followers, following,
         <div className="comate_card_wrapper" onClick={onClick}>
             <div className="comate_card full">
             <div className="profile_section full">
-                <img src={sampleImg_profile} alt="user_profile" className="profile_img full" />
-                <div className="nickname full">{nickname}</div>
+                <img src={sampleImg_profile} alt="user_profile" className="profile_img full"
+                onClick={(e) => { e.stopPropagation(); onTabClick('review'); }} />
+                <div className="nickname full" onClick={(e) => { e.stopPropagation(); onTabClick('review'); }}>{nickname}</div>
                 <div className="skin_types full">
                     {skinTypes?.map((type, index) => (
                         <span key={index}>{type}</span>

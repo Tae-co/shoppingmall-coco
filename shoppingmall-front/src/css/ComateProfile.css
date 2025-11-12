@@ -1,5 +1,5 @@
 .comate_card {
-    border: 1px solid #eee;
+    border: 1px solid #ddd;
     text-align: center;
     background-color: #fff;
     cursor: pointer;
@@ -103,7 +103,7 @@
     font-size: 18px;
 }
 .stats_section.full {
-    margin-top: 30px;
+    margin-top: 60px;
     padding-top: 20px;
     border-top: 1px solid #eee;
     gap: 30px;

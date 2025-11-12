@@ -45,8 +45,8 @@ const Comate = () => {
             <ComateContent 
                 activeTab={activeTab}
                 reviewList={reviewList}
-                likesList={likeList}
-                followersList={followerList}
+                likeList={likeList}
+                followerList={followerList}
                 followingList={followingList}
             />
         </div>
