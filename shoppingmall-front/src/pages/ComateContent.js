@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
-import ReviewCard from './ReviewCard';
-import UserCard from './UserCard';
+import ComateReviewCard from './ComateReviewCard';
+import ComateUserCard from './ComateUserCard';
 
 const ComateContent = ({ 
     activeTab,
@@ -23,19 +23,19 @@ const ComateContent = ({
     switch(activeTab) {
         case 'review':
             title = "누적 리뷰";
-            content = reviewList.map(item => <ReviewCard key={item.id} {...item} />);
+            content = reviewList.map(item => <ComateReviewCard key={item.id} {...item} />);
             break;
         case 'like':
             title = "좋아요";
-            content = likeList.map(item => <ReviewCard key={item.id} {...item} />);
+            content = likeList.map(item => <ComateReviewCard key={item.id} {...item} />);
             break;
         case 'follower':
             title = "팔로워";
-            content = followerList.map(item => <UserCard key={item.id} {...item} />);
+            content = followerList.map(item => <ComateUserCard key={item.id} {...item} />);
             break;
         case 'following':
             title = "팔로잉";
-            content = followingList.map(item => <UserCard key={item.id} {...item} />);
+            content = followingList.map(item => <ComateUserCard key={item.id} {...item} />);
             break;
         default:
             content = <div>데이터 없음</div>;

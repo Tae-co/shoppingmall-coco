@@ -1,9 +1,9 @@
 import React from 'react';
 
-import '../css/UserCard.css';
+import '../css/ComateUserCard.css';
 import sampleImg_profile from '../images/sampleImg_profile.png'; // 임시 프로필 이미지
 
-const UserCard = ({ nickname, skinTypes, isFollowing, onFollowClick }) => {
+const ComateUserCard = ({ nickname, skinTypes, isFollowing, onFollowClick }) => {
 
     return (
         <div className="uc_wrapper">
@@ -27,4 +27,4 @@ const UserCard = ({ nickname, skinTypes, isFollowing, onFollowClick }) => {
     );   
 }
 
-export default UserCard;
+export default ComateUserCard;
