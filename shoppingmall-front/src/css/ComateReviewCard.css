@@ -1,5 +1,5 @@
 .comate_review_wrapper {
-    padding: 20px;
+    padding: 30px 35px;
     border-bottom: 1px solid #bbb;
 }
 .comate_review_wrapper:last-child {
@@ -63,7 +63,6 @@
 .review_like_wrapper {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
     font-size: 14px;
     font-weight: 500;
     color: #999;
