@@ -1,19 +1,22 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import '../css/Comate.css';
 
 import ComateFullProfile from './ComateFullProfile';
 import ComateContent from './ComateContent';
 
-const Comate = () => {
-    const {tab} = useParams();
+const Comate = ({ userType }) => {
+    const { tab, userId } = useParams();
     const navigate = useNavigate();
-
     const [activeTab, setActiveTab] = useState(tab ||  'review');
+
     const handleTabChange = (tabName) => {
         setActiveTab(tabName);
-        navigate(`/comate/${tabName}`)
+        if (userType === 'me')
+            navigate(`/comate/me/${tabName}`);
+        else
+            navigate(`/comate/user/${userId}/${tabName}`);
     };
     
     useEffect(() => {
@@ -116,7 +119,8 @@ const Comate = () => {
         }
     ];
 
-    const profile = {
+    const profile = userType === 'me' 
+    ? {
         nickname: "뷰티소연", skinTypes: ["건성", "민감성"], 
         likes: likeList.length,
         followers: followerList.length, 
@@ -124,7 +128,19 @@ const Comate = () => {
         isFollowing: false,
         onFollowClick: () => console.log("팔로우 클릭"),
         onClick: () => console.log("프로필 클릭"),
-        onTabClick: handleTabChange
+        onTabClick: handleTabChange,
+        userType
+    } 
+    : {
+        nickname: "홍길동", skinTypes: ["지성", "홍조", "가을웜"], 
+        likes: likeList.length,
+        followers: followerList.length, 
+        following: followingList.length, 
+        isFollowing: false,
+        onFollowClick: () => console.log("팔로우 클릭"),
+        onClick: () => console.log("프로필 클릭"),
+        onTabClick: handleTabChange,
+        userType
     };
 
     return (
