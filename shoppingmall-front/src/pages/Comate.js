@@ -21,32 +21,103 @@ const Comate = () => {
     }, [tab]);
 
     // co-mate 데이터 (임시)
-    const profile = {nickname: "뷰티소연", skinTypes: ["건성", "민감성"], likes: 152, followers: 1280, following: 340, isFollowing: false,
+    const reviewList = [
+        {
+          id: 1,
+          productName: "촉촉 수분크림",
+          productImg: "/images/sample_product1.jpg",
+          createdAt: "2025-11-12",
+          rating: 4.5,
+          content: "이거 바르고 나서 피부 진짜 촉촉해졌어요!",
+          tags: ["수분감좋음", "촉촉", "가벼운질감"],
+        },
+        {
+          id: 2,
+          productName: "진정 토너",
+          productImg: "/images/sample_product2.jpg",
+          createdAt: "2025-11-10",
+          rating: 5.0,
+          content: "민감한 피부에도 자극 없고 진정 효과 최고예요.",
+          tags: ["진정효과", "민감피부용"],
+        },
+        {
+          id: 3,
+          productName: "데일리 선크림",
+          productImg: "/images/sample_product3.jpg",
+          createdAt: "2025-11-08",
+          rating: 3.8,
+          content: "백탁 거의 없어요. 여름에 쓰기 딱 좋아요.",
+          tags: ["가벼움", "백탁없음"],
+        },
+    ]; 
+    const likeList = [
+        {
+          id: 101,
+          productName: "톤업 크림",
+          productImg: "/images/sample_product4.jpg",
+          createdAt: "2025-11-11",
+          rating: 4.2,
+          content: "피부가 자연스럽게 환해져요.",
+          tags: ["톤업효과", "자연스러움"],
+        }
+    ];
+    const followerList = [
+        {
+          id: 1,
+          nickname: "뷰티하늘",
+          skinTypes: ["건성", "민감성"],
+          profileImg: "https://via.placeholder.com/80",
+          isFollowing: false
+        },
+        {
+          id: 2,
+          nickname: "민감러버",
+          skinTypes: ["건성", "민감성"],
+          profileImg: "https://via.placeholder.com/80",
+          isFollowing: false
+        },
+        {
+          id: 3,
+          nickname: "촉촉미소",
+          skinTypes: ["건성", "민감성"],
+          profileImg: "https://via.placeholder.com/80",
+          isFollowing: true
+        }
+    ];
+    const followingList = [
+        {
+            id: 3,
+            nickname: "촉촉미소",
+            skinTypes: ["건성", "민감성"],
+            profileImg: "https://via.placeholder.com/80",
+            isFollowing: true
+        },
+        {
+            id: 4,
+            nickname: "스킨러버",
+            skinTypes: ["건성", "민감성"],
+            profileImg: "https://via.placeholder.com/80",
+            isFollowing: true
+        },
+        {
+            id: 5,
+            nickname: "글로우마스터",
+            skinTypes: ["건성", "민감성"],
+            profileImg: "https://via.placeholder.com/80",
+            isFollowing: true
+        }
+    ];
+
+    const profile = {
+        nickname: "뷰티소연", skinTypes: ["건성", "민감성"], 
+        likes: likeList.length,
+        followers: followerList.length, 
+        following: followingList.length, 
+        isFollowing: false,
         onFollowClick: () => console.log("팔로우 클릭"),
         onClick: () => console.log("프로필 클릭"),
         onTabClick: handleTabChange
     };
-
-    const reviewList = [
-        "리뷰 1: 이 제품 진짜 좋아요!",
-        "리뷰 2: 촉촉하고 산뜻합니다.",
-        "리뷰 3: 재구매 의사 있음!"
-    ];
-    const likeList = [
-        "좋아요 게시물 1",
-        "좋아요 게시물 2",
-        "좋아요 게시물 3"
-    ];
-    const followerList = [
-        "팔로워 유저A",
-        "팔로워 유저B",
-        "팔로워 유저C"
-    ];
-    const followingList = [
-        "팔로잉 유저X",
-        "팔로잉 유저Y",
-        "팔로잉 유저Z"
-    ];
 
     return (
         <div className="comate_wrapper">
