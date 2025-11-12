@@ -25,40 +25,48 @@ const Comate = () => {
         {
           id: 1,
           productName: "촉촉 수분크림",
+          productOption: "옵션: [기획특가] 300ml",
           productImg: "/images/sample_product1.jpg",
           createdAt: "2025-11-12",
           rating: 4.5,
           content: "이거 바르고 나서 피부 진짜 촉촉해졌어요!",
           tags: ["수분감좋음", "촉촉", "가벼운질감"],
+          likeCount: 3
         },
         {
           id: 2,
           productName: "진정 토너",
+          productOption: "옵션: 150ml+150ml 리필 증정 기획",
           productImg: "/images/sample_product2.jpg",
           createdAt: "2025-11-10",
           rating: 5.0,
           content: "민감한 피부에도 자극 없고 진정 효과 최고예요.",
           tags: ["진정효과", "민감피부용"],
+          likeCount: 0
         },
         {
           id: 3,
           productName: "데일리 선크림",
+          productOption: "",
           productImg: "/images/sample_product3.jpg",
           createdAt: "2025-11-08",
           rating: 3.8,
           content: "백탁 거의 없어요. 여름에 쓰기 딱 좋아요.",
           tags: ["가벼움", "백탁없음"],
+          likeCount: 0
         },
     ]; 
     const likeList = [
         {
           id: 101,
           productName: "톤업 크림",
+          productOption: "옵션: 100ml",
           productImg: "/images/sample_product4.jpg",
           createdAt: "2025-11-11",
           rating: 4.2,
           content: "피부가 자연스럽게 환해져요.",
           tags: ["톤업효과", "자연스러움"],
+          likeCount: 2
         }
     ];
     const followerList = [
