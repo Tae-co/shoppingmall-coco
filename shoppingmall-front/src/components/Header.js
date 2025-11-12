@@ -57,9 +57,9 @@ const Header = () => {
                                                             className={({isActive}) => 
                                                                 isActive ? 'gnb_link active' : 'gnb_link'}>SHOP</NavLink></li>
                                     <li className="gnb_item"><NavLink 
-                                                            to="/comate/review" 
-                                                            className={({isActive}) => 
-                                                                isActive ? 'gnb_link active' : 'gnb_link'}>CO-MATE</NavLink></li>
+                                                            to="/comate/" 
+                                                            className={({isActive}) => {
+                                                                return window.location.pathname.startsWith('/comate') ? 'gnb_link active' : 'gnb_link'}}>CO-MATE</NavLink></li>
                                     <li className="gnb_item"><div className="gnb_link">EVENT</div></li>
                                 </ul>
                             </nav>

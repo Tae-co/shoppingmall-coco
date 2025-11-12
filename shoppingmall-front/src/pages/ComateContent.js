@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {userParams} from 'react-router-dom';
 
 const ComateContent = ({ 
     activeTab,
