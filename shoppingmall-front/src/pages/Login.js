@@ -5,6 +5,7 @@ import GoogleIcon from '../images/google.svg';
 import NaverIcon from '../images/naver.svg';
 import KakaoIcon from '../images/kakao.svg';
 import LoginIcon from '../images/login.svg';
+import { login as memberLogin } from '../utils/api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,35 +33,16 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/member/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          memId: userId,
-          memPwd: password
-        })
+      await memberLogin({
+        memId: userId,
+        memPwd: password
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-        }
-        localStorage.setItem('member', JSON.stringify(data));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        alert('로그인되었습니다.');
-        window.dispatchEvent(new Event('loginStatusChanged'));
-        navigate('/');
-      } else {
-        alert(data.message || '아이디 또는 비밀번호가 일치하지 않습니다.');
-      }
+      alert('로그인되었습니다.');
+      navigate('/');
     } catch (error) {
       console.error('로그인 오류:', error);
-      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
