@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
-import com.shoppingmallcoco.project.service.ProductService;
+import com.shoppingmallcoco.project.service.product.ProductService;
 
 import lombok.Data;
 

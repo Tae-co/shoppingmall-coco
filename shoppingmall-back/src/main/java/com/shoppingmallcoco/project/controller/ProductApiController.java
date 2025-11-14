@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.shoppingmallcoco.project.dto.product.ProductDetailResponseDTO;
 import com.shoppingmallcoco.project.dto.product.ProductListResponseDTO;
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
-import com.shoppingmallcoco.project.service.ProductService;
-import com.shoppingmallcoco.project.service.ProductService;
+import com.shoppingmallcoco.project.service.product.ProductService;
 
 @RestController
 @CrossOrigin("*")

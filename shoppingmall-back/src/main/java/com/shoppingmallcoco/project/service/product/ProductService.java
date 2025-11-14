@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.service;
+package com.shoppingmallcoco.project.service.product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.criteria.Predicate;
 
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
-import com.shoppingmallcoco.project.repository.ProductRepository;
+import com.shoppingmallcoco.project.repository.product.ProductRepository;
 import com.shoppingmallcoco.project.service.IReviewService;
 
 @Service
