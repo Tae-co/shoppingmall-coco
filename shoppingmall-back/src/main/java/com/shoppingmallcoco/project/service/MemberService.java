@@ -1,6 +1,6 @@
 package com.shoppingmallcoco.project.service;
 
-import com.shoppingmallcoco.project.dto.MemberLoginDto;
+
 import com.shoppingmallcoco.project.dto.MemberResponseDto;
 import com.shoppingmallcoco.project.dto.MemberSignupDto;
 import com.shoppingmallcoco.project.dto.MemberUpdateDto;
