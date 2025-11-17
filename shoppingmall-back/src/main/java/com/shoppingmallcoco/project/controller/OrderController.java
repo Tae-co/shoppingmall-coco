@@ -1,11 +1,14 @@
 package com.shoppingmallcoco.project.controller;
 
 import com.shoppingmallcoco.project.dto.order.OrderRequestDto;
+import com.shoppingmallcoco.project.dto.order.OrderResponseDto;
 import com.shoppingmallcoco.project.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController // "이 클래스는 JSON 데이터를 반환하는 API '컨트롤러'입니다."
 @RequiredArgsConstructor // final이 붙은 '서비스'를 주입받기 위한 생성자
@@ -22,11 +25,11 @@ public class OrderController {
     public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto requestDto) {
 
         // (참고) 실제로는 Spring Security에서 로그인한 회원 정보를 가져와야 함
-        Integer tempMemberId = 1; // (임시) 회원 ID
+        Long tempMemberId = 1L; // (임시) 회원 ID
 
         try {
             // '서비스'에게 DTO와 회원 ID를 넘겨 '주문 생성' 로직을 실행시킴
-            Integer orderId = orderService.createOrder(requestDto, tempMemberId);
+            Long orderId = orderService.createOrder(requestDto, tempMemberId);
 
             // 성공 시, 생성된 주문 ID와 함께 201 (Created) 상태 반환
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -38,9 +41,37 @@ public class OrderController {
                     .body(e.getMessage()); // 서비스에서 던진 에러 메시지 반환
         }
     }
+    @GetMapping("/my")
+    public ResponseEntity<List<OrderResponseDto>> getMyOrderHistory() {
 
-    // (참고) 나중에 '주문 내역 조회 API' (GET) 등을 여기에 추가하게 됩니다.
-    // @GetMapping("/my-history")
-    // public ResponseEntity<?> getMyOrderHistory(...) { ... }
+
+        Long tempMemberId = 1L; // (임시) 테스트용 회원 ID: 1 (홍길동)
+
+        // 서비스 호출
+        List<OrderResponseDto> orderHistory = orderService.getOrderHistory(tempMemberId);
+
+        return ResponseEntity.ok(orderHistory);
+
+        }
+    // ... (기존 코드들) ...
+
+    /**
+     * [추가] 주문 취소 API
+     * POST /api/orders/{orderNo}/cancel
+     */
+    @PostMapping("/{orderNo}/cancel")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long orderNo) {
+
+        Long tempMemberId = 1L; // (임시) 로그인한 회원 ID
+
+        try {
+            orderService.cancelOrder(orderNo, tempMemberId);
+            return ResponseEntity.ok("주문이 성공적으로 취소되었습니다.");
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
 
 }

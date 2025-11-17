@@ -1,35 +1,31 @@
-package com.shoppingmallcoco.project.entity;
+package com.shoppingmallcoco.project.entity.auth;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*; // @Setter, @Getter 등 포함
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
-import com.shoppingmallcoco.project.dto.MemberSignupDto;
-
 @Entity
 @Getter
+@Setter // [필수 수정] OrderService에서 포인트 환불(setPoint)을 위해 추가
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert // DB 컬럼의 기본값 적용 가능하도록 필드값이 null인 경우 insert에서 제외
-@Table(name = "memberTable")
+@DynamicInsert
+@Table(name = "member")
 public class Member {
 
     @Id
     @SequenceGenerator(
-            name = "seq_memberTable_memNo",
-            sequenceName = "seq_memberTable_memNo",
+            name = "seq_member_memNo",
+            sequenceName = "seq_member_memNo",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "seq_memberTable_memNo"
+            generator = "seq_member_memNo"
     )
     @Column(name = "memNo")
     private Long memNo;
@@ -76,19 +72,11 @@ public class Member {
         USER, ADMIN
     }
 
-    // DTO를 Entity로 변환하는 메서드
-    public static Member toEntity(MemberSignupDto dto) {
-        return Member.builder()
-                .memId(dto.getMemId())
-                .memPwd(dto.getMemPwd())
-                .memNickname(dto.getMemNickname())
-                .memName(dto.getMemName())
-                .memMail(dto.getMemMail())
-                .memHp(dto.getMemHp())
-                .memZipcode(dto.getMemZipcode())
-                .memAddress1(dto.getMemAddress1())
-                .memAddress2(dto.getMemAddress2())
-                .build();
+    // [비즈니스 로직] 포인트 사용
+    public void usePoints(Long pointsToUse) {
+        if (this.point < pointsToUse) {
+            throw new RuntimeException("보유 포인트가 부족합니다.");
+        }
+        this.point -= pointsToUse;
     }
 }
-

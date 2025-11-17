@@ -1,11 +1,12 @@
 package com.shoppingmallcoco.project.service.order;
 
 import com.shoppingmallcoco.project.dto.order.OrderRequestDto;
+import com.shoppingmallcoco.project.dto.order.OrderResponseDto;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.entity.order.Order;
 import com.shoppingmallcoco.project.entity.order.OrderItem;
 import com.shoppingmallcoco.project.repository.OrderRepository;
-// (참고) 나중에 상품 재고, 가격 확인을 위해 ProductRepository 등이 필요합니다.
-// import com.shoppingmallcoco.project.repository.product.ProductRepository;
+import com.shoppingmallcoco.project.repository.auth.MemberRepository; // 경로 확인
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,25 +23,24 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    // private final ProductRepository productRepository; // (나중에 주석 해제)
+    private final MemberRepository memberRepository;
 
     /**
-     * 주문 생성 (핵심 로직)
-     * @param requestDto (주문 요청 상자)
-     * @param memNo (주문한 회원 번호)
-     * @return 생성된 주문의 ID (orderNo)
+     * 주문 생성
      */
     @Transactional
-    public Integer createOrder(OrderRequestDto requestDto, Integer memNo) {
+    public Long createOrder(OrderRequestDto requestDto, Long memNo) {
 
-        // --- 1. 주문 상품(OrderItem) 엔티티 목록 생성 ---
+        // 1. 회원 조회
+        Member member = memberRepository.findById(memNo)
+                .orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다. ID: " + memNo));
+
+        // 2. 상품 목록 생성 (임시 가격)
         List<OrderItem> orderItems = new ArrayList<>();
+        long totalOrderPrice = 0;
 
-        int totalOrderPrice = 0; // (임시) 총 주문 금액
         for (OrderRequestDto.OrderItemDto itemDto : requestDto.getOrderItems()) {
-
-            // (임시 가격 로직)
-            int tempProductPrice = 5000;
+            long tempProductPrice = 5000L;
 
             OrderItem orderItem = new OrderItem();
             orderItem.setPrdNo(itemDto.getPrdNo());
@@ -51,31 +52,71 @@ public class OrderService {
             totalOrderPrice += (tempProductPrice * itemDto.getOrderQty());
         }
 
-        // --- 2. 주문(Order) 엔티티 생성 및 데이터 매핑 ---
+        // 3. 포인트 차감
+        long pointsToUse = requestDto.getPointsUsed();
+        if (pointsToUse > 0) {
+            // Member에 추가한 메서드 사용
+            member.usePoints(pointsToUse);
+        }
+
+        // 4. 주문 생성
         Order order = new Order();
-        order.setMemNo(memNo);
+        order.setMember(member); // 객체 연결
         order.setOrderDate(LocalDate.now());
         order.setStatus("PENDING");
-        order.setTotalPrice(totalOrderPrice); // (임시) 총 금액
+        order.setTotalPrice(totalOrderPrice);
 
-        // (프론트 검토 완료된) 배송지 및 기타 정보 매핑
         order.setRecipientName(requestDto.getRecipientName());
         order.setRecipientPhone(requestDto.getRecipientPhone());
         order.setOrderZipcode(requestDto.getOrderZipcode());
         order.setOrderAddress1(requestDto.getOrderAddress1());
         order.setOrderAddress2(requestDto.getOrderAddress2());
         order.setDeliveryMessage(requestDto.getDeliveryMessage());
-        order.setPointsUsed(requestDto.getPointsUsed());
+        order.setPointsUsed(pointsToUse);
 
-        // --- 3. 관계 설정 (Order가 OrderItem을 관리) ---
+        // 5. 관계 설정
         for (OrderItem orderItem : orderItems) {
-            order.getOrderItems().add(orderItem);
-            orderItem.setOrder(order);
+            order.addOrderItem(orderItem);
         }
 
-        // --- 4. 주문 저장 ---
+        // 6. 저장
         Order savedOrder = orderRepository.save(order);
-
         return savedOrder.getOrderNo();
+    }
+
+    /**
+     * 주문 조회
+     */
+    public List<OrderResponseDto> getOrderHistory(Long memNo) {
+        List<Order> orders = orderRepository.findAllByMemberMemNoOrderByOrderNoDesc(memNo);
+        return orders.stream()
+                .map(OrderResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 주문 취소
+     */
+    @Transactional
+    public void cancelOrder(Long orderNo, Long memNo) {
+        Order order = orderRepository.findById(orderNo)
+                .orElseThrow(() -> new RuntimeException("해당 주문을 찾을 수 없습니다. ID: " + orderNo));
+
+        if (!order.getMember().getMemNo().equals(memNo)) {
+            throw new RuntimeException("권한 없음");
+        }
+
+        if ("SHIPPED".equals(order.getStatus())) {
+            throw new RuntimeException("취소 불가");
+        }
+
+        // 포인트 환불
+        if (order.getPointsUsed() != null && order.getPointsUsed() > 0) {
+            Member member = order.getMember();
+            // Member 엔티티에 @Setter가 있어야 이 코드가 동작합니다!
+            member.setPoint(member.getPoint() + order.getPointsUsed());
+        }
+
+        order.setStatus("CANCELLED");
     }
 }

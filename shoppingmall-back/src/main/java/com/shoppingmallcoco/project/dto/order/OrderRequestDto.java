@@ -22,7 +22,7 @@ public class OrderRequestDto {
     private String deliveryMessage;
 
     // 결제 정보
-    private Integer pointsUsed;
+    private Long pointsUsed;
 
 
     /**
@@ -32,8 +32,8 @@ public class OrderRequestDto {
     @Setter
     @NoArgsConstructor
     public static class OrderItemDto {
-        private Integer prdNo;
-        private Integer orderQty;
-        private Integer optionNo;
+        private Long prdNo;
+        private Long orderQty;
+        private Long optionNo;
     }
 }
