@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { createAdminProduct, fetchCategories } from '../../api/mockApi';
 import { toast } from 'react-toastify';
 import {
   Title,
@@ -28,7 +27,8 @@ function AdminProductNew() {
     description: '',
     categoryNo: '',
     prdPrice: 0,
-    stock: 0
+    stock: 0,
+    status: 'SALE'
   });
 
   const [categories, setCategories] = useState([]);
@@ -36,14 +36,16 @@ function AdminProductNew() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const data = await fetchCategories();
-        setCategories(data);
+        const response = await fetch('http://localhost:8080/api/categories');
+        if (!response.ok) throw new Error('카테고리 로드 실패');
+        const data = await response.json();
+        setCategories(data); // DB에서 가져온 카테고리 목록 설정
       } catch (error) {
         toast.error('카테고리 목록을 불러오지 못했습니다.');
       }
     };
     loadCategories();
-  }, []); // [] : 페이지 로드 시 1회 실행
+  }, []);
 
   const [imageFile, setImageFile] = useState(null);
 
@@ -64,7 +66,7 @@ function AdminProductNew() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { prdName, prdPrice, stock } = formData;
+    const { prdName, prdPrice, stock, categoryNo } = formData;
 
     if (!prdName || prdName.trim() === "") {
       toast.warn('상품명을 입력해주세요.');
@@ -74,7 +76,7 @@ function AdminProductNew() {
     const priceNum = Number(prdPrice);
     const stockNum = Number(stock);
 
-if (priceNum <= 0) {
+    if (priceNum <= 0) {
       toast.warn('가격은 0보다 커야 합니다.');
       return;
     }
@@ -83,23 +85,47 @@ if (priceNum <= 0) {
       toast.warn('재고는 0개 이상이어야 합니다.');
       return;
     }
-    
+
+    if (!categoryNo) {
+      toast.warn('카테고리를 선택해주세요.');
+      return;
+    }
+
     if (!imageFile) {
       toast.warn('상품 이미지를 등록해주세요.');
       return;
     }
 
-    const newProductData = new FormData();
-    newProductData.append('prdName', prdName);
-    newProductData.append('description', formData.description);
-    newProductData.append('categoryNo', formData.categoryNo);
-    newProductData.append('prdPrice', priceNum);
-    newProductData.append('stock', stockNum);
-    newProductData.append('imageFile', imageFile);
-    
+    const productDto = {
+      prdName: formData.prdName,
+      description: formData.description,
+      categoryNo: Number(formData.categoryNo),
+      prdPrice: Number(formData.prdPrice),
+      stock: Number(formData.stock),
+      status: formData.status
+    };
+
+    const dataToSend = new FormData();
+
+    dataToSend.append("dto", new Blob([JSON.stringify(productDto)], {
+      type: "application/json"
+    }));
+
+    dataToSend.append("imageFile", imageFile);
+
     try {
-      await createAdminProduct(newProductData); 
-      
+      const response = await fetch('http://localhost:8080/api/admin/products', {
+        method: 'POST',
+        body: dataToSend,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '상품 등록 실패');
+      }
+
+      const newProduct = await response.json();
+
       toast.success(`상품이 등록되었습니다: ${prdName}`);
       navigate(`/admin/products`);
 
@@ -170,8 +196,25 @@ if (priceNum <= 0) {
           >
             <option value="" disabled>카테고리를 선택하세요</option>
             {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <option key={cat.categoryNo} value={cat.categoryNo}>
+                {cat.categoryName}
+              </option>
             ))}
+          </Select>
+        </FormGroup>
+
+        {/* 상태 선택 */}
+        <FormGroup>
+          <Label htmlFor="status">상품 상태</Label>
+          <Select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+          >
+            <option value="SALE">판매중</option>
+            <option value="SOLD_OUT">품절</option>
+            <option value="STOP">판매중지</option>
           </Select>
         </FormGroup>
 
