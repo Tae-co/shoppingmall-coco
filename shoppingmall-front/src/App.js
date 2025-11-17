@@ -83,10 +83,11 @@ function App() {
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/order-success" element={<OrderSuccessPage />} />
             <Route path="/order-fail" element={<OrderFailPage />} />
-            {/* COMATE 관련 */}
-            <Route path="/comate" element={<Comate />} />
+            {/* COMATE 관련 -  내 계정 */}
+            <Route path="/comate/me/:tab?" element={<Comate userType="me" />} />
           </Route>
-
+          {/* COMATE 관련 - 다른 사용자 계정 */}
+          <Route path="/comate/user/:userId/:tab?" element={<Comate userType="user" />} />
           {/* 리뷰 관련 */}
           <Route path="/reviews" element={<Review />} />
           <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
