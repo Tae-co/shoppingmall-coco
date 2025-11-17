@@ -15,5 +15,9 @@ public class ProductAdminRequestDTO {
     private int prdPrice;
     private int stock;
     private String status;
+    private String howToUse;
+    private String skinType;
+    private String skinConcern;
+    private String personalColor;
     
 }

@@ -166,6 +166,10 @@ public class ProductService {
 		newProduct.setDescription(dto.getDescription());
 		newProduct.setRegDate(LocalDate.now());
 		newProduct.setCategory(category);
+		newProduct.setHowToUse(dto.getHowToUse());
+        newProduct.setSkinType(dto.getSkinType());
+        newProduct.setSkinConcern(dto.getSkinConcern());
+        newProduct.setPersonalColor(dto.getPersonalColor());
 		
 		if (dto.getStatus() != null && !dto.getStatus().isEmpty()) {
             newProduct.setStatus(dto.getStatus());
@@ -222,13 +226,17 @@ public class ProductService {
 		product.setPrdName(dto.getPrdName());
 		product.setPrdPrice(dto.getPrdPrice());
 		product.setDescription(dto.getDescription());
+		product.setHowToUse(dto.getHowToUse());
+        product.setSkinType(dto.getSkinType());
+        product.setSkinConcern(dto.getSkinConcern());
+        product.setPersonalColor(dto.getPersonalColor());
 		
 		// 상태 수정
 		if (dto.getStatus() != null && !dto.getStatus().isEmpty()) {
             product.setStatus(dto.getStatus());
         }
 
-		// 옵션(제고) 수정 로직
+		// 재고 수정 로직
 		List<ProductOptionEntity> options = product.getOptions();
         if (options != null && !options.isEmpty()) {
             ProductOptionEntity defaultOption = options.get(0);
