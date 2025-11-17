@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchAdminProductById, updateAdminProduct, fetchCategories } from '../../api/mockApi';
 import Spinner from '../../components/admin/Spinner';
 import { toast } from 'react-toastify';
 import {
@@ -39,41 +38,38 @@ function AdminProductEdit() {
     imageUrl: '',
     categoryNo: '',
     prdPrice: 0,
-    stock: 0
+    stock: 0,
+    status: 'SALE'
   });
+
+  const [categories, setCategories] = useState([]);
   const [newImageFile, setNewImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadProduct = async () => {
-      console.log(`[관리자] ${productId}번 상품 데이터 로드 시도...`);
-      setIsLoading(true);
-      try {
-        const foundProduct = await fetchAdminProductById(productId);
-        setFormData(foundProduct);
-      } catch (error) {
-        console.error(error);
-        toast.error('존재하지 않는 상품이거나 로드에 실패했습니다.');
-        navigate('/admin/products');
-      }
-      setIsLoading(false);
-    };
-
-    loadProduct();
-
-  }, [productId, navigate]);
-
-  const [categories, setCategories] = useState([]);
-
+  // 데이터 로드
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const foundProduct = await fetchAdminProductById(productId);
-        setFormData(foundProduct);
-        
-        const categoryData = await fetchCategories();
+        const catResponse = await fetch('http://localhost:8080/api/categories');
+        if (!catResponse.ok) throw new Error('카테고리 로드 실패');
+        const categoryData = await catResponse.json();
         setCategories(categoryData);
+        
+        const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+        if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
+
+        const productData = await response.json();
+
+        setFormData({
+          prdName: productData.prdName,
+          description: productData.description || '',
+          imageUrl: productData.imageUrls?.[0] || '',
+          stock: productData.options?.[0]?.stock || 0, 
+          prdPrice: productData.prdPrice,
+          categoryNo: productData.categoryNo || '', 
+          status: productData.status || 'SALE'
+        });
 
       } catch (error) {
         console.error(error);
@@ -99,44 +95,46 @@ function AdminProductEdit() {
     }
   };
 
+  // 수정 요청
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { prdName, prdPrice, stock } = formData;
+    const { prdName, prdPrice, stock, categoryNo } = formData;
 
     if (!prdName || prdName.trim() === "") {
       toast.error('상품명을 입력해주세요.');
       return;
     }
 
-    const priceNum = Number(prdPrice);
-    const stockNum = Number(stock);
+    const productDto = {
+      prdName: prdName,
+      description: formData.description,
+      categoryNo: Number(categoryNo),
+      prdPrice: Number(prdPrice),
+      stock: Number(stock),
+      status: formData.status
+    };
 
-    if (priceNum <= 0) {
-      toast.error('가격은 0보다 커야 합니다.');
-      return;
-    }
+    const dataToSend = new FormData();
+    dataToSend.append("dto", new Blob([JSON.stringify(productDto)], {
+      type: "application/json"
+    }));
 
-    if (stockNum < 0) {
-      toast.error('재고는 0개 이상이어야 합니다.');
-      return;
-    }
-
-    const productData = new FormData();
-    productData.append('prdName', prdName);
-    productData.append('description', formData.description);
-    productData.append('categoryNo', formData.categoryNo);
-    productData.append('prdPrice', priceNum);
-    productData.append('stock', stockNum);
-
+    // 새 파일이 있을 때만 전송
     if (newImageFile) {
-      productData.append('imageFile', newImageFile);
-    } else {
-      productData.append('imageUrl', formData.imageUrl);
+      dataToSend.append("imageFile", newImageFile);
     }
 
     try {
-      await updateAdminProduct(productId, productData);
+      const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, {
+        method: 'PUT',
+        body: dataToSend,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "상품 수정 실패");
+      }
 
       toast.success(`상품이 수정되었습니다: ${prdName}`);
       navigate('/admin/products');
@@ -192,10 +190,10 @@ function AdminProductEdit() {
           <Label htmlFor="imageFile">상품 이미지</Label>
           {/* 기존 이미지 미리보기 */}
           {formData.imageUrl && !newImageFile && (
-            <div>
-              <CurrentImage src={formData.imageUrl} alt="기존 이미지" />
+            <div style={{marginBottom: '10px'}}>
+               <CurrentImage src={formData.imageUrl} alt="기존 이미지" /> 
               <p style={{ fontSize: '12px', color: '#777' }}>
-                (현재 이미지)
+                (현재 등록된 이미지)
               </p>
             </div>
           )}
@@ -225,8 +223,25 @@ function AdminProductEdit() {
           >
             <option value="" disabled>카테고리를 선택하세요</option>
             {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <option key={cat.categoryNo} value={cat.categoryNo}>
+                {cat.categoryName}
+              </option>
             ))}
+          </Select>
+        </FormGroup>
+
+        {/* 상태 수정 */}
+        <FormGroup>
+          <Label htmlFor="status">상품 상태</Label>
+          <Select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+          >
+            <option value="SALE">판매중</option>
+            <option value="SOLD_OUT">품절</option>
+            <option value="STOP">판매중지</option>
           </Select>
         </FormGroup>
 
