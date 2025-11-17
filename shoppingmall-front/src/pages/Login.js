@@ -18,38 +18,7 @@ const Login = () => {
     if (window.Kakao && !window.Kakao.isInitialized()) {
       window.Kakao.init(process.env.REACT_APP_KAKAO_JS_KEY || 'YOUR_KAKAO_JS_KEY');
     }
-
-    // 구글 SDK 초기화
-    const initGoogleSDK = () => {
-      if (window.google && window.google.accounts) {
-        window.google.accounts.id.initialize({
-          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
-          callback: handleGoogleLoginCallback,
-        });
-      } else {
-        // SDK가 아직 로드되지 않은 경우 재시도
-        setTimeout(initGoogleSDK, 100);
-      }
-    };
-    initGoogleSDK();
   }, []);
-
-  // 구글 로그인 콜백 처리
-  const handleGoogleLoginCallback = async (response) => {
-    try {
-      const data = await googleLogin(response.credential);
-      
-      if (data.needsAdditionalInfo) {
-        navigate('/kakao/additional-info');
-      } else {
-        alert('구글 로그인되었습니다.');
-        navigate('/');
-      }
-    } catch (error) {
-      console.error('구글 로그인 오류:', error);
-      alert(error.message || '구글 로그인 중 오류가 발생했습니다.');
-    }
-  };
 
   // 일반 로그인 처리
   const handleSubmit = async (e) => {

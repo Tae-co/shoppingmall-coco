@@ -209,6 +209,47 @@ public class MemberController {
         }
     }
 
+    // 네이버 로그인
+    @PostMapping("/naver/login")
+    public ResponseEntity<?> naverLogin(@RequestBody NaverLoginDto naverLoginDto) {
+        try {
+            if (naverLoginDto.getCode() == null || naverLoginDto.getCode().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "네이버 인증 코드가 필요합니다."));
+            }
+            if (naverLoginDto.getState() == null || naverLoginDto.getState().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "상태값이 필요합니다."));
+            }
+
+            MemberResponseDto response = memberService.naverLogin(
+                    naverLoginDto.getCode(),
+                    naverLoginDto.getState()
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 구글 로그인
+    @PostMapping("/google/login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginDto googleLoginDto) {
+        try {
+            if (googleLoginDto.getAccessToken() == null || googleLoginDto.getAccessToken().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "구글 액세스 토큰이 필요합니다."));
+            }
+
+            MemberResponseDto response = memberService.googleLogin(googleLoginDto.getAccessToken());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
     // 회원 정보 수정 (카카오 로그인 후 추가 정보 입력용)
     @PutMapping("/update")
     public ResponseEntity<?> updateMember(Authentication authentication, @RequestBody MemberUpdateDto updateDto) {
