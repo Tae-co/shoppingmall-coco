@@ -13,11 +13,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "orderTable") // ERD의 'orderTable'과 연결
+@Table(name = "\"ORDER\"") // ERD의 "ORDER"와 연결
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq_gen")
+    @SequenceGenerator(name = "order_seq_gen", sequenceName = "order_SEQ", allocationSize = 1)
     @Column(name = "orderNo")
     private Integer orderNo; // 주문 고유 번호 (NUMBER)
 

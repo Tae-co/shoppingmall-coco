@@ -11,30 +11,29 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequestDto {
 
-    // --- 1. 주문 상품 목록 ---
     private List<OrderItemDto> orderItems;
 
-    // --- 2. 배송지 정보 ---
+    // 배송지 정보
     private String recipientName;
     private String recipientPhone;
-    private String postcode;
-    private String address;
-    private String addressDetail;
+    private String orderZipcode; // (ERD에 맞춘 이름)
+    private String orderAddress1; // (ERD에 맞춘 이름)
+    private String orderAddress2; // (ERD에 맞춘 이름)
     private String deliveryMessage;
 
-    // --- 3. 결제 정보 ---
+    // 결제 정보
     private Integer pointsUsed;
 
 
-
-
-
-
+    /**
+     * 개별 상품 DTO (Inner Class)
+     */
     @Getter
     @Setter
     @NoArgsConstructor
     public static class OrderItemDto {
-        private Integer prdNo; // 상품 번호
-        private Integer orderQty; // 주문 수량
+        private Integer prdNo;
+        private Integer orderQty;
+        private Integer optionNo;
     }
 }
