@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.entity;
+package com.shoppingmallcoco.project.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
-import com.shoppingmallcoco.project.dto.MemberSignupDto;
+import com.shoppingmallcoco.project.dto.auth.MemberSignupDto;
 
 @Entity
 @Getter

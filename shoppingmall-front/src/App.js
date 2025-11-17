@@ -14,6 +14,7 @@ import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
 import FindAccount from './pages/FindAccount';
 import KakaoAdditionalInfo from './pages/KakaoAdditionalInfo';
+import NaverLoginCallback from './pages/NaverLoginCallback';
 import MyPage from './pages/MyPage';
 import ProfileEdit from "./pages/ProfileEdit";
 import OrderHistory from "./pages/OrderHistory";
@@ -39,7 +40,7 @@ import { OrderProvider } from './pages/OrderContext';
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = ['/login', '/signup/terms', '/signup/info', '/find-account', '/kakao/additional-info', '/admin'].includes(location.pathname);
+  const hideHeaderFooter = ['/login', '/login/naver/callback', '/signup/terms', '/signup/info', '/find-account', '/kakao/additional-info', '/admin'].includes(location.pathname);
 
 
   return (
@@ -51,6 +52,7 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* 로그인 관련 */}
           <Route path="/login" element={<Login />} />
+          <Route path="/login/naver/callback" element={<NaverLoginCallback />} />
           <Route path="/signup/terms" element={<SignupTerms />} />
           <Route path="/signup/info" element={<SignupInfo />} />
           <Route path="/find-account" element={<FindAccount />} />

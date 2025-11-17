@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.service;
+package com.shoppingmallcoco.project.service.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
