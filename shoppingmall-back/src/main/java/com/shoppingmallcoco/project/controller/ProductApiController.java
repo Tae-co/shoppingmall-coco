@@ -30,12 +30,14 @@ public class ProductApiController {
 			@RequestParam(value = "skinType", required = false) List<String> skinType,
 			@RequestParam(value = "skinConcern", required = false) List<String> skinConcern,
 			@RequestParam(value = "personalColor", required = false) List<String> personalColor,
+			@RequestParam(value = "categoryNo", required = false) Long categoryNo,
+            @RequestParam(value = "status", required = false) String status,
 			@RequestParam(value = "sort", required = false, defaultValue = "popularity") String sort,
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "size", required = false, defaultValue = "6") int size
 			) {
 				// Service 호출
-				Page<ProductEntity> productPage = prdService.getProductList(q, skinType, skinConcern, personalColor, sort, page, size);
+				Page<ProductEntity> productPage = prdService.getProductList(q, skinType, skinConcern, personalColor, categoryNo, status, sort, page, size);
 				
 				// page -> DTO 변환
 				return new ProductListResponseDTO(productPage, prdService);

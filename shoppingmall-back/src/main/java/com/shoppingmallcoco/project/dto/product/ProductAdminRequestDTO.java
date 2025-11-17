@@ -14,5 +14,6 @@ public class ProductAdminRequestDTO {
     private Long categoryNo; 
     private int prdPrice;
     private int stock;
+    private String status;
     
 }

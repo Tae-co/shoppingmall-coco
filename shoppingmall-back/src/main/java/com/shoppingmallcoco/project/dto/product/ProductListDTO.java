@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
+import com.shoppingmallcoco.project.entity.product.ProductOptionEntity;
 
 import lombok.Data;
 
@@ -15,6 +16,9 @@ public class ProductListDTO {
 	private String imageUrl;
 	private double averageRating;
 	private int reviewCount;
+	private String categoryName;
+    private int stock; 
+    private String status;
 	private List<String> skinTypes;
 	private List<String> skinConcerns;
 	private List<String> personalColors;
@@ -25,6 +29,27 @@ public class ProductListDTO {
 		this.prdNo = product.getPrdNo();
 		this.prdName = product.getPrdName();
 		this.prdPrice = product.getPrdPrice();
+		
+		// 카테고리 이름 매핑
+        if (product.getCategory() != null) {
+            this.categoryName = product.getCategory().getCategoryName();
+        }
+        
+        // 재고(Stock) 계산
+        if (product.getOptions() != null && !product.getOptions().isEmpty()) {
+            this.stock = product.getOptions().stream()
+                                .mapToInt(ProductOptionEntity::getStock)
+                                .sum();
+        } else {
+            this.stock = 0;
+        }
+        
+        // 👇 3. 상태(Status) 매핑 (화면용 텍스트로 변환)
+        if ("SOLD_OUT".equals(product.getStatus())) {
+            this.status = "품절";
+        } else {
+            this.status = "판매중";
+        }
 		
 		if (product.getImages() != null && !product.getImages().isEmpty()) {
             this.imageUrl = product.getImages().get(0).getImageUrl();
