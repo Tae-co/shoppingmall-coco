@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import Spinner from '../../components/admin/Spinner';
-import {
-  fetchCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory
-} from '../../api/mockApi';
 import {
   Title,
   Card,
@@ -31,12 +26,12 @@ const AddForm = styled.form`
 `;
 
 const AddInputGroup = styled(FormGroup)`
-  flex: 1; /* Input이 길게 늘어나도록 */
+  flex: 1;
   margin-bottom: 0;
 `;
 
 const CategoryTable = styled(Table)`
-  min-width: 0; /* 상품 테이블과 달리 꽉 차지 않아도 됨 */
+  min-width: 0;
 `;
 
 const ActionButton = styled(Button)`
@@ -44,7 +39,6 @@ const ActionButton = styled(Button)`
   font-size: 12px;
   margin-right: 5px;
   
-  /* $danger prop을 받으면 빨간색 버튼 */
   background: ${props => (props.$danger ? props.theme.colors.danger : '#eee')};
   color: ${props => (props.$danger ? 'white' : props.theme.colors.text)};
 `;
@@ -54,12 +48,18 @@ function AdminCategoryList() {
   const [isLoading, setIsLoading] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState('');
 
+  const getAuthHeader = () => {
+    const token = localStorage.getItem('accessToken');
+    return { headers: { Authorization: token } };
+  };
+
   const loadCategories = async () => {
     try {
-      const data = await fetchCategories();
-      setCategories(data);
+      const response = await axios.get('/api/category/list', getAuthHeader());
+      setCategories(response.data);
     } catch (error) {
-      toast.error('카테고리 로드에 실패했습니다.');
+      console.error(error);
+      // toast.error('카테고리 로드 실패');
     }
     setIsLoading(false);
   };
@@ -76,7 +76,8 @@ function AdminCategoryList() {
       return;
     }
     try {
-      await createCategory(newCategoryName);
+      const categoryData = { categoryName: newCategoryName }; 
+      await axios.post('/api/category/add', categoryData, getAuthHeader());
       toast.success(`'${newCategoryName}' 카테고리가 추가되었습니다.`);
       setNewCategoryName('');
       await loadCategories();
@@ -86,11 +87,16 @@ function AdminCategoryList() {
   };
 
   const handleEditCategory = async (category) => {
+    const currentName = category.categoryName || category.name;
     const newName = window.prompt('새 카테고리 이름을 입력하세요:', category.name);
     
     if (newName && newName.trim() !== '' && newName.trim() !== category.name) {
       try {
-        await updateCategory(category.id, newName.trim());
+        const updateData = { 
+            categoryNo: category.categoryNo || category.id,
+            categoryName: newName.trim() 
+        };
+        await axios.put('/api/category/update', updateData, getAuthHeader());
         toast.success('카테고리 이름이 수정되었습니다.');
         await loadCategories();
       } catch (error) {
@@ -100,12 +106,17 @@ function AdminCategoryList() {
   };
   
   const handleDeleteCategory = async (category) => {
+    const catName = category.categoryName || category.name;
+    const catId = category.categoryNo || category.id;
+
     if (window.confirm(`'${category.name}' 카테고리를 삭제하시겠습니까?`)) {
       try {
-        await deleteCategory(category.id);
-        toast.success(`'${category.name}' 카테고리가 삭제되었습니다.`);
+        await axios.delete(`/api/category/delete/${catId}`, getAuthHeader());
+        
+        toast.success(`'${catName}' 카테고리가 삭제되었습니다.`);
         await loadCategories();
       } catch (error) {
+        console.error(error);
         toast.error('카테고리 삭제에 실패했습니다.');
       }
     }
@@ -152,9 +163,9 @@ function AdminCategoryList() {
           </thead>
           <tbody>
             {categories.map((cat) => (
-              <tr key={cat.id}>
-                <Td>{cat.id}</Td>
-                <Td>{cat.name}</Td>
+              <tr key={cat.categoryNo || cat.id}>
+                <Td>{cat.categoryNo || cat.id}</Td>
+                <Td>{cat.categoryName || cat.name}</Td>
                 <Td>
                   <ActionButton 
                     onClick={() => handleEditCategory(cat)}

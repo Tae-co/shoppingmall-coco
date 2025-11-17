@@ -20,6 +20,45 @@ const Form = styled(Card).attrs({ as: 'form' })`
   margin: auto;
 `;
 
+const CheckboxGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+  
+  input {
+    margin-right: 8px;
+    transform: scale(1.2);
+  }
+`;
+
+const TAG_OPTIONS = {
+  skinTypes: [
+    { id: 'dry', label: '건성' }, { id: 'oily', label: '지성' }, 
+    { id: 'combination', label: '복합성' }, { id: 'sensitive', label: '민감성' }
+  ],
+  skinConcerns: [
+    { id: 'hydration', label: '수분' }, { id: 'moisture', label: '보습' },
+    { id: 'brightening', label: '미백' }, { id: 'tone', label: '피부톤' },
+    { id: 'soothing', label: '진정' }, { id: 'sensitive', label: '민감' },
+    { id: 'uv', label: '자외선차단' }, { id: 'wrinkle', label: '주름' },
+    { id: 'elasticity', label: '탄력' }, { id: 'pores', label: '모공' }
+  ],
+  personalColors: [
+    { id: 'cool', label: '쿨톤' }, { id: 'warm', label: '웜톤' }, { id: 'neutral', label: '뉴트럴톤' }
+  ]
+};
+
 function AdminProductNew() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -28,7 +67,11 @@ function AdminProductNew() {
     categoryNo: '',
     prdPrice: 0,
     stock: 0,
-    status: 'SALE'
+    status: 'SALE',
+    howToUse: '',
+    skinType: [],      // 배열로 관리 (다중 선택)
+    skinConcern: [],   // 배열로 관리
+    personalColor: []  // 배열로 관리
   });
 
   const [categories, setCategories] = useState([]);
@@ -61,6 +104,21 @@ function AdminProductNew() {
     if (e.target.files && e.target.files.length > 0) {
       setImageFile(e.target.files[0]);
     }
+  };
+
+  const handleCheckboxChange = (groupName, value) => {
+    setFormData(prevData => {
+      const currentValues = prevData[groupName];
+      let newValues;
+
+      if (currentValues.includes(value)) {
+        newValues = currentValues.filter(item => item !== value);
+      } else {
+        newValues = [...currentValues, value];
+      }
+
+      return { ...prevData, [groupName]: newValues };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -102,7 +160,11 @@ function AdminProductNew() {
       categoryNo: Number(formData.categoryNo),
       prdPrice: Number(formData.prdPrice),
       stock: Number(formData.stock),
-      status: formData.status
+      status: formData.status,
+      howToUse: formData.howToUse,
+      skinType: formData.skinType.join(','),
+      skinConcern: formData.skinConcern.join(','),
+      personalColor: formData.personalColor.join(',')
     };
 
     const dataToSend = new FormData();
@@ -244,6 +306,71 @@ function AdminProductNew() {
             min="0"
             required
           />
+        </FormGroup>
+
+        {/* 사용 방법 입력창 */}
+        <FormGroup>
+          <Label htmlFor="howToUse">사용 방법</Label>
+          <Textarea
+            id="howToUse"
+            name="howToUse"
+            value={formData.howToUse}
+            onChange={handleChange}
+            placeholder="예: 세안 후 적당량을 덜어 얼굴 전체에 펴 발라주세요."
+          />
+        </FormGroup>
+
+        {/* 선택 영역 */}
+        
+        {/* 피부 타입 */}
+        <FormGroup>
+          <Label>피부 타입 (중복 선택 가능)</Label>
+          <CheckboxGroup>
+            {TAG_OPTIONS.skinTypes.map(opt => (
+              <CheckboxLabel key={opt.id}>
+                <input 
+                  type="checkbox" 
+                  checked={formData.skinType.includes(opt.id)}
+                  onChange={() => handleCheckboxChange('skinType', opt.id)}
+                />
+                {opt.label}
+              </CheckboxLabel>
+            ))}
+          </CheckboxGroup>
+        </FormGroup>
+
+        {/* 피부 고민 */}
+        <FormGroup>
+          <Label>피부 고민 (중복 선택 가능)</Label>
+          <CheckboxGroup>
+            {TAG_OPTIONS.skinConcerns.map(opt => (
+              <CheckboxLabel key={opt.id}>
+                <input 
+                  type="checkbox" 
+                  checked={formData.skinConcern.includes(opt.id)}
+                  onChange={() => handleCheckboxChange('skinConcern', opt.id)}
+                />
+                {opt.label}
+              </CheckboxLabel>
+            ))}
+          </CheckboxGroup>
+        </FormGroup>
+
+        {/* 퍼스널 컬러 */}
+        <FormGroup>
+          <Label>퍼스널 컬러 (중복 선택 가능)</Label>
+          <CheckboxGroup>
+            {TAG_OPTIONS.personalColors.map(opt => (
+              <CheckboxLabel key={opt.id}>
+                <input 
+                  type="checkbox" 
+                  checked={formData.personalColor.includes(opt.id)}
+                  onChange={() => handleCheckboxChange('personalColor', opt.id)}
+                />
+                {opt.label}
+              </CheckboxLabel>
+            ))}
+          </CheckboxGroup>
         </FormGroup>
 
         {/* 버튼 영역 */}
