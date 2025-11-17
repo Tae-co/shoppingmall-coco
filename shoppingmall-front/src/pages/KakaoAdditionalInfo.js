@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/KakaoAdditionalInfo.css';
+import { updateMember, isLoggedIn, validateEmail, storage, STORAGE_KEYS } from '../utils/api';
 
 const KakaoAdditionalInfo = () => {
   const navigate = useNavigate();
@@ -57,44 +58,28 @@ const KakaoAdditionalInfo = () => {
       return;
     }
 
-    const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-    if (!emailRegex.test(formData.memMail)) {
+    if (!validateEmail(formData.memMail)) {
       alert('올바른 이메일 형식을 입력해주세요.');
+      return;
+    }
+
+    if (!isLoggedIn()) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('로그인이 필요합니다.');
-        navigate('/login');
-        return;
-      }
-
-      const response = await fetch('http://localhost:8080/api/member/update', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('member', JSON.stringify(data));
-        alert('추가 정보가 입력되었습니다.');
-        window.dispatchEvent(new Event('loginStatusChanged'));
-        navigate('/');
-      } else {
-        alert(data.message || '정보 입력에 실패했습니다.');
-      }
+      const data = await updateMember(formData);
+      storage.set(STORAGE_KEYS.MEMBER, JSON.stringify(data));
+      alert('추가 정보가 입력되었습니다.');
+      window.dispatchEvent(new Event('loginStatusChanged'));
+      navigate('/');
     } catch (error) {
       console.error('정보 입력 오류:', error);
-      alert('정보 입력 중 오류가 발생했습니다.');
+      alert(error.message || '정보 입력 중 오류가 발생했습니다.');
     } finally {
       setIsSubmitting(false);
     }
