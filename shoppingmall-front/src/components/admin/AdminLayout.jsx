@@ -81,7 +81,7 @@ function AdminLayout() {
           <li><NavItem to="/admin">대시보드</NavItem></li>
           <li><NavItem to="/admin/products">상품 관리</NavItem></li>
           <li><NavItem to="/admin/categories">카테고리 관리</NavItem></li>
-          <li><NavItem to="/admin/users">(준비중) 회원 관리</NavItem></li>
+          <li><NavItem to="/admin/members">회원 관리</NavItem></li>
           <li><NavItem to="/admin/orders">(준비중) 주문 관리</NavItem></li>
         </NavList>
       </Sidebar>

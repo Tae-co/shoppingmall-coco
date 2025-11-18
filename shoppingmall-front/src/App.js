@@ -32,6 +32,7 @@ import AdminProductList from './pages/admin/AdminProductList';
 import AdminProductNew from './pages/admin/AdminProductNew';
 import AdminProductEdit from './pages/admin/AdminProductEdit';
 import AdminCategoryList from './pages/admin/AdminCategoryList';
+import AdminMemberList from './pages/admin/AdminMemberList';
 import OrderPage from './pages/Orderpage/OrderPage';
 import PaymentPage from './pages/PaymentPage/PaymentPage';
 import OrderSuccessPage from './pages/OrderSuccessPage/OrderSuccessPage';
@@ -40,7 +41,9 @@ import { OrderProvider } from './pages/OrderContext';
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = ['/login', '/login/naver/callback', '/signup/terms', '/signup/info', '/find-account', '/kakao/additional-info', '/admin'].includes(location.pathname);
+  // 관리자 페이지는 모든 하위 경로 포함하여 헤더/푸터 숨김
+  const hideHeaderFooter = ['/login', '/login/naver/callback', '/signup/terms', '/signup/info', '/find-account', '/kakao/additional-info'].includes(location.pathname) 
+    || location.pathname.startsWith('/admin');
 
 
   return (
@@ -77,6 +80,7 @@ function App() {
               <Route path="product/new" element={<AdminProductNew />} />
               <Route path="product/edit/:productId" element={<AdminProductEdit />} />
               <Route path="categories" element={<AdminCategoryList />} />
+              <Route path="members" element={<AdminMemberList />} />
             </Route>
             {/* 주문 관련 */}
             <Route path="/order" element={<OrderPage />} />

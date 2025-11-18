@@ -133,9 +133,9 @@ function AdminHome() {
           상품 관리
         </MenuLink>
 
-        <MenuButtonDisabled disabled>
-          회원 관리 (준비중)
-        </MenuButtonDisabled>
+        <MenuLink to="/admin/members">
+          회원 관리
+        </MenuLink>
         <MenuButtonDisabled disabled>
           주문 관리 (준비중)
         </MenuButtonDisabled>
