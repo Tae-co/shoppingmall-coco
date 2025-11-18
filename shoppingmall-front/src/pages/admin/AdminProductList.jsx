@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchAdminProducts, deleteAdminProduct } from '../../api/mockApi';
 import Pagination from '../../components/admin/Pagination';
 import Spinner from '../../components/admin/Spinner';
 import { toast } from 'react-toastify';
@@ -120,18 +119,24 @@ function AdminProductList() {
     const loadProducts = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchAdminProducts({
+        const params = new URLSearchParams({
           page: currentPage,
-          limit: LIMIT,
-          searchTerm,
-          selectedCategory,
-          selectedStatus
+          size: LIMIT,
+          sort: 'newest'
         });
 
-        setProducts(data.products);
+        if (searchTerm) params.append('q', searchTerm);
+        if (selectedCategory) params.append('categoryNo', selectedCategory);
+        if (selectedStatus) params.append('status', selectedStatus);
+
+        const response = await fetch(`http://localhost:8080/api/products?${params.toString()}`);
+        if (!response.ok) throw new Error('네트워크 응답이 올바르지 않습니다.');
+
+        const data = await response.json();
+
+        setProducts(data.content);
         setTotalPages(data.totalPages);
-        setTotalProducts(data.totalProducts);
-        setDashboardCounts(data.dashboardCounts);
+        setTotalProducts(data.totalElements);
 
       } catch (error) {
         console.error("상품 목록 로드 실패:", error);
@@ -151,25 +156,24 @@ function AdminProductList() {
     const confirmMessage = `상품을 삭제하시겠습니까?\n\n상품명: ${product.prdName}\n\n이 작업은 취소할 수 없습니다.`;
     if (window.confirm(confirmMessage)) {
       try {
-        await deleteAdminProduct(product.prdNo);
-        toast.success(`'${product.prdName}' 상품이 삭제되었습니다.`);
-        console.log(`[관리자] ${product.prdName} 삭제 실행`);
-
-        const data = await fetchAdminProducts({
-          page: currentPage,
-          limit: LIMIT,
-          searchTerm,
-          selectedCategory,
-          selectedStatus
+        const response = await fetch(`http://localhost:8080/api/admin/products/${product.prdNo}`, {
+          method: 'DELETE',
         });
-        setProducts(data.products);
-        setTotalPages(data.totalPages);
-        setTotalProducts(data.totalProducts);
-        setDashboardCounts(data.dashboardCounts);
 
-        if (data.products.length === 0 && currentPage > 1) {
-          setCurrentPage(currentPage - 1);
+        if (!response.ok) {
+          throw new Error('상품 삭제 실패');
         }
+
+        toast.success(`'${product.prdName}' 상품이 삭제되었습니다.`);
+        console.log(`[관리자] ${product.prdName} 삭제 완료`);
+
+        setProducts(prevProducts => prevProducts.filter(p => p.prdNo !== product.prdNo));
+        setTotalProducts(prev => prev - 1);
+
+        if (products.length === 1 && currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+
       } catch (error) {
         console.error("상품 삭제 실패:", error);
         toast.error("상품 삭제 중 오류가 발생했습니다.");
