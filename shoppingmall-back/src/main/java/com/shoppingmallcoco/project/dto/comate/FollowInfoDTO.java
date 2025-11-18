@@ -1,5 +1,10 @@
 package com.shoppingmallcoco.project.dto.comate;
 
-public class FollowDTO {
+import lombok.*;
 
+@Getter
+@AllArgsConstructor
+public class FollowInfoDTO {
+    private Long memNo;
+    private String nickname;
 }

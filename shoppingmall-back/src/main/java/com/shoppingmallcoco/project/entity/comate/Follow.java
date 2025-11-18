@@ -1,30 +1,27 @@
 package com.shoppingmallcoco.project.entity.comate;
 
 import com.shoppingmallcoco.project.entity.Member;
-
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "FOLLOW")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "follow")
 public class Follow {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "FOLLOWNO")
+    private Long followNo;
 
-    // 팔로워: 나를 팔로우 하는 사용자
-    @ManyToOne
-    @JoinColumn(name = "follower_memNo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FOLLOWERNO")  // ← Oracle 컬럼명 그대로 사용!
     private Member follower;
 
-    // 팔로잉: 내가 팔로우 하는 사용자
-    @ManyToOne
-    @JoinColumn(name = "following_memNo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FOLLOWINGNO") // ← Oracle 컬럼명 그대로 사용!
     private Member following;
 }
