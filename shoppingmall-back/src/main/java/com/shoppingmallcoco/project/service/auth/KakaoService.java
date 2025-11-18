@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.service;
+package com.shoppingmallcoco.project.service.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

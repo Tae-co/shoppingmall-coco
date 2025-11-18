@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchAdminProductById, updateAdminProduct, fetchCategories } from '../../api/mockApi';
 import Spinner from '../../components/admin/Spinner';
 import { toast } from 'react-toastify';
+import TagCheckboxGroup from '../../components/admin/TagCheckboxGroup';
 import {
   Title,
   FormGroup,
@@ -30,6 +30,12 @@ const CurrentImage = styled.img`
   margin-bottom: 10px;
 `;
 
+const TAG_OPTIONS = {
+  skinTypes: [{ id: 'dry', label: '건성' }, { id: 'oily', label: '지성' }, { id: 'combination', label: '복합성' }, { id: 'sensitive', label: '민감성' }],
+  skinConcerns: [{ id: 'hydration', label: '수분' }, { id: 'moisture', label: '보습' }, { id: 'brightening', label: '미백' }, { id: 'tone', label: '피부톤' }, { id: 'soothing', label: '진정' }, { id: 'sensitive', label: '민감' }, { id: 'uv', label: '자외선차단' }, { id: 'wrinkle', label: '주름' }, { id: 'elasticity', label: '탄력' }, { id: 'pores', label: '모공' }],
+  personalColors: [{ id: 'cool', label: '쿨톤' }, { id: 'warm', label: '웜톤' }, { id: 'neutral', label: '뉴트럴톤' }]
+};
+
 function AdminProductEdit() {
   const navigate = useNavigate();
   const { productId } = useParams();
@@ -39,41 +45,46 @@ function AdminProductEdit() {
     imageUrl: '',
     categoryNo: '',
     prdPrice: 0,
-    stock: 0
+    stock: 0,
+    status: 'SALE',
+    howToUse: '',
+    skinType: [],
+    skinConcern: [],
+    personalColor: []
   });
+
+  const [categories, setCategories] = useState([]);
   const [newImageFile, setNewImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadProduct = async () => {
-      console.log(`[관리자] ${productId}번 상품 데이터 로드 시도...`);
-      setIsLoading(true);
-      try {
-        const foundProduct = await fetchAdminProductById(productId);
-        setFormData(foundProduct);
-      } catch (error) {
-        console.error(error);
-        toast.error('존재하지 않는 상품이거나 로드에 실패했습니다.');
-        navigate('/admin/products');
-      }
-      setIsLoading(false);
-    };
-
-    loadProduct();
-
-  }, [productId, navigate]);
-
-  const [categories, setCategories] = useState([]);
-
+  // 데이터 로드
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const foundProduct = await fetchAdminProductById(productId);
-        setFormData(foundProduct);
-        
-        const categoryData = await fetchCategories();
+        const catResponse = await fetch('http://localhost:8080/api/categories');
+        if (!catResponse.ok) throw new Error('카테고리 로드 실패');
+        const categoryData = await catResponse.json();
         setCategories(categoryData);
+
+        const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+        if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
+
+        const productData = await response.json();
+
+        setFormData({
+          prdName: productData.prdName,
+          description: productData.description || '',
+          imageUrl: productData.imageUrls?.[0] || '',
+          stock: productData.options?.[0]?.stock || 0,
+          prdPrice: productData.prdPrice,
+          categoryNo: productData.categoryNo || '',
+          status: productData.status || 'SALE',
+          howToUse: productData.howToUse || '',
+          skinType: productData.skinTypes || [],
+          skinConcern: productData.skinConcerns || [],
+          personalColor: productData.personalColors || []
+        });
 
       } catch (error) {
         console.error(error);
@@ -99,44 +110,64 @@ function AdminProductEdit() {
     }
   };
 
+  // 체크박스 변경 핸들러
+  const handleCheckboxChange = (groupName, value) => {
+    setFormData(prevData => {
+      const currentValues = prevData[groupName];
+      let newValues;
+      if (currentValues.includes(value)) {
+        newValues = currentValues.filter(item => item !== value);
+      } else {
+        newValues = [...currentValues, value];
+      }
+      return { ...prevData, [groupName]: newValues };
+    });
+  };
+
+  // 수정 요청
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { prdName, prdPrice, stock } = formData;
+    const { prdName, prdPrice, stock, categoryNo } = formData;
 
     if (!prdName || prdName.trim() === "") {
       toast.error('상품명을 입력해주세요.');
       return;
     }
 
-    const priceNum = Number(prdPrice);
-    const stockNum = Number(stock);
+    const productDto = {
+      prdName: prdName,
+      description: formData.description,
+      categoryNo: Number(categoryNo),
+      prdPrice: Number(prdPrice),
+      stock: Number(stock),
+      status: formData.status,
+      howToUse: formData.howToUse,
+      skinType: formData.skinType.join(','),
+      skinConcern: formData.skinConcern.join(','),
+      personalColor: formData.personalColor.join(',')
+    };
 
-    if (priceNum <= 0) {
-      toast.error('가격은 0보다 커야 합니다.');
-      return;
-    }
+    const dataToSend = new FormData();
+    dataToSend.append("dto", new Blob([JSON.stringify(productDto)], {
+      type: "application/json"
+    }));
 
-    if (stockNum < 0) {
-      toast.error('재고는 0개 이상이어야 합니다.');
-      return;
-    }
-
-    const productData = new FormData();
-    productData.append('prdName', prdName);
-    productData.append('description', formData.description);
-    productData.append('categoryNo', formData.categoryNo);
-    productData.append('prdPrice', priceNum);
-    productData.append('stock', stockNum);
-
+    // 새 파일이 있을 때만 전송
     if (newImageFile) {
-      productData.append('imageFile', newImageFile);
-    } else {
-      productData.append('imageUrl', formData.imageUrl);
+      dataToSend.append("imageFile", newImageFile);
     }
 
     try {
-      await updateAdminProduct(productId, productData);
+      const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, {
+        method: 'PUT',
+        body: dataToSend,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "상품 수정 실패");
+      }
 
       toast.success(`상품이 수정되었습니다: ${prdName}`);
       navigate('/admin/products');
@@ -192,10 +223,10 @@ function AdminProductEdit() {
           <Label htmlFor="imageFile">상품 이미지</Label>
           {/* 기존 이미지 미리보기 */}
           {formData.imageUrl && !newImageFile && (
-            <div>
+            <div style={{ marginBottom: '10px' }}>
               <CurrentImage src={formData.imageUrl} alt="기존 이미지" />
               <p style={{ fontSize: '12px', color: '#777' }}>
-                (현재 이미지)
+                (현재 등록된 이미지)
               </p>
             </div>
           )}
@@ -225,10 +256,59 @@ function AdminProductEdit() {
           >
             <option value="" disabled>카테고리를 선택하세요</option>
             {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <option key={cat.categoryNo} value={cat.categoryNo}>
+                {cat.categoryName}
+              </option>
             ))}
           </Select>
         </FormGroup>
+
+        {/* 상태 수정 */}
+        <FormGroup>
+          <Label htmlFor="status">상품 상태</Label>
+          <Select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+          >
+            <option value="SALE">판매중</option>
+            <option value="SOLD_OUT">품절</option>
+            <option value="STOP">판매중지</option>
+          </Select>
+        </FormGroup>
+
+        <FormGroup>
+          <Label htmlFor="howToUse">사용 방법</Label>
+          <Textarea id="howToUse" name="howToUse" value={formData.howToUse} onChange={handleChange} />
+        </FormGroup>
+
+        {/* 피부 타입 */}
+        <TagCheckboxGroup
+          label="피부 타입"
+          groupName="skinType"
+          options={TAG_OPTIONS.skinTypes}
+          selectedValues={formData.skinType}
+          onChange={handleCheckboxChange}
+        />
+
+        {/* 피부 고민 */}
+        <TagCheckboxGroup
+          label="피부 고민"
+          groupName="skinConcern"
+          options={TAG_OPTIONS.skinConcerns}
+          selectedValues={formData.skinConcern}
+          onChange={handleCheckboxChange}
+        />
+
+        {/* 퍼스널 컬러 */}
+        <TagCheckboxGroup
+          label="퍼스널 컬러"
+          groupName="personalColor"
+          options={TAG_OPTIONS.personalColors}
+          selectedValues={formData.personalColor}
+          onChange={handleCheckboxChange}
+        />
 
         {/* 가격 */}
         <FormGroup>

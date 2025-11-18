@@ -1,14 +1,13 @@
-package com.shoppingmallcoco.project.service;
+package com.shoppingmallcoco.project.service.auth;
 
-import com.shoppingmallcoco.project.dto.MemberLoginDto;
-import com.shoppingmallcoco.project.dto.MemberResponseDto;
-import com.shoppingmallcoco.project.dto.MemberSignupDto;
-import com.shoppingmallcoco.project.dto.MemberUpdateDto;
-import com.shoppingmallcoco.project.dto.FindIdDto;
-import com.shoppingmallcoco.project.dto.ResetPasswordDto;
-import com.shoppingmallcoco.project.entity.Member;
-import com.shoppingmallcoco.project.repository.MemberRepository;
-import com.shoppingmallcoco.project.service.EmailVerificationService;
+import com.shoppingmallcoco.project.dto.auth.MemberLoginDto;
+import com.shoppingmallcoco.project.dto.auth.MemberResponseDto;
+import com.shoppingmallcoco.project.dto.auth.MemberSignupDto;
+import com.shoppingmallcoco.project.dto.auth.MemberUpdateDto;
+import com.shoppingmallcoco.project.dto.auth.FindIdDto;
+import com.shoppingmallcoco.project.dto.auth.ResetPasswordDto;
+import com.shoppingmallcoco.project.entity.auth.Member;
+import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +26,8 @@ public class MemberService {
     private final JwtUtil jwtUtil;
     private final EmailVerificationService emailVerificationService;
     private final KakaoService kakaoService;
+    private final NaverService naverService;
+    private final GoogleService googleService;
 
     // 일반 회원가입 처리
     public MemberResponseDto signup(MemberSignupDto signupDto) {
@@ -274,6 +275,109 @@ public class MemberService {
         Member member = memberRepository.findByMemId(memId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         return toResponseDto(member);
+    }
+
+    // 네이버 소셜 로그인 처리
+    public MemberResponseDto naverLogin(String code, String state) {
+        // 네이버 리다이렉트 URI
+        String redirectUri = "http://localhost:3000/login/naver/callback";
+        
+        // 네이버 인증 코드로 액세스 토큰 받기
+        String accessToken = naverService.getAccessToken(code, state, redirectUri);
+        
+        // 네이버 사용자 정보 조회
+        NaverService.NaverUserInfo naverUserInfo = naverService.getUserInfo(accessToken);
+
+        String naverMemId = "NAVER_" + naverUserInfo.getNaverId();
+        Optional<Member> memberOpt = memberRepository.findByMemId(naverMemId);
+
+        Member member;
+        if (memberOpt.isPresent()) {
+            member = memberOpt.get();
+        } else {
+            String nickname = naverUserInfo.getNickname() != null
+                    ? naverUserInfo.getNickname()
+                    : "네이버사용자_" + naverUserInfo.getNaverId();
+
+            String finalNickname = nickname;
+            int suffix = 1;
+            while (memberRepository.existsByMemNickname(finalNickname)) {
+                finalNickname = nickname + "_" + suffix;
+                suffix++;
+            }
+
+            member = Member.builder()
+                    .memId(naverMemId)
+                    .memPwd(passwordEncoder.encode("NAVER_" + naverUserInfo.getNaverId() + "_NO_PASSWORD"))
+                    .memNickname(finalNickname)
+                    .memName(naverUserInfo.getName())
+                    .memMail(naverUserInfo.getEmail())
+                    .memHp(naverUserInfo.getMobile())
+                    .role(Member.Role.USER)
+                    .point(0L)
+                    .build();
+
+            member = memberRepository.save(member);
+        }
+
+        String token = jwtUtil.generateToken(member.getMemId(), member.getMemNo());
+        MemberResponseDto response = toResponseDto(member);
+        response.setToken(token);
+
+        boolean needsAdditionalInfo = (member.getMemMail() == null || member.getMemMail().trim().isEmpty()) ||
+                (member.getMemName() == null || member.getMemName().trim().isEmpty()) ||
+                (member.getMemHp() == null || member.getMemHp().trim().isEmpty());
+        response.setNeedsAdditionalInfo(needsAdditionalInfo);
+
+        return response;
+    }
+
+    // 구글 소셜 로그인 처리
+    public MemberResponseDto googleLogin(String accessToken) {
+        // 구글 액세스 토큰으로 사용자 정보 조회
+        GoogleService.GoogleUserInfo googleUserInfo = googleService.getUserInfo(accessToken);
+
+        String googleMemId = "GOOGLE_" + googleUserInfo.getGoogleId();
+        Optional<Member> memberOpt = memberRepository.findByMemId(googleMemId);
+
+        Member member;
+        if (memberOpt.isPresent()) {
+            member = memberOpt.get();
+        } else {
+            String nickname = googleUserInfo.getName() != null
+                    ? googleUserInfo.getName()
+                    : "구글사용자_" + googleUserInfo.getGoogleId();
+
+            String finalNickname = nickname;
+            int suffix = 1;
+            while (memberRepository.existsByMemNickname(finalNickname)) {
+                finalNickname = nickname + "_" + suffix;
+                suffix++;
+            }
+
+            member = Member.builder()
+                    .memId(googleMemId)
+                    .memPwd(passwordEncoder.encode("GOOGLE_" + googleUserInfo.getGoogleId() + "_NO_PASSWORD"))
+                    .memNickname(finalNickname)
+                    .memName(googleUserInfo.getName())
+                    .memMail(googleUserInfo.getEmail())
+                    .role(Member.Role.USER)
+                    .point(0L)
+                    .build();
+
+            member = memberRepository.save(member);
+        }
+
+        String token = jwtUtil.generateToken(member.getMemId(), member.getMemNo());
+        MemberResponseDto response = toResponseDto(member);
+        response.setToken(token);
+
+        boolean needsAdditionalInfo = (member.getMemMail() == null || member.getMemMail().trim().isEmpty()) ||
+                (member.getMemName() == null || member.getMemName().trim().isEmpty()) ||
+                (member.getMemHp() == null || member.getMemHp().trim().isEmpty());
+        response.setNeedsAdditionalInfo(needsAdditionalInfo);
+
+        return response;
     }
 }
 

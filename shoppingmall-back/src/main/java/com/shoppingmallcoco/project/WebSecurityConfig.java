@@ -41,6 +41,8 @@ public class WebSecurityConfig {
 					"/api/member/signup",
 					"/api/member/login",
 					"/api/member/kakao/**",
+					"/api/member/naver/**",
+					"/api/member/google/**",
 					"/api/member/check-id/**",
 					"/api/member/check-nickname/**",
 					"/api/member/check-email/**",

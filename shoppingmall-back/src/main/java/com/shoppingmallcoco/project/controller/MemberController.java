@@ -1,8 +1,8 @@
 package com.shoppingmallcoco.project.controller;
 
-import com.shoppingmallcoco.project.dto.*;
-import com.shoppingmallcoco.project.service.EmailVerificationService;
-import com.shoppingmallcoco.project.service.MemberService;
+import com.shoppingmallcoco.project.dto.auth.*;
+import com.shoppingmallcoco.project.service.auth.EmailVerificationService;
+import com.shoppingmallcoco.project.service.auth.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -202,6 +202,47 @@ public class MemberController {
             }
 
             MemberResponseDto response = memberService.kakaoLogin(kakaoLoginDto.getAccessToken());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 네이버 로그인
+    @PostMapping("/naver/login")
+    public ResponseEntity<?> naverLogin(@RequestBody NaverLoginDto naverLoginDto) {
+        try {
+            if (naverLoginDto.getCode() == null || naverLoginDto.getCode().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "네이버 인증 코드가 필요합니다."));
+            }
+            if (naverLoginDto.getState() == null || naverLoginDto.getState().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "상태값이 필요합니다."));
+            }
+
+            MemberResponseDto response = memberService.naverLogin(
+                    naverLoginDto.getCode(),
+                    naverLoginDto.getState()
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 구글 로그인
+    @PostMapping("/google/login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginDto googleLoginDto) {
+        try {
+            if (googleLoginDto.getAccessToken() == null || googleLoginDto.getAccessToken().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "구글 액세스 토큰이 필요합니다."));
+            }
+
+            MemberResponseDto response = memberService.googleLogin(googleLoginDto.getAccessToken());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
