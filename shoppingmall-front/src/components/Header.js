@@ -11,10 +11,31 @@ const Header = () => {
 
     const navigate = useNavigate();
 
-    // 로그인 상태 관리
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [userRole, setUserRole] = useState('');
+    // 초기 상태를 localStorage에서 설정
+    const getInitialState = () => {
+        const status = isLoggedIn();
+        if (status) {
+            const memberData = getStoredMember();
+            if (memberData && Object.keys(memberData).length > 0) {
+                const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
+                return {
+                    loggedIn: true,
+                    userName: fallbackName,
+                    userRole: memberData.role || ''
+                };
+            }
+        }
+        return {
+            loggedIn: false,
+            userName: '',
+            userRole: ''
+        };
+    };
+
+    const initialState = getInitialState();
+    const [loggedIn, setLoggedIn] = useState(initialState.loggedIn);
+    const [userName, setUserName] = useState(initialState.userName);
+    const [userRole, setUserRole] = useState(initialState.userRole);
 
     useEffect(() => {
         const syncLoginStatus = () => {
@@ -24,16 +45,24 @@ const Header = () => {
             if (status) {
                 // localStorage에서 회원 정보 가져오기 (로그인 시 이미 저장됨)
                 const memberData = getStoredMember();
-                const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
-                setUserName(fallbackName);
-                setUserRole(memberData.role || '');
+                if (memberData && Object.keys(memberData).length > 0) {
+                    const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
+                    setUserName(fallbackName);
+                    setUserRole(memberData.role || '');
+                } else {
+                    setUserName('');
+                    setUserRole('');
+                }
             } else {
                 setUserName('');
                 setUserRole('');
             }
         };
 
-        // 초기 로드 시 백엔드에서 최신 정보 가져오기 (한 번만)
+        // 초기 로드 시 먼저 localStorage에서 상태 확인
+        syncLoginStatus();
+
+        // 그 다음 백엔드에서 최신 정보 가져오기 (한 번만)
         const loadMemberInfo = async () => {
             if (isLoggedIn()) {
                 try {
@@ -41,13 +70,12 @@ const Header = () => {
                     const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
                     setUserName(fallbackName);
                     setUserRole(memberData.role || '');
+                    setLoggedIn(true); // 백엔드 호출 성공 시 로그인 상태 확실히 설정
                 } catch (error) {
                     // 백엔드 호출 실패 시 localStorage에서 가져오기
                     console.error('회원 정보 조회 실패:', error);
                     syncLoginStatus();
                 }
-            } else {
-                syncLoginStatus();
             }
         };
 
