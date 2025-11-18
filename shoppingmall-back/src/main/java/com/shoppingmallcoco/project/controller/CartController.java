@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coco/members/cart")
+@RequestMapping("/api/coco/members/cart")
 public class CartController {
 
     private final CartService cartService;
