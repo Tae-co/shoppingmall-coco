@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Spinner from '../../components/admin/Spinner';
 import { toast } from 'react-toastify';
+import TagCheckboxGroup from '../../components/admin/TagCheckboxGroup';
 import {
   Title,
   FormGroup,
@@ -29,28 +30,10 @@ const CurrentImage = styled.img`
   margin-bottom: 10px;
 `;
 
-const CheckboxGroup = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #fafafa;
-`;
-
-const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  cursor: pointer;
-  input { margin-right: 8px; transform: scale(1.2); }
-`;
-
 const TAG_OPTIONS = {
-  skinTypes: [ { id: 'dry', label: '건성' }, { id: 'oily', label: '지성' }, { id: 'combination', label: '복합성' }, { id: 'sensitive', label: '민감성' } ],
-  skinConcerns: [ { id: 'hydration', label: '수분' }, { id: 'moisture', label: '보습' }, { id: 'brightening', label: '미백' }, { id: 'tone', label: '피부톤' }, { id: 'soothing', label: '진정' }, { id: 'sensitive', label: '민감' }, { id: 'uv', label: '자외선차단' }, { id: 'wrinkle', label: '주름' }, { id: 'elasticity', label: '탄력' }, { id: 'pores', label: '모공' } ],
-  personalColors: [ { id: 'cool', label: '쿨톤' }, { id: 'warm', label: '웜톤' }, { id: 'neutral', label: '뉴트럴톤' } ]
+  skinTypes: [{ id: 'dry', label: '건성' }, { id: 'oily', label: '지성' }, { id: 'combination', label: '복합성' }, { id: 'sensitive', label: '민감성' }],
+  skinConcerns: [{ id: 'hydration', label: '수분' }, { id: 'moisture', label: '보습' }, { id: 'brightening', label: '미백' }, { id: 'tone', label: '피부톤' }, { id: 'soothing', label: '진정' }, { id: 'sensitive', label: '민감' }, { id: 'uv', label: '자외선차단' }, { id: 'wrinkle', label: '주름' }, { id: 'elasticity', label: '탄력' }, { id: 'pores', label: '모공' }],
+  personalColors: [{ id: 'cool', label: '쿨톤' }, { id: 'warm', label: '웜톤' }, { id: 'neutral', label: '뉴트럴톤' }]
 };
 
 function AdminProductEdit() {
@@ -83,7 +66,7 @@ function AdminProductEdit() {
         if (!catResponse.ok) throw new Error('카테고리 로드 실패');
         const categoryData = await catResponse.json();
         setCategories(categoryData);
-        
+
         const response = await fetch(`http://localhost:8080/api/products/${productId}`);
         if (!response.ok) throw new Error('상품 정보를 불러올 수 없습니다.');
 
@@ -93,12 +76,12 @@ function AdminProductEdit() {
           prdName: productData.prdName,
           description: productData.description || '',
           imageUrl: productData.imageUrls?.[0] || '',
-          stock: productData.options?.[0]?.stock || 0, 
+          stock: productData.options?.[0]?.stock || 0,
           prdPrice: productData.prdPrice,
-          categoryNo: productData.categoryNo || '', 
+          categoryNo: productData.categoryNo || '',
           status: productData.status || 'SALE',
           howToUse: productData.howToUse || '',
-          skinType: productData.skinTypes || [], 
+          skinType: productData.skinTypes || [],
           skinConcern: productData.skinConcerns || [],
           personalColor: productData.personalColors || []
         });
@@ -240,8 +223,8 @@ function AdminProductEdit() {
           <Label htmlFor="imageFile">상품 이미지</Label>
           {/* 기존 이미지 미리보기 */}
           {formData.imageUrl && !newImageFile && (
-            <div style={{marginBottom: '10px'}}>
-               <CurrentImage src={formData.imageUrl} alt="기존 이미지" /> 
+            <div style={{ marginBottom: '10px' }}>
+              <CurrentImage src={formData.imageUrl} alt="기존 이미지" />
               <p style={{ fontSize: '12px', color: '#777' }}>
                 (현재 등록된 이미지)
               </p>
@@ -300,41 +283,32 @@ function AdminProductEdit() {
           <Textarea id="howToUse" name="howToUse" value={formData.howToUse} onChange={handleChange} />
         </FormGroup>
 
-        <FormGroup>
-          <Label>피부 타입</Label>
-          <CheckboxGroup>
-            {TAG_OPTIONS.skinTypes.map(opt => (
-              <CheckboxLabel key={opt.id}>
-                <input type="checkbox" checked={formData.skinType.includes(opt.id)} onChange={() => handleCheckboxChange('skinType', opt.id)} />
-                {opt.label}
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+        {/* 피부 타입 */}
+        <TagCheckboxGroup
+          label="피부 타입"
+          groupName="skinType"
+          options={TAG_OPTIONS.skinTypes}
+          selectedValues={formData.skinType}
+          onChange={handleCheckboxChange}
+        />
 
-        <FormGroup>
-          <Label>피부 고민</Label>
-          <CheckboxGroup>
-            {TAG_OPTIONS.skinConcerns.map(opt => (
-              <CheckboxLabel key={opt.id}>
-                <input type="checkbox" checked={formData.skinConcern.includes(opt.id)} onChange={() => handleCheckboxChange('skinConcern', opt.id)} />
-                {opt.label}
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+        {/* 피부 고민 */}
+        <TagCheckboxGroup
+          label="피부 고민"
+          groupName="skinConcern"
+          options={TAG_OPTIONS.skinConcerns}
+          selectedValues={formData.skinConcern}
+          onChange={handleCheckboxChange}
+        />
 
-        <FormGroup>
-          <Label>퍼스널 컬러</Label>
-          <CheckboxGroup>
-            {TAG_OPTIONS.personalColors.map(opt => (
-              <CheckboxLabel key={opt.id}>
-                <input type="checkbox" checked={formData.personalColor.includes(opt.id)} onChange={() => handleCheckboxChange('personalColor', opt.id)} />
-                {opt.label}
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+        {/* 퍼스널 컬러 */}
+        <TagCheckboxGroup
+          label="퍼스널 컬러"
+          groupName="personalColor"
+          options={TAG_OPTIONS.personalColors}
+          selectedValues={formData.personalColor}
+          onChange={handleCheckboxChange}
+        />
 
         {/* 가격 */}
         <FormGroup>
