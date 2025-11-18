@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../css/MyPage.css";
 import { useNavigate } from "react-router-dom";
+import { getStoredMember, getCurrentMember } from "../utils/api";
 
 function MyPage() {
   const navigate = useNavigate();
+
+  // 관리자 체크 - 관리자는 관리자 페이지로 리다이렉트
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      try {
+        // 백엔드에서 최신 회원 정보 가져오기
+        const memberData = await getCurrentMember();
+        const userRole = memberData.role || '';
+        if (userRole === 'ADMIN' || userRole === 'admin') {
+          navigate('/admin', { replace: true });
+        }
+      } catch (error) {
+        // 백엔드 호출 실패 시 localStorage에서 가져오기
+        console.error('회원 정보 조회 실패:', error);
+        const memberData = getStoredMember();
+        const userRole = memberData.role || '';
+        if (userRole === 'ADMIN' || userRole === 'admin') {
+          navigate('/admin', { replace: true });
+        }
+      }
+    };
+
+    checkAdminRole();
+  }, [navigate]);
 
   // 메뉴 데이터
   const menuItems = [

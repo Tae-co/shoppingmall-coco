@@ -4,7 +4,7 @@ import {NavLink, Link, Routes, Route, useNavigate} from 'react-router-dom';
 import Logo from '../images/logo.png';
 
 import '../css/Header.css';
-import { getStoredMember, isLoggedIn, logout } from '../utils/api';
+import { getStoredMember, isLoggedIn, logout, getCurrentMember } from '../utils/api';
 
 
 const Header = () => {
@@ -14,6 +14,7 @@ const Header = () => {
     // 로그인 상태 관리
     const [loggedIn, setLoggedIn] = useState(false);
     const [userName, setUserName] = useState('');
+    const [userRole, setUserRole] = useState('');
 
     useEffect(() => {
         const syncLoginStatus = () => {
@@ -21,15 +22,38 @@ const Header = () => {
             setLoggedIn(status);
 
             if (status) {
+                // localStorage에서 회원 정보 가져오기 (로그인 시 이미 저장됨)
                 const memberData = getStoredMember();
                 const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
                 setUserName(fallbackName);
+                setUserRole(memberData.role || '');
             } else {
                 setUserName('');
+                setUserRole('');
             }
         };
 
-        syncLoginStatus();
+        // 초기 로드 시 백엔드에서 최신 정보 가져오기 (한 번만)
+        const loadMemberInfo = async () => {
+            if (isLoggedIn()) {
+                try {
+                    const memberData = await getCurrentMember();
+                    const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
+                    setUserName(fallbackName);
+                    setUserRole(memberData.role || '');
+                } catch (error) {
+                    // 백엔드 호출 실패 시 localStorage에서 가져오기
+                    console.error('회원 정보 조회 실패:', error);
+                    syncLoginStatus();
+                }
+            } else {
+                syncLoginStatus();
+            }
+        };
+
+        loadMemberInfo();
+        
+        // 로그인 상태 변경 이벤트 리스너 (로그인/로그아웃 시에만 발생)
         window.addEventListener('loginStatusChanged', syncLoginStatus);
 
         return () => {
@@ -40,6 +64,16 @@ const Header = () => {
     const handleLogout = () => {
         logout();
         navigate('/');
+    };
+
+    // 마이페이지 클릭 핸들러 (관리자는 관리자 페이지로 이동)
+    const handleMyPageClick = (e) => {
+        e.preventDefault();
+        if (userRole === 'ADMIN' || userRole === 'admin') {
+            navigate('/admin');
+        } else {
+            navigate('/mypage');
+        }
     };
 
     return (
@@ -56,7 +90,11 @@ const Header = () => {
                                 </li>
                             )}
                             <li className="top_item">고객센터</li>
-                            <li className="top_item"><Link to="/mypage" className="top_item">마이페이지</Link></li>
+                            <li className="top_item">
+                                <a href="#" className="top_item" onClick={handleMyPageClick}>
+                                    {userRole === 'ADMIN' || userRole === 'admin' ? '관리자 페이지' : '마이페이지'}
+                                </a>
+                            </li>
                             <li className="top_item">알림</li>
                             <li className="top_item">
                                 {/* 로그인 여부에 따라 로그인/로그아웃 버튼 분기 */}

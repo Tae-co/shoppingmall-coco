@@ -250,6 +250,20 @@ public class MemberController {
         }
     }
 
+    // 현재 로그인한 회원 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentMember(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            MemberResponseDto member = memberService.getMemberByMemId(authentication.getName());
+            return ResponseEntity.ok(member);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
     // 회원 정보 수정 (카카오 로그인 후 추가 정보 입력용)
     @PutMapping("/update")
     public ResponseEntity<?> updateMember(Authentication authentication, @RequestBody MemberUpdateDto updateDto) {

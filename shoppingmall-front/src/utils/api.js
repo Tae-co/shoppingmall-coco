@@ -348,3 +348,19 @@ export const updateMember = async (updateData) => {
 export const validateEmail = (email) => {
   return EMAIL_REGEX.test(email);
 };
+
+// 현재 로그인한 회원 정보 조회 (백엔드 API 호출)
+export const getCurrentMember = async () => {
+  const response = await fetchWithAuth('/member/me');
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || '회원 정보 조회에 실패했습니다.');
+  }
+
+  // localStorage에 최신 정보 업데이트 (이벤트는 발생시키지 않음 - 무한 루프 방지)
+  storage.set(STORAGE_KEYS.MEMBER, JSON.stringify(data));
+
+  return data;
+};
