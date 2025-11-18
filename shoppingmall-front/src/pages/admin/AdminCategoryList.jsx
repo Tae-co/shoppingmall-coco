@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import Spinner from '../../components/admin/Spinner';
 import {
   Title,
@@ -47,79 +46,152 @@ function AdminCategoryList() {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [parentCategoryNo, setParentCategoryNo] = useState('');
+  const [editId, setEditId] = useState(null);
 
-  const getAuthHeader = () => {
-    const token = localStorage.getItem('accessToken');
-    return { headers: { Authorization: token } };
-  };
-
+  // 목록 조회 (GET)
   const loadCategories = async () => {
     try {
-      const response = await axios.get('/api/category/list', getAuthHeader());
-      setCategories(response.data);
+      const response = await fetch('http://localhost:8080/api/categories');
+      if (!response.ok) throw new Error('로드 실패');
+      const data = await response.json();
+      setCategories(data);
     } catch (error) {
       console.error(error);
-      // toast.error('카테고리 로드 실패');
+      toast.error('카테고리 로드 실패');
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    setIsLoading(true);
     loadCategories();
   }, []);
 
-  const handleAddCategory = async (e) => {
+  // 초기화 함수
+  const resetForm = () => {
+    setNewCategoryName('');
+    setParentCategoryNo('');
+    setEditId(null);
+  };
+
+  // 폼 제출 핸들러 (추가 / 수정)
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (newCategoryName.trim() === '') {
       toast.warn('카테고리 이름을 입력하세요.');
       return;
     }
+
+    // 부모 카테고리 값 정리 (빈 문자열이면 null로)
+    const parentNoValue = parentCategoryNo === '' ? null : parentCategoryNo;
+
+    const categoryData = {
+      categoryName: newCategoryName,
+      parentCategoryNo: parentNoValue
+    };
+
     try {
-      const categoryData = { categoryName: newCategoryName }; 
-      await axios.post('/api/category/add', categoryData, getAuthHeader());
-      toast.success(`'${newCategoryName}' 카테고리가 추가되었습니다.`);
-      setNewCategoryName('');
-      await loadCategories();
-    } catch (error) {
-      toast.error('카테고리 추가에 실패했습니다.');
-    }
-  };
+      let url = 'http://localhost:8080/api/admin/categories';
+      let method = 'POST';
 
-  const handleEditCategory = async (category) => {
-    const currentName = category.categoryName || category.name;
-    const newName = window.prompt('새 카테고리 이름을 입력하세요:', category.name);
-    
-    if (newName && newName.trim() !== '' && newName.trim() !== category.name) {
-      try {
-        const updateData = { 
-            categoryNo: category.categoryNo || category.id,
-            categoryName: newName.trim() 
-        };
-        await axios.put('/api/category/update', updateData, getAuthHeader());
-        toast.success('카테고리 이름이 수정되었습니다.');
-        await loadCategories();
-      } catch (error) {
-        toast.error('카테고리 수정에 실패했습니다.');
+      // 수정 모드라면 URL과 Method 변경
+      if (editId) {
+        url = `http://localhost:8080/api/admin/categories/${editId}`;
+        method = 'PUT';
       }
+
+      const response = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoryData)
+      });
+
+      if (!response.ok) throw new Error('작업 실패');
+
+      toast.success(editId ? '수정되었습니다.' : '추가되었습니다.');
+      resetForm();
+      await loadCategories();
+
+    } catch (error) {
+      console.error(error);
+      toast.error('작업에 실패했습니다.');
     }
   };
-  
-  const handleDeleteCategory = async (category) => {
-    const catName = category.categoryName || category.name;
-    const catId = category.categoryNo || category.id;
 
-    if (window.confirm(`'${category.name}' 카테고리를 삭제하시겠습니까?`)) {
+  // 수정 버튼 클릭 핸들러
+  const handleEditClick = (category) => {
+    setEditId(category.categoryNo);
+    setNewCategoryName(category.categoryName);
+
+    if (category.parentCategory) {
+      setParentCategoryNo(category.parentCategory.categoryNo);
+    } else {
+      setParentCategoryNo('');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 삭제 (DELETE)
+  const handleDeleteCategory = async (category) => {
+    if (window.confirm(`'${category.categoryName}' 카테고리를 삭제하시겠습니까?`)) {
       try {
-        await axios.delete(`/api/category/delete/${catId}`, getAuthHeader());
-        
-        toast.success(`'${catName}' 카테고리가 삭제되었습니다.`);
+        const response = await fetch(`http://localhost:8080/api/admin/categories/${category.categoryNo}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('삭제 실패');
+
+        toast.success(`'${category.categoryName}' 카테고리가 삭제되었습니다.`);
         await loadCategories();
       } catch (error) {
         console.error(error);
         toast.error('카테고리 삭제에 실패했습니다.');
       }
     }
+  };
+
+  // 계층 구조로 정렬하여 렌더링하는 함수
+  const renderCategoryRows = () => {
+    // 대분류(최상위 부모)만 골라내기
+    const parents = categories.filter(cat => !cat.parentCategory && !cat.parentCategoryNo);
+
+    return parents.map(parent => {
+      // 해당 부모의 자식(소분류) 찾기
+      const children = categories.filter(cat => {
+          const parentId = cat.parentCategory ? cat.parentCategory.categoryNo : cat.parentCategoryNo;
+          return parentId === parent.categoryNo;
+      });
+
+      return (
+        <React.Fragment key={parent.categoryNo}>
+          {/* 대분류 렌더링 */}
+          <tr style={{ fontWeight: 'bold', backgroundColor: '#f9f9f9' }}>
+            <Td>{parent.categoryNo}</Td>
+            <Td style={{ textAlign: 'left', paddingLeft: '20px' }}>
+                {parent.categoryName}
+            </Td>
+            <Td>
+              <ActionButton onClick={() => handleEditClick(parent)}>수정</ActionButton>
+              <ActionButton $danger onClick={() => handleDeleteCategory(parent)}>삭제</ActionButton>
+            </Td>
+          </tr>
+
+          {/* 소분류 렌더링 (들여쓰기 효과) */}
+          {children.map(child => (
+            <tr key={child.categoryNo}>
+              <Td style={{ color: '#888' }}>{child.categoryNo}</Td>
+              <Td style={{ textAlign: 'left', paddingLeft: '50px' }}>
+                └ {child.categoryName}
+              </Td>
+              <Td>
+                <ActionButton onClick={() => handleEditClick(child)}>수정</ActionButton>
+                <ActionButton $danger onClick={() => handleDeleteCategory(child)}>삭제</ActionButton>
+              </Td>
+            </tr>
+          ))}
+        </React.Fragment>
+      );
+    });
   };
 
   if (isLoading) {
@@ -132,19 +204,45 @@ function AdminCategoryList() {
 
       {/* --- 새 카테고리 추가 폼 --- */}
       <FormContainer>
-        <ContentTitle>새 카테고리 추가</ContentTitle>
-        <AddForm onSubmit={handleAddCategory}>
+        <ContentTitle>
+          {editId ? '카테고리 수정' : '새 카테고리 추가'}
+        </ContentTitle>
+        <AddForm onSubmit={handleSubmit}>
           <AddInputGroup>
-            <Label htmlFor="newCategoryName" style={{marginBottom: '5px'}}>카테고리 이름</Label>
+            <Label>상위 카테고리</Label>
+            <select
+              value={parentCategoryNo}
+              onChange={(e) => setParentCategoryNo(e.target.value)}
+              style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+            >
+              <option value="">[선택 안 함] 새로운 카테고리 생성</option>
+              {categories
+                .filter(cat => !cat.parentCategory && !cat.parentCategoryNo)
+                .map((cat) => (
+                  cat.categoryNo !== editId && (
+                    <option key={cat.categoryNo} value={cat.categoryNo}>
+                      {cat.categoryName}
+                    </option>
+                  )
+                ))}
+            </select>
+          </AddInputGroup>
+
+          <AddInputGroup>
+            <Label>카테고리 이름</Label>
             <Input
               type="text"
-              id="newCategoryName"
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="예: 신상품"
+              placeholder="예: 스킨케어, 크림 등"
             />
           </AddInputGroup>
-          <Button type="submit" $primary>추가</Button>
+
+          {/* 버튼 그룹 */}
+          <div style={{ display: 'flex', gap: '5px' }}>
+            <Button type="submit" $primary>{editId ? '수정 완료' : '추가'}</Button>
+            {editId && <Button type="button" onClick={resetForm} style={{ background: '#6c757d', color: 'white' }}>취소</Button>}
+          </div>
         </AddForm>
       </FormContainer>
 
@@ -156,31 +254,13 @@ function AdminCategoryList() {
         <CategoryTable>
           <thead>
             <tr>
-              <Th style={{width: '100px'}}>ID</Th>
+              <Th style={{ width: '100px' }}>ID</Th>
               <Th>카테고리 이름</Th>
-              <Th style={{width: '150px'}}>관리</Th>
+              <Th style={{ width: '150px' }}>관리</Th>
             </tr>
           </thead>
           <tbody>
-            {categories.map((cat) => (
-              <tr key={cat.categoryNo || cat.id}>
-                <Td>{cat.categoryNo || cat.id}</Td>
-                <Td>{cat.categoryName || cat.name}</Td>
-                <Td>
-                  <ActionButton 
-                    onClick={() => handleEditCategory(cat)}
-                  >
-                    수정
-                  </ActionButton>
-                  <ActionButton 
-                    $danger 
-                    onClick={() => handleDeleteCategory(cat)}
-                  >
-                    삭제
-                  </ActionButton>
-                </Td>
-              </tr>
-            ))}
+            {renderCategoryRows()}
           </tbody>
         </CategoryTable>
       </Card>

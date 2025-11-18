@@ -186,7 +186,7 @@ function AdminProductNew() {
         throw new Error(errorData.message || '상품 등록 실패');
       }
 
-      const newProduct = await response.json();
+      //const newProduct = await response.json();
 
       toast.success(`상품이 등록되었습니다: ${prdName}`);
       navigate(`/admin/products`);
