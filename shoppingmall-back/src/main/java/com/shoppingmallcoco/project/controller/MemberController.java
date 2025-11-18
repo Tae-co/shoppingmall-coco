@@ -264,6 +264,21 @@ public class MemberController {
         }
     }
 
+    // 관리자용: 전체 회원 목록 조회 (페이징, 검색, 필터)
+    @GetMapping("/admin/list")
+    public ResponseEntity<?> getAllMembers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String role) {
+        try {
+            Map<String, Object> result = memberService.getAllMembers(page, size, searchTerm, role);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
     // 회원 정보 수정 (카카오 로그인 후 추가 정보 입력용)
     @PutMapping("/update")
     public ResponseEntity<?> updateMember(Authentication authentication, @RequestBody MemberUpdateDto updateDto) {

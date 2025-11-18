@@ -1,6 +1,6 @@
 package com.shoppingmallcoco.project.entity.cart;
 
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.entity.product.ProductOptionEntity;
 import jakarta.persistence.*;
 import lombok.*;

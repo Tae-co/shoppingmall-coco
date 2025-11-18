@@ -15,6 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 
 @Service
 @RequiredArgsConstructor
@@ -275,6 +281,65 @@ public class MemberService {
         Member member = memberRepository.findByMemId(memId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
         return toResponseDto(member);
+    }
+
+    // 관리자용: 전체 회원 목록 조회 (페이징, 검색)
+    @Transactional(readOnly = true)
+    public Map<String, Object> getAllMembers(int page, int size, String searchTerm, String role) {
+        PageRequest pageable = PageRequest.of(page - 1, size);
+        
+        Page<Member> memberPage;
+        
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            // 검색어가 있으면 아이디, 닉네임, 이메일, 이름으로 검색
+            memberPage = memberRepository.findByMemIdContainingOrMemNicknameContainingOrMemMailContainingOrMemNameContaining(
+                    searchTerm, searchTerm, searchTerm, searchTerm, pageable);
+        } else {
+            memberPage = memberRepository.findAll(pageable);
+        }
+        
+        // role 필터링 (Java Stream으로 필터링)
+        if (role != null && !role.trim().isEmpty() && !role.equals("ALL")) {
+            try {
+                Member.Role roleEnum = Member.Role.valueOf(role);
+                List<Member> filteredMembers = memberPage.getContent().stream()
+                        .filter(m -> m.getRole() == roleEnum)
+                        .collect(java.util.stream.Collectors.toList());
+                
+                // 필터링된 결과로 새 Page 생성
+                memberPage = new PageImpl<>(
+                        filteredMembers, 
+                        pageable, 
+                        filteredMembers.size()
+                );
+            } catch (IllegalArgumentException e) {
+                // 잘못된 role 값이면 전체 조회
+            }
+        }
+        
+        List<MemberResponseDto> members = memberPage.getContent().stream()
+                .map(this::toResponseDto)
+                .collect(java.util.stream.Collectors.toList());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("members", members);
+        response.put("totalElements", memberPage.getTotalElements());
+        response.put("totalPages", memberPage.getTotalPages());
+        response.put("currentPage", page);
+        response.put("size", size);
+        
+        // 통계 정보
+        long totalMembers = memberRepository.count();
+        long adminCount = memberRepository.countByRole(Member.Role.ADMIN);
+        long userCount = memberRepository.countByRole(Member.Role.USER);
+        
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("totalMembers", totalMembers);
+        stats.put("adminCount", adminCount);
+        stats.put("userCount", userCount);
+        response.put("stats", stats);
+        
+        return response;
     }
 
     // 네이버 소셜 로그인 처리
