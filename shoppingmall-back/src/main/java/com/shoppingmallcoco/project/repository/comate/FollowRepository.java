@@ -19,6 +19,12 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 	@Query("SELECT new com.shoppingmallcoco.project.dto.comate.FollowInfoDTO(f.following.memNo, f.following.memNickname) " +
 	       "FROM Follow f WHERE f.follower.memNo = :memNo")
 	List<FollowInfoDTO> findFollowingInfo(@Param("memNo") Long memNo);
+	
+	// 팔로우 여부 확인
+    boolean existsByFollowerMemNoAndFollowingMemNo(Long followerNo, Long followingNo);
+
+    // 언팔로우
+    void deleteByFollowerMemNoAndFollowingMemNo(Long followerNo, Long followingNo);
 
 
 }
