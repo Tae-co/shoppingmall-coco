@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import Spinner from '../../components/admin/Spinner';
+import CategoryTable from '../../components/admin/CategoryTable';
 import {
   Title,
   Card,
@@ -11,7 +12,6 @@ import {
   Label,
   Input,
   Button,
-  Table, Th, Td
 } from '../../styles/admincommon';
 
 const FormContainer = styled(Card)`
@@ -27,19 +27,6 @@ const AddForm = styled.form`
 const AddInputGroup = styled(FormGroup)`
   flex: 1;
   margin-bottom: 0;
-`;
-
-const CategoryTable = styled(Table)`
-  min-width: 0;
-`;
-
-const ActionButton = styled(Button)`
-  padding: 5px 10px;
-  font-size: 12px;
-  margin-right: 5px;
-  
-  background: ${props => (props.$danger ? props.theme.colors.danger : '#eee')};
-  color: ${props => (props.$danger ? 'white' : props.theme.colors.text)};
 `;
 
 function AdminCategoryList() {
@@ -150,50 +137,6 @@ function AdminCategoryList() {
     }
   };
 
-  // 계층 구조로 정렬하여 렌더링하는 함수
-  const renderCategoryRows = () => {
-    // 대분류(최상위 부모)만 골라내기
-    const parents = categories.filter(cat => !cat.parentCategory && !cat.parentCategoryNo);
-
-    return parents.map(parent => {
-      // 해당 부모의 자식(소분류) 찾기
-      const children = categories.filter(cat => {
-          const parentId = cat.parentCategory ? cat.parentCategory.categoryNo : cat.parentCategoryNo;
-          return parentId === parent.categoryNo;
-      });
-
-      return (
-        <React.Fragment key={parent.categoryNo}>
-          {/* 대분류 렌더링 */}
-          <tr style={{ fontWeight: 'bold', backgroundColor: '#f9f9f9' }}>
-            <Td>{parent.categoryNo}</Td>
-            <Td style={{ textAlign: 'left', paddingLeft: '20px' }}>
-                {parent.categoryName}
-            </Td>
-            <Td>
-              <ActionButton onClick={() => handleEditClick(parent)}>수정</ActionButton>
-              <ActionButton $danger onClick={() => handleDeleteCategory(parent)}>삭제</ActionButton>
-            </Td>
-          </tr>
-
-          {/* 소분류 렌더링 (들여쓰기 효과) */}
-          {children.map(child => (
-            <tr key={child.categoryNo}>
-              <Td style={{ color: '#888' }}>{child.categoryNo}</Td>
-              <Td style={{ textAlign: 'left', paddingLeft: '50px' }}>
-                └ {child.categoryName}
-              </Td>
-              <Td>
-                <ActionButton onClick={() => handleEditClick(child)}>수정</ActionButton>
-                <ActionButton $danger onClick={() => handleDeleteCategory(child)}>삭제</ActionButton>
-              </Td>
-            </tr>
-          ))}
-        </React.Fragment>
-      );
-    });
-  };
-
   if (isLoading) {
     return <Spinner />;
   }
@@ -251,18 +194,12 @@ function AdminCategoryList() {
         <ContentHeader>
           <ContentTitle>카테고리 목록</ContentTitle>
         </ContentHeader>
-        <CategoryTable>
-          <thead>
-            <tr>
-              <Th style={{ width: '100px' }}>ID</Th>
-              <Th>카테고리 이름</Th>
-              <Th style={{ width: '150px' }}>관리</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {renderCategoryRows()}
-          </tbody>
-        </CategoryTable>
+        {/* 분리된 컴포넌트 사용 */}
+        <CategoryTable 
+            categories={categories} 
+            onEdit={handleEditClick} 
+            onDelete={handleDeleteCategory} 
+        />
       </Card>
     </>
   );

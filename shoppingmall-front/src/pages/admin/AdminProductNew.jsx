@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import TagCheckboxGroup from '../../components/admin/TagCheckboxGroup';
 import {
   Title,
   FormGroup,
@@ -20,31 +21,9 @@ const Form = styled(Card).attrs({ as: 'form' })`
   margin: auto;
 `;
 
-const CheckboxGroup = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #fafafa;
-`;
-
-const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  cursor: pointer;
-  
-  input {
-    margin-right: 8px;
-    transform: scale(1.2);
-  }
-`;
-
 const TAG_OPTIONS = {
   skinTypes: [
-    { id: 'dry', label: '건성' }, { id: 'oily', label: '지성' }, 
+    { id: 'dry', label: '건성' }, { id: 'oily', label: '지성' },
     { id: 'combination', label: '복합성' }, { id: 'sensitive', label: '민감성' }
   ],
   skinConcerns: [
@@ -321,57 +300,33 @@ function AdminProductNew() {
         </FormGroup>
 
         {/* 선택 영역 */}
-        
+
         {/* 피부 타입 */}
-        <FormGroup>
-          <Label>피부 타입 (중복 선택 가능)</Label>
-          <CheckboxGroup>
-            {TAG_OPTIONS.skinTypes.map(opt => (
-              <CheckboxLabel key={opt.id}>
-                <input 
-                  type="checkbox" 
-                  checked={formData.skinType.includes(opt.id)}
-                  onChange={() => handleCheckboxChange('skinType', opt.id)}
-                />
-                {opt.label}
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+        <TagCheckboxGroup
+          label="피부 타입"
+          groupName="skinType"
+          options={TAG_OPTIONS.skinTypes}
+          selectedValues={formData.skinType}
+          onChange={handleCheckboxChange}
+        />
 
         {/* 피부 고민 */}
-        <FormGroup>
-          <Label>피부 고민 (중복 선택 가능)</Label>
-          <CheckboxGroup>
-            {TAG_OPTIONS.skinConcerns.map(opt => (
-              <CheckboxLabel key={opt.id}>
-                <input 
-                  type="checkbox" 
-                  checked={formData.skinConcern.includes(opt.id)}
-                  onChange={() => handleCheckboxChange('skinConcern', opt.id)}
-                />
-                {opt.label}
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+        <TagCheckboxGroup
+          label="피부 고민"
+          groupName="skinConcern"
+          options={TAG_OPTIONS.skinConcerns}
+          selectedValues={formData.skinConcern}
+          onChange={handleCheckboxChange}
+        />
 
         {/* 퍼스널 컬러 */}
-        <FormGroup>
-          <Label>퍼스널 컬러 (중복 선택 가능)</Label>
-          <CheckboxGroup>
-            {TAG_OPTIONS.personalColors.map(opt => (
-              <CheckboxLabel key={opt.id}>
-                <input 
-                  type="checkbox" 
-                  checked={formData.personalColor.includes(opt.id)}
-                  onChange={() => handleCheckboxChange('personalColor', opt.id)}
-                />
-                {opt.label}
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+        <TagCheckboxGroup
+          label="퍼스널 컬러"
+          groupName="personalColor"
+          options={TAG_OPTIONS.personalColors}
+          selectedValues={formData.personalColor}
+          onChange={handleCheckboxChange}
+        />
 
         {/* 버튼 영역 */}
         <ButtonContainer>
