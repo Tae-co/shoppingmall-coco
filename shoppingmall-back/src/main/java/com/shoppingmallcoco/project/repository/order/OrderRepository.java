@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.repository;
+package com.shoppingmallcoco.project.repository.order;
 
 import com.shoppingmallcoco.project.entity.order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

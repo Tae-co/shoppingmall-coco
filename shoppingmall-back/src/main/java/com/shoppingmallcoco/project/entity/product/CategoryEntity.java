@@ -7,20 +7,20 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "CATEGORYTABLE")
+@Table(name = "CATEGORY")
 public class CategoryEntity {
-	
-	@Id
-	@Column(name = "CATEGORYNO")
-	private Long categoryNo;
-	
-	@Column(name = "CATEGORYNAME")
-	private String categoryName;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PARENT_CATEGORY_NO")
-	private CategoryEntity parentCategory;
-	
-	@OneToMany(mappedBy = "category")
-	private List<ProductEntity> products;
+
+    @Id
+    @Column(name = "CATEGORYNO")
+    private Long categoryNo;
+
+    @Column(name = "CATEGORYNAME")
+    private String categoryName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_CATEGORY_NO")
+    private CategoryEntity parentCategory;
+
+    @OneToMany(mappedBy = "category")
+    private List<ProductEntity> products;
 }

@@ -2,14 +2,16 @@ package com.shoppingmallcoco.project.entity.product;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
-@Table(name = "PRODUCTIMAGETABLE")
+@Setter
+@Table(name = "PRODUCTIMAGE")
 public class ProductImageEntity {
-	
-	@Id
-	@Column(name = "PRODUCTIMAGENO")
+
+    @Id
+    @Column(name = "PRODUCTIMAGENO")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productimagetable_seq_generator")
     @SequenceGenerator(name="productimagetable_seq_generator", sequenceName="PRODUCTIMAGETABLE_SEQ", allocationSize=1)
     private Long productImageNo;

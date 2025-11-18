@@ -16,9 +16,9 @@ public class OrderRequestDto {
     // 배송지 정보
     private String recipientName;
     private String recipientPhone;
-    private String orderZipcode; // (ERD에 맞춘 이름)
-    private String orderAddress1; // (ERD에 맞춘 이름)
-    private String orderAddress2; // (ERD에 맞춘 이름)
+    private String orderZipcode;
+    private String orderAddress1;
+    private String orderAddress2;
     private String deliveryMessage;
 
     // 결제 정보

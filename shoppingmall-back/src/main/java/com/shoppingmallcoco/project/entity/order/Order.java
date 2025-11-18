@@ -17,19 +17,19 @@ import java.util.List;
 @Table(name = "\"ORDER\"")
 public class Order {
 
-    // [수정 1] orderNo 필드 복구 및 어노테이션 정리
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq_gen")
     @SequenceGenerator(name = "order_seq_gen", sequenceName = "order_SEQ", allocationSize = 1)
     @Column(name = "orderNo")
-    private Long orderNo; // <-- 아까 이 줄이 빠져 있었습니다!
+    private Long orderNo;
 
-    // [수정 2] Long memNo 삭제하고 Member 객체만 남김 (중복 매핑 해결)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memNo", nullable = false)
     private Member member;
 
-    // (삭제됨) private Long memNo; <-- 이 줄은 지워야 합니다.
+
 
     @Column(name = "orderDate")
     private LocalDate orderDate;

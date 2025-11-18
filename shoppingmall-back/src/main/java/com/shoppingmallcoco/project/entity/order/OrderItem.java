@@ -1,5 +1,7 @@
 package com.shoppingmallcoco.project.entity.order;
 
+import com.shoppingmallcoco.project.entity.product.ProductEntity;
+import com.shoppingmallcoco.project.entity.product.ProductOptionEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "orderitem") // DB 테이블명 (소문자)
+@Table(name = "orderitem") // DB 테이블명
 public class OrderItem {
 
     @Id
@@ -18,17 +20,19 @@ public class OrderItem {
     @Column(name = "orderitemNo")
     private Long orderItemId;
 
-    @Column(name = "prdNo", nullable = false)
-    private Long prdNo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prdNo", nullable = false) // DB 컬럼 'prdNo'와 연결
+    private ProductEntity product;
 
-    // --- [필수 추가] 옵션 번호 ---
-    @Column(name = "OptionNo", nullable = false) // (DB 컬럼명: OptionNo)
-    private Long optionNo;
 
-    @Column(name = "price", nullable = false) // (DB 컬럼명 수정: price)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OptionNo", nullable = false) // DB 컬럼 'OptionNo'와 연결
+    private ProductOptionEntity productOption;
+
+    @Column(name = "price", nullable = false)
     private Long orderPrice;
 
-    @Column(name = "qty", nullable = false) // (DB 컬럼명 수정: qty)
+    @Column(name = "qty", nullable = false)
     private Long orderQty;
 
     @ManyToOne(fetch = FetchType.LAZY)

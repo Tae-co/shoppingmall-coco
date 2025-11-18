@@ -12,10 +12,10 @@ import java.util.List;
 
 @RestController // "이 클래스는 JSON 데이터를 반환하는 API '컨트롤러'입니다."
 @RequiredArgsConstructor // final이 붙은 '서비스'를 주입받기 위한 생성자
-@RequestMapping("/api/orders") // "이 컨트롤러는 /api/orders 주소로 오는 요청을 담당합니다."
+@RequestMapping("/api/orders")
 public class OrderController {
 
-    private final OrderService orderService; // '서비스'를 주입받음
+    private final OrderService orderService;
 
     /**
      * 주문 생성 API
@@ -24,14 +24,14 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto requestDto) {
 
-        // (참고) 실제로는 Spring Security에서 로그인한 회원 정보를 가져와야 함
+
         Long tempMemberId = 1L; // (임시) 회원 ID
 
         try {
-            // '서비스'에게 DTO와 회원 ID를 넘겨 '주문 생성' 로직을 실행시킴
+
             Long orderId = orderService.createOrder(requestDto, tempMemberId);
 
-            // 성공 시, 생성된 주문 ID와 함께 201 (Created) 상태 반환
+
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("주문이 성공적으로 생성되었습니다. 주문 ID: " + orderId);
 
@@ -53,7 +53,6 @@ public class OrderController {
         return ResponseEntity.ok(orderHistory);
 
         }
-    // ... (기존 코드들) ...
 
     /**
      * [추가] 주문 취소 API

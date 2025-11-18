@@ -1,7 +1,7 @@
 package com.shoppingmallcoco.project.entity.auth;
 
 import jakarta.persistence.*;
-import lombok.*; // @Setter, @Getter 등 포함
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter // [필수 수정] OrderService에서 포인트 환불(setPoint)을 위해 추가
+@Setter
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -72,11 +72,16 @@ public class Member {
         USER, ADMIN
     }
 
-    // [비즈니스 로직] 포인트 사용
+
     public void usePoints(Long pointsToUse) {
         if (this.point < pointsToUse) {
             throw new RuntimeException("보유 포인트가 부족합니다.");
         }
         this.point -= pointsToUse;
+    }
+
+
+    public void returnPoints(Long pointsToReturn) {
+        this.point += pointsToReturn;
     }
 }
