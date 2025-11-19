@@ -1,34 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/MyPage.css";
 import { useNavigate } from "react-router-dom";
-import { getStoredMember, getCurrentMember } from "../utils/api";
+import axios from "axios";
 
 function MyPage() {
   const navigate = useNavigate();
 
-  // 관리자 체크 - 관리자는 관리자 페이지로 리다이렉트
-  useEffect(() => {
-    const checkAdminRole = async () => {
-      try {
-        // 백엔드에서 최신 회원 정보 가져오기
-        const memberData = await getCurrentMember();
-        const userRole = memberData.role || '';
-        if (userRole === 'ADMIN' || userRole === 'admin') {
-          navigate('/admin', { replace: true });
-        }
-      } catch (error) {
-        // 백엔드 호출 실패 시 localStorage에서 가져오기
-        console.error('회원 정보 조회 실패:', error);
-        const memberData = getStoredMember();
-        const userRole = memberData.role || '';
-        if (userRole === 'ADMIN' || userRole === 'admin') {
-          navigate('/admin', { replace: true });
-        }
-      }
-    };
+  const [myPageData, setMyPageData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    checkAdminRole();
-  }, [navigate]);
+  // JWT 토큰 (로그인 시 localStorage 저장)
+  const token = localStorage.getItem("token");
 
   // 메뉴 데이터
   const menuItems = [
@@ -39,23 +21,31 @@ function MyPage() {
     { icon: "⚙️", title: "계정 설정", desc: "비밀번호 변경 및 계정 관리", path: "/account-settings" },
   ];
 
-  // 주문 데이터 (예시)
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2024.10.28",
-      title: "히알루론산 인텐시브 세럼",
-      total: 45000,
-      status: "배송완료",
-    },
-    {
-      id: "ORD-002",
-      date: "2024.10.15",
-      title: "비타민C 브라이트닝 토너 외 2건",
-      total: 91000,
-      status: "배송중",
-    },
-  ];
+  // 마이페이지 데이터 불러오기
+  useEffect(() => {
+    if (!token) return; // 토큰 없으면 요청x
+
+    axios
+      .get("http://localhost:8080/api/mypage", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setMyPageData(res.data);
+      })
+      .catch((err) => {
+        console.error("마이페이지 불러오기 오류:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [token]); // token 변경 시 다시 요청
+
+  if (loading) return <div>로딩 중...</div>;
+  if (!myPageData) return <div>데이터를 불러오지 못했습니다.</div>;
+
+  const { nickname, point, recentOrders } = myPageData;
 
   return (
     <div className="mypage-container">
@@ -68,14 +58,14 @@ function MyPage() {
       {/* 사용자 정보 */}
       <div className="mypage-user">
         <div className="user-info">
-          <div className="user-avatar">뷰</div>
+          <div className="user-avatar">{nickname?.charAt(0)}</div>
           <div>
-            <h3>뷰티러버</h3>
-            <p>beauty@coco.com</p>
+            <h3>{nickname}</h3>
+            <p>로그인한 계정</p>
           </div>
         </div>
         <div className="user-stats">
-          <strong>5,420</strong>
+          <strong>{point?.toLocaleString()}</strong>
           <p>포인트</p>
         </div>
       </div>
@@ -110,21 +100,40 @@ function MyPage() {
           </button>
         </div>
 
-        {orders.length > 0 ? (
+        {recentOrders.length > 0 ? (
           <div className="recent-orders-list">
-            {orders.map((order) => (
+            {recentOrders.map((order) => (
               <div
-                key={order.id}
+                key={order.orderNo}
                 className="recent-order-item"
-                onClick={() => navigate(`/order-detail/${order.id}`)}
+                onClick={() => navigate(`/order-detail/${order.orderNo}`)}
               >
-                <div className="order-left">
+                {/* 이미지 영역 */}
+                <div className="order-image-box">
+                  <img
+                    src={order.thumbnailImage}
+                    alt={order.mainProductName}
+                    className="order-thumbnail"
+                  />
+                </div>
+
+                {/* 내용 영역 */}
+                <div className="order-content">
                   <p className="order-date">
-                    {order.date} <span>주문번호: {order.id}</span>
+                    {order.orderDate} <span>주문번호: {order.orderNo}</span>
                   </p>
-                  <p className="order-title">{order.title}</p>
+
+                  <p className="order-title">
+                    {order.mainProductName}
+                    {order.extraItemCount > 0 && (
+                      <span className="extra-count">
+                        {" "}외 {order.extraItemCount}건
+                      </span>
+                    )}
+                  </p>
+
                   <p className="order-price">
-                    {order.total.toLocaleString()}원
+                    {order.totalPrice.toLocaleString()}원
                   </p>
                 </div>
 
