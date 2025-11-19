@@ -129,6 +129,12 @@ const ProductInfoBox = ({
   handleAddToCart,
   handleBuyNow
 }) => {
+
+  // 상태 확인 로직
+  const isSoldOut = product.status === '품절' || product.status === 'SOLD_OUT';
+  const isStop = product.status === '판매중지' || product.status === 'STOP';
+  const isUnavailable = isSoldOut || isStop;
+
   return (
     <InfoBox>
       <ProductName>{product.prdName}</ProductName>
@@ -181,11 +187,12 @@ const ProductInfoBox = ({
       </div>
 
       <ButtonGroup>
-        <ProductButton onClick={handleAddToCart}>
-          장바구니
-        </ProductButton>
-        <ProductButton primary onClick={handleBuyNow}>
-          바로구매
+        <ProductButton
+          onClick={handleAddToCart}
+          disabled={isUnavailable} // 비활성화
+          style={{ opacity: isUnavailable ? 0.5 : 1 }}
+        >
+          {isSoldOut ? '품절' : (isStop ? '판매 중지' : '장바구니')}
         </ProductButton>
       </ButtonGroup>
     </InfoBox>
