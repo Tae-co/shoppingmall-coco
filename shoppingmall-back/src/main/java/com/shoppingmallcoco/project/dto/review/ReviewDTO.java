@@ -58,6 +58,7 @@ public class ReviewDTO {
         return ReviewDTO.builder().reviewNo(entity.getReviewNo())
             .orderItemNo(entity.getOrderItem().getOrderItemNo()).rating(entity.getRating()).content(
                 entity.getContent()).createdAt(entity.getCreatedAt())
+            .userNickname(entity.getOrderItem().getOrder().getMember().getMemNickname())
             .updatedAt(entity.getUpdatedAt()).likeCount(likeCount).prosTags(prosTagList)
             .consTags(consTagList).reviewImages(reviewImagesList).build();
     }

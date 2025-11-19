@@ -1,7 +1,7 @@
 package com.shoppingmallcoco.project.service.review;
 
 import com.shoppingmallcoco.project.dto.review.ReviewDTO;
-import com.shoppingmallcoco.project.entity.OrderItem;
+import com.shoppingmallcoco.project.entity.order.OrderItem;
 import com.shoppingmallcoco.project.entity.review.Review;
 import com.shoppingmallcoco.project.entity.review.ReviewImage;
 import com.shoppingmallcoco.project.entity.review.ReviewTagMap;
@@ -12,12 +12,9 @@ import com.shoppingmallcoco.project.repository.review.ReviewImageRepository;
 import com.shoppingmallcoco.project.repository.review.ReviewRepository;
 import com.shoppingmallcoco.project.repository.review.ReviewTagMapRepository;
 import com.shoppingmallcoco.project.repository.review.TagRepository;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
