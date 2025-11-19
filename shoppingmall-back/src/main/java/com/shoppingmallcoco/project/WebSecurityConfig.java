@@ -68,7 +68,7 @@ public class WebSecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
 		// REST API에서 사용하는 HTTP 메서드를 허용
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		// 필요한 모든 헤더를 허용
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		// 자격 증명(쿠키, 인증 헤더 등)을 포함한 요청 허용
