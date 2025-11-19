@@ -1,8 +1,8 @@
 package com.shoppingmallcoco.project.controller;
 
-import com.shoppingmallcoco.project.dto.*;
-import com.shoppingmallcoco.project.service.EmailVerificationService;
-import com.shoppingmallcoco.project.service.MemberService;
+import com.shoppingmallcoco.project.dto.auth.*;
+import com.shoppingmallcoco.project.service.auth.EmailVerificationService;
+import com.shoppingmallcoco.project.service.auth.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -206,6 +206,87 @@ public class MemberController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 네이버 로그인
+    @PostMapping("/naver/login")
+    public ResponseEntity<?> naverLogin(@RequestBody NaverLoginDto naverLoginDto) {
+        try {
+            if (naverLoginDto.getCode() == null || naverLoginDto.getCode().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "네이버 인증 코드가 필요합니다."));
+            }
+            if (naverLoginDto.getState() == null || naverLoginDto.getState().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "상태값이 필요합니다."));
+            }
+
+            MemberResponseDto response = memberService.naverLogin(
+                    naverLoginDto.getCode(),
+                    naverLoginDto.getState()
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 구글 로그인
+    @PostMapping("/google/login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginDto googleLoginDto) {
+        try {
+            if (googleLoginDto.getAccessToken() == null || googleLoginDto.getAccessToken().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "구글 액세스 토큰이 필요합니다."));
+            }
+
+            MemberResponseDto response = memberService.googleLogin(googleLoginDto.getAccessToken());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 현재 로그인한 회원 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentMember(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            MemberResponseDto member = memberService.getMemberByMemId(authentication.getName());
+            return ResponseEntity.ok(member);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 관리자용: 전체 회원 목록 조회 (페이징, 검색, 필터)
+    @GetMapping("/admin/list")
+    public ResponseEntity<?> getAllMembers(
+            Authentication authentication,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String role) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            // 관리자 권한 체크
+            MemberResponseDto currentMember = memberService.getMemberByMemId(authentication.getName());
+            if (currentMember.getRole() == null || 
+                (!currentMember.getRole().equals("ADMIN") && !currentMember.getRole().equals("admin"))) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "관리자 권한이 필요합니다."));
+            }
+            
+            Map<String, Object> result = memberService.getAllMembers(page, size, searchTerm, role);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 

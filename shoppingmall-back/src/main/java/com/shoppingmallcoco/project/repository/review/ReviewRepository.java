@@ -13,13 +13,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     //Optional<Review> findById(Long reviewNo);
 
     // review 모든 목록 조회 (하나의 상품에 등록된 리뷰 목록 조회)
-    //List<Review> findByOrderItem_PrdNo(Long prdNo);
-	List<Review> findByOrderItem_Product_PrdNo(Long prdNo);
+    List<Review> findByOrderItem_PrdNo(Long prdNo);
+	//List<Review> findByOrderItem_Product_PrdNo(Long prdNo);
 
     // review 삭제
     //void deleteById(Long reviewNo);
     
-	// [이규리] 작성 - 나중에 병합할때 체크
+	// CO-MATE 기능 구현
     // 특정 사용자가 작성한 리뷰 조회 (기본값:최신순)
     //List<Review> findByOrderItem_Member_MemNo(Long memNo);
 	List<Review> findByOrderItem_Order_Member_MemNoOrderByCreatedAtDesc(Long memNo);

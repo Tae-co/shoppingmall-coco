@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/FindAccount.css';
 import BackIcon from '../images/back.svg';
+import { 
+  sendFindIdVerificationCode, 
+  findId, 
+  sendResetPasswordVerificationCode, 
+  resetPassword,
+  validateEmail
+} from '../utils/api';
+import { useVerificationTimer } from '../hooks/useVerificationTimer';
 
 const FindAccount = () => {
   const navigate = useNavigate();
@@ -11,23 +19,9 @@ const FindAccount = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
-  const [timer, setTimer] = useState(0);
-  const [isSendingCode, setIsSendingCode] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [foundId, setFoundId] = useState('');
-
-  // 인증번호 유효시간 타이머 관리
-  useEffect(() => {
-    let interval = null;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer(timer => timer - 1);
-      }, 1000);
-    } else if (timer === 0 && interval) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
+  const { timer, isSendingCode, setIsSendingCode, startTimer, resetTimer, formatTimer, isTimerActive } = useVerificationTimer();
 
   // 탭 전환 시 모든 입력값 및 상태 초기화
   const handleTabChange = (newTab) => {
@@ -37,10 +31,9 @@ const FindAccount = () => {
     setVerificationCode('');
     setNewPassword('');
     setNewPasswordConfirm('');
-    setTimer(0);
+    resetTimer();
     setIsVerified(false);
     setFoundId('');
-    setIsSendingCode(false);
   };
 
   // 로그인 페이지로 이동
@@ -58,34 +51,20 @@ const FindAccount = () => {
         return;
       }
 
-      const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-      if (!emailRegex.test(email)) {
+      if (!validateEmail(email)) {
         alert('올바른 이메일 형식을 입력해주세요.');
         return;
       }
 
       setIsSendingCode(true);
       try {
-        const response = await fetch('http://localhost:8080/api/member/find-id/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          alert(data.message);
-          setTimer(300); // 5분
-          setIsVerified(false);
-        } else {
-          alert(data.message || '인증번호 전송에 실패했습니다.');
-        }
+        await sendFindIdVerificationCode(email);
+        alert('인증번호가 이메일로 전송되었습니다.');
+        startTimer();
+        setIsVerified(false);
       } catch (error) {
         console.error('인증번호 전송 오류:', error);
-        alert('인증번호 전송 중 오류가 발생했습니다.');
+        alert(error.message || '인증번호 전송 중 오류가 발생했습니다.');
       } finally {
         setIsSendingCode(false);
       }
@@ -99,34 +78,20 @@ const FindAccount = () => {
         return;
       }
 
-      const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-      if (!emailRegex.test(email)) {
+      if (!validateEmail(email)) {
         alert('올바른 이메일 형식을 입력해주세요.');
         return;
       }
 
       setIsSendingCode(true);
       try {
-        const response = await fetch('http://localhost:8080/api/member/find-password/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ memId, email })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          alert(data.message);
-          setTimer(300); // 5분
-          setIsVerified(false);
-        } else {
-          alert(data.message || '인증번호 전송에 실패했습니다.');
-        }
+        await sendResetPasswordVerificationCode(memId, email);
+        alert('인증번호가 이메일로 전송되었습니다.');
+        startTimer();
+        setIsVerified(false);
       } catch (error) {
         console.error('인증번호 전송 오류:', error);
-        alert('인증번호 전송 중 오류가 발생했습니다.');
+        alert(error.message || '인증번호 전송 중 오류가 발생했습니다.');
       } finally {
         setIsSendingCode(false);
       }
@@ -143,30 +108,14 @@ const FindAccount = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/member/find-id/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          code: verificationCode
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setFoundId(data.memId);
-        setIsVerified(true);
-        setTimer(0);
-        alert('아이디 찾기가 완료되었습니다.');
-      } else {
-        alert(data.message || '인증번호가 일치하지 않습니다.');
-      }
+      const data = await findId(email, verificationCode);
+      setFoundId(data.memId);
+      setIsVerified(true);
+      resetTimer();
+      alert('아이디 찾기가 완료되었습니다.');
     } catch (error) {
       console.error('아이디 찾기 오류:', error);
-      alert('아이디 찾기 중 오류가 발생했습니다.');
+      alert(error.message || '아이디 찾기 중 오류가 발생했습니다.');
     }
   };
 
@@ -192,30 +141,12 @@ const FindAccount = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/member/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          memId,
-          email,
-          code: verificationCode,
-          newPassword
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert('비밀번호가 재설정되었습니다. 로그인해주세요.');
-        navigate('/login');
-      } else {
-        alert(data.message || '비밀번호 재설정에 실패했습니다.');
-      }
+      await resetPassword(memId, email, verificationCode, newPassword);
+      alert('비밀번호가 재설정되었습니다. 로그인해주세요.');
+      navigate('/login');
     } catch (error) {
       console.error('비밀번호 재설정 오류:', error);
-      alert('비밀번호 재설정 중 오류가 발생했습니다.');
+      alert(error.message || '비밀번호 재설정 중 오류가 발생했습니다.');
     }
   };
 
@@ -259,21 +190,21 @@ const FindAccount = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="find-account-input"
-                      disabled={timer > 0}
+                      disabled={isTimerActive}
                     />
                   </div>
 
                   <button 
                     type="submit" 
                     className="verify-button"
-                    disabled={isSendingCode || timer > 0}
+                    disabled={isSendingCode || isTimerActive}
                   >
-                    {isSendingCode ? '전송중...' : timer > 0 ? `재전송(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})` : '인증번호 받기'}
+                    {isSendingCode ? '전송중...' : isTimerActive ? `재전송(${formatTimer()})` : '인증번호 받기'}
                   </button>
                 </form>
               ) : null}
 
-              {timer > 0 && !foundId && (
+              {isTimerActive && !foundId && (
                 <form onSubmit={handleFindId} className="find-account-form" style={{ marginTop: '20px' }}>
                   <div className="input-group">
                     <label>인증번호 *</label>
@@ -331,7 +262,7 @@ const FindAccount = () => {
                         value={memId}
                         onChange={(e) => setMemId(e.target.value)}
                         className="find-account-input"
-                        disabled={timer > 0}
+                        disabled={isTimerActive}
                       />
                     </div>
 
@@ -343,20 +274,20 @@ const FindAccount = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="find-account-input"
-                        disabled={timer > 0}
+                        disabled={isTimerActive}
                       />
                     </div>
 
                     <button 
                       type="submit" 
                       className="verify-button"
-                      disabled={isSendingCode || timer > 0}
+                      disabled={isSendingCode || isTimerActive}
                     >
-                      {isSendingCode ? '전송중...' : timer > 0 ? `재전송(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})` : '인증번호 받기'}
+                      {isSendingCode ? '전송중...' : isTimerActive ? `재전송(${formatTimer()})` : '인증번호 받기'}
                     </button>
                   </form>
 
-                  {timer > 0 && (
+                  {isTimerActive && (
                     <form onSubmit={handleResetPassword} className="find-account-form" style={{ marginTop: '20px' }}>
                       <div className="input-group">
                         <label>인증번호 *</label>

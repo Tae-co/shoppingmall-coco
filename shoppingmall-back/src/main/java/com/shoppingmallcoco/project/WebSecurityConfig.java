@@ -41,6 +41,8 @@ public class WebSecurityConfig {
 					"/api/member/signup",
 					"/api/member/login",
 					"/api/member/kakao/**",
+					"/api/member/naver/**",
+					"/api/member/google/**",
 					"/api/member/check-id/**",
 					"/api/member/check-nickname/**",
 					"/api/member/check-email/**",
@@ -51,6 +53,8 @@ public class WebSecurityConfig {
 				).permitAll()
 				// 로그인된 사용자만 접근할 수 있는 API
 				.requestMatchers("/api/member/me", "/api/member/update").authenticated()
+				// 관리자만 접근할 수 있는 API
+				.requestMatchers("/api/member/admin/**").authenticated()
 				// 나머지 요청은 모두 허용 (추후 필요 시 제한 추가)
 				.anyRequest().permitAll()
 			)
@@ -66,7 +70,7 @@ public class WebSecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
 		// REST API에서 사용하는 HTTP 메서드를 허용
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		// 필요한 모든 헤더를 허용
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		// 자격 증명(쿠키, 인증 헤더 등)을 포함한 요청 허용

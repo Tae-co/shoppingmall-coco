@@ -1,6 +1,8 @@
-package com.shoppingmallcoco.project.repository;
+package com.shoppingmallcoco.project.repository.auth;
 
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +25,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 이메일 중복 확인
     boolean existsByMemMail(String memMail);
+
+    // 검색: 아이디, 닉네임, 이메일, 이름으로 검색
+    Page<Member> findByMemIdContainingOrMemNicknameContainingOrMemMailContainingOrMemNameContaining(
+            String memId, String memNickname, String memMail, String memName, Pageable pageable);
+
+    // role별 회원 수 조회
+    long countByRole(Member.Role role);
 }
 
 

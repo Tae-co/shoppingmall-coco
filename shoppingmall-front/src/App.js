@@ -6,6 +6,7 @@ import theme from './styles/admintheme';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import Home from './pages/Home';
 import Comate from './pages/Comate';
 import Cart from './pages/Cart';
@@ -14,6 +15,7 @@ import SignupTerms from './pages/SignupTerms';
 import SignupInfo from './pages/SignupInfo';
 import FindAccount from './pages/FindAccount';
 import KakaoAdditionalInfo from './pages/KakaoAdditionalInfo';
+import NaverLoginCallback from './pages/NaverLoginCallback';
 import MyPage from './pages/MyPage';
 import ProfileEdit from "./pages/ProfileEdit";
 import OrderHistory from "./pages/OrderHistory";
@@ -31,6 +33,7 @@ import AdminProductList from './pages/admin/AdminProductList';
 import AdminProductNew from './pages/admin/AdminProductNew';
 import AdminProductEdit from './pages/admin/AdminProductEdit';
 import AdminCategoryList from './pages/admin/AdminCategoryList';
+import AdminMemberList from './pages/admin/AdminMemberList';
 import OrderPage from './pages/Orderpage/OrderPage';
 import PaymentPage from './pages/PaymentPage/PaymentPage';
 import OrderSuccessPage from './pages/OrderSuccessPage/OrderSuccessPage';
@@ -39,7 +42,8 @@ import { OrderProvider } from './pages/OrderContext';
 
 function App() {
   const location = useLocation();
-  const hideHeaderFooter = ['/login', '/signup/terms', '/signup/info', '/find-account', '/kakao/additional-info', '/admin'].includes(location.pathname);
+  const hideHeaderFooter = ['/login', '/login/naver/callback', '/signup/terms', '/signup/info', '/find-account', '/kakao/additional-info'].includes(location.pathname) 
+    || location.pathname.startsWith('/admin');
 
 
   return (
@@ -51,12 +55,13 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* 로그인 관련 */}
           <Route path="/login" element={<Login />} />
+          <Route path="/login/naver/callback" element={<NaverLoginCallback />} />
           <Route path="/signup/terms" element={<SignupTerms />} />
           <Route path="/signup/info" element={<SignupInfo />} />
           <Route path="/find-account" element={<FindAccount />} />
           <Route path="/kakao/additional-info" element={<KakaoAdditionalInfo />} />
 
-          <Route element={<ProtectedRoute />}> //로그인이 필요한 페이지는 ProtectedRoute로 감싸서 접근 제어
+          <Route element={<ProtectedRoute />}> {/* 로그인이 필요한 페이지는 ProtectedRoute로 감싸서 접근 제어 */}
             {/* 마이페이지 관련 */}
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/profile-edit" element={<ProfileEdit />} />
@@ -68,14 +73,6 @@ function App() {
             <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
             {/* 장바구니 관련 */}
             <Route path="/cart" element={<Cart />} />
-            {/* 관리자 페이지 */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminHome />} />
-              <Route path="products" element={<AdminProductList />} />
-              <Route path="product/new" element={<AdminProductNew />} />
-              <Route path="product/edit/:productId" element={<AdminProductEdit />} />
-              <Route path="categories" element={<AdminCategoryList />} />
-            </Route>
             {/* 주문 관련 */}
             <Route path="/order" element={<OrderPage />} />
             <Route path="/payment" element={<PaymentPage />} />
@@ -84,10 +81,22 @@ function App() {
             {/* COMATE 관련 -  내 계정 */}
             <Route path="/comate/me/:tab?" element={<Comate userType="me" />} />
           </Route>
+          
+          {/* 관리자 페이지 - 관리자 권한 필요 */}
+          <Route element={<AdminProtectedRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminHome />} />
+              <Route path="products" element={<AdminProductList />} />
+              <Route path="product/new" element={<AdminProductNew />} />
+              <Route path="product/edit/:productId" element={<AdminProductEdit />} />
+              <Route path="categories" element={<AdminCategoryList />} />
+              <Route path="members" element={<AdminMemberList />} />
+            </Route>
+          </Route>
           {/* COMATE 관련 - 다른 사용자 계정 */}
           <Route path="/comate/user/:userId/:tab?" element={<Comate userType="user" />} />
           {/* 리뷰 관련 */}
-          <Route path="/reviews" element={<Review />} />
+          <Route path="/reviews/:orderItemNo" element={<Review />} />
           <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
           {/* 상품 관련 */}
           <Route path="/product" element={<ProductListPage />} />

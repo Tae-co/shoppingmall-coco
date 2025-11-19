@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.entity;
+package com.shoppingmallcoco.project.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
-import com.shoppingmallcoco.project.dto.MemberSignupDto;
+import com.shoppingmallcoco.project.dto.auth.MemberSignupDto;
 
 @Entity
 @Getter
@@ -18,18 +18,18 @@ import com.shoppingmallcoco.project.dto.MemberSignupDto;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert // DB 컬럼의 기본값 적용 가능하도록 필드값이 null인 경우 insert에서 제외
-@Table(name = "memberTable")
+@Table(name = "member")
 public class Member {
 
     @Id
     @SequenceGenerator(
-            name = "seq_memberTable_memNo",
-            sequenceName = "seq_memberTable_memNo",
+            name = "seq_member_memNo",
+            sequenceName = "seq_member_memNo",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "seq_memberTable_memNo"
+            generator = "seq_member_memNo"
     )
     @Column(name = "memNo")
     private Long memNo;

@@ -1,0 +1,86 @@
+import React, { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { fetchWithoutAuth, storage, STORAGE_KEYS } from '../utils/api';
+
+const NaverLoginCallback = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+    const storedState = localStorage.getItem('naver_state');
+    const error = searchParams.get('error');
+
+    // 에러가 있으면 로그인 실패
+    if (error) {
+      alert('네이버 로그인에 실패했습니다.');
+      localStorage.removeItem('naver_state');
+      navigate('/login');
+      return;
+    }
+
+    // 상태값 검증 (CSRF 방지)
+    if (!state || state !== storedState) {
+      alert('네이버 로그인 인증에 실패했습니다.');
+      localStorage.removeItem('naver_state');
+      navigate('/login');
+      return;
+    }
+
+    // 코드가 없으면 에러
+    if (!code) {
+      alert('네이버 로그인에 실패했습니다.');
+      localStorage.removeItem('naver_state');
+      navigate('/login');
+      return;
+    }
+
+    // 네이버 로그인 처리 (백엔드에서 code를 받아서 처리)
+    const handleNaverLogin = async () => {
+      try {
+        const response = await fetchWithoutAuth('/member/naver/login', {
+          method: 'POST',
+          body: JSON.stringify({ code, state }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // 로그인 성공 처리
+          if (data.token) {
+            storage.set(STORAGE_KEYS.TOKEN, data.token);
+          }
+          storage.set(STORAGE_KEYS.MEMBER, JSON.stringify(data));
+          window.dispatchEvent(new Event('loginStatusChanged'));
+
+          if (data.needsAdditionalInfo) {
+            navigate('/kakao/additional-info');
+          } else {
+            alert('네이버 로그인되었습니다.');
+            navigate('/');
+          }
+        } else {
+          throw new Error(data.message || '네이버 로그인에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('네이버 로그인 오류:', error);
+        alert(error.message || '네이버 로그인 중 오류가 발생했습니다.');
+        navigate('/login');
+      } finally {
+        localStorage.removeItem('naver_state');
+      }
+    };
+
+    handleNaverLogin();
+  }, [searchParams, navigate]);
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div>네이버 로그인 처리 중...</div>
+    </div>
+  );
+};
+
+export default NaverLoginCallback;
+

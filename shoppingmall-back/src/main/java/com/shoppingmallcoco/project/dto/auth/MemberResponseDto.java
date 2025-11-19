@@ -1,4 +1,4 @@
-package com.shoppingmallcoco.project.dto;
+package com.shoppingmallcoco.project.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

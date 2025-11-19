@@ -101,7 +101,7 @@ const ProductTabs = ({ product }) => {
         {currentTab === 'reviews' && (
           <div>
             <h3>상품 리뷰</h3>
-            <ProductReviews />
+            <ProductReviews productNo={product.productId} />
           </div>
         )}
         {currentTab === 'howToUse' && (

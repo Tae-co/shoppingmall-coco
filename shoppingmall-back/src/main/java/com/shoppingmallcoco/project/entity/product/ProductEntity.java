@@ -5,9 +5,11 @@ import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "PRODUCT")
 public class ProductEntity {
 	
@@ -41,15 +43,18 @@ public class ProductEntity {
     
     @Column(name = "PERSONALCOLOR")
     private String personalColor;
+    
+    @Column(name = "STATUS")
+    private String status;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CATEGORY_NO", nullable = false)
 	private CategoryEntity category;
 	
-	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProductOptionEntity> options;
 	
-	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC") // 이미지 순서(sortOrder)대로 정렬 1번이 썸네일
     private List<ProductImageEntity> images;
 

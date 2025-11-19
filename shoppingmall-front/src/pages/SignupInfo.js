@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/SignupInfo.css';
+import { 
+  checkIdDuplicate, 
+  checkNicknameDuplicate, 
+  sendEmailVerificationCode, 
+  verifyEmailCode,
+  signup,
+  validateEmail
+} from '../utils/api';
+import { useVerificationTimer } from '../hooks/useVerificationTimer';
 
 const SignupInfo = () => {
   const navigate = useNavigate();
@@ -20,8 +29,7 @@ const SignupInfo = () => {
   const [isIdChecked, setIsIdChecked] = useState(false);
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [isSendingCode, setIsSendingCode] = useState(false);
+  const { timer, isSendingCode, setIsSendingCode, startTimer, resetTimer, formatTimer, isTimerActive } = useVerificationTimer();
 
   // 입력 필드 변경 처리 및 중복확인 상태 초기화
   const handleInputChange = (e) => {
@@ -47,8 +55,7 @@ const SignupInfo = () => {
           alert('아이디는 4자 이상 입력해주세요.');
           return;
         }
-        const response = await fetch(`http://localhost:8080/api/member/check-id/${formData.userId}`);
-        const data = await response.json();
+        const data = await checkIdDuplicate(formData.userId);
         
         if (data.available) {
           setIsIdChecked(true);
@@ -62,8 +69,7 @@ const SignupInfo = () => {
           alert('닉네임은 2자 이상 입력해주세요.');
           return;
         }
-        const response = await fetch(`http://localhost:8080/api/member/check-nickname/${encodeURIComponent(formData.nickname)}`);
-        const data = await response.json();
+        const data = await checkNicknameDuplicate(formData.nickname);
         
         if (data.available) {
           setIsNicknameChecked(true);
@@ -75,22 +81,9 @@ const SignupInfo = () => {
       }
     } catch (error) {
       console.error('중복확인 오류:', error);
-      alert('중복확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '중복확인 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
-
-  // 인증번호 유효시간 타이머 관리
-  useEffect(() => {
-    let interval = null;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer(timer => timer - 1);
-      }, 1000);
-    } else if (timer === 0 && interval) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
 
   // 이메일 인증번호 전송 처리
   const handleSendVerificationCode = async () => {
@@ -99,36 +92,20 @@ const SignupInfo = () => {
       return;
     }
 
-    const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!validateEmail(formData.email)) {
       alert('올바른 이메일 형식을 입력해주세요.');
       return;
     }
 
     setIsSendingCode(true);
     try {
-      const response = await fetch('http://localhost:8080/api/member/email/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert(data.message);
-        setTimer(300); // 5분 (300초)
-        setIsPhoneVerified(false); // 인증 상태 초기화
-      } else {
-        alert(data.message || '인증번호 전송에 실패했습니다.');
-      }
+      await sendEmailVerificationCode(formData.email);
+      alert('인증번호가 이메일로 전송되었습니다.');
+      startTimer();
+      setIsPhoneVerified(false);
     } catch (error) {
       console.error('인증번호 전송 오류:', error);
-      alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '인증번호 전송 중 오류가 발생했습니다.');
     } finally {
       setIsSendingCode(false);
     }
@@ -147,30 +124,14 @@ const SignupInfo = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/member/email/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          code: formData.verificationCode
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setIsPhoneVerified(true);
-        setTimer(0);
-        alert('인증이 완료되었습니다.');
-      } else {
-        alert(data.message || '인증번호가 일치하지 않습니다.');
-        setIsPhoneVerified(false);
-      }
+      await verifyEmailCode(formData.email, formData.verificationCode);
+      setIsPhoneVerified(true);
+      resetTimer();
+      alert('인증이 완료되었습니다.');
     } catch (error) {
       console.error('인증번호 검증 오류:', error);
-      alert('인증번호 검증 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '인증번호가 일치하지 않습니다.');
+      setIsPhoneVerified(false);
     }
   };
 
@@ -247,25 +208,12 @@ const SignupInfo = () => {
         memAddress2: formData.address2 || ''
       };
 
-      const response = await fetch('http://localhost:8080/api/member/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(signupData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('회원가입이 완료되었습니다.');
-        navigate('/login');
-      } else {
-        alert(data.message || '회원가입 중 오류가 발생했습니다.');
-      }
+      await signup(signupData);
+      alert('회원가입이 완료되었습니다.');
+      navigate('/login');
     } catch (error) {
       console.error('회원가입 오류:', error);
-      alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -377,14 +325,14 @@ const SignupInfo = () => {
                 type="button"
                 className="check-button"
                 onClick={handleSendVerificationCode}
-                disabled={isSendingCode || timer > 0 || isPhoneVerified}
+                disabled={isSendingCode || isTimerActive || isPhoneVerified}
               >
-                {isSendingCode ? '전송중...' : timer > 0 ? `재전송(${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, '0')})` : '인증번호'}
+                {isSendingCode ? '전송중...' : isTimerActive ? `재전송(${formatTimer()})` : '인증번호'}
               </button>
             </div>
           </div>
 
-          {timer > 0 && !isPhoneVerified && (
+          {isTimerActive && !isPhoneVerified && (
             <div className="input-group">
               <label>인증번호 *</label>
               <div className="input-with-button">
