@@ -54,10 +54,6 @@ const SelectBox = styled.select`
   ${CommonFormStyle}
 `;
 
-const QuantityInput = styled.input`
-  ${CommonFormStyle}
-`;
-
 const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
