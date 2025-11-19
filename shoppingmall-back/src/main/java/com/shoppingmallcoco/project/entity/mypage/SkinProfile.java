@@ -5,33 +5,32 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "SKIN")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Table(name = "SKIN")
 public class SkinProfile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "skin_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "skin_seq_gen")
     @SequenceGenerator(
-            name = "skin_seq",
+            name = "skin_seq_gen",
             sequenceName = "SKIN_SEQ",
             allocationSize = 1
     )
     @Column(name = "PROFILENO")
     private Long profileNo;
 
-    @OneToOne
-    @JoinColumn(name = "MEMNO", unique = true, nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MEMNO", unique = true)
     private Member member;
 
     @Column(name = "SKINTYPE")
     private String skinType;
 
     @Column(name = "SKINCONCERN")
-    private String skinConcern; // 예: "모공,여드름"
+    private String skinConcern;
 
     @Column(name = "PERSONALCOLOR")
     private String personalColor;
