@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/AccountSettings.css";
+import { changePassword } from "../utils/api";
 
 function AccountSettings() {
   const navigate = useNavigate();
@@ -8,6 +9,8 @@ function AccountSettings() {
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [notifications, setNotifications] = useState({
     email: true,
@@ -21,15 +24,43 @@ function AccountSettings() {
     setNotifications({ ...notifications, [key]: !notifications[key] });
   };
 
-  const handlePasswordChange = () => {
-    if (newPw !== confirmPw) {
-      alert("새 비밀번호가 일치하지 않습니다.");
+  const handlePasswordChange = async () => {
+    setError("");
+
+    // 유효성 검사
+    if (!currentPw || !newPw || !confirmPw) {
+      setError("모든 필드를 입력해주세요.");
       return;
     }
-    alert("비밀번호가 성공적으로 변경되었습니다.");
-    setCurrentPw("");
-    setNewPw("");
-    setConfirmPw("");
+
+    if (newPw.length < 8) {
+      setError("새 비밀번호는 8자 이상이어야 합니다.");
+      return;
+    }
+
+    if (newPw !== confirmPw) {
+      setError("새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    if (currentPw === newPw) {
+      setError("새 비밀번호는 현재 비밀번호와 달라야 합니다.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await changePassword(currentPw, newPw);
+      alert("비밀번호가 성공적으로 변경되었습니다.");
+      setCurrentPw("");
+      setNewPw("");
+      setConfirmPw("");
+      setError("");
+    } catch (error) {
+      setError(error.message || "비밀번호 변경에 실패했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -52,24 +83,46 @@ function AccountSettings() {
             type="password"
             placeholder="현재 비밀번호를 입력하세요"
             value={currentPw}
-            onChange={(e) => setCurrentPw(e.target.value)}
+            onChange={(e) => {
+              setCurrentPw(e.target.value);
+              setError("");
+            }}
+            disabled={isLoading}
           />
           <input
             type="password"
             placeholder="새 비밀번호 (최소 8자 이상)"
             value={newPw}
-            onChange={(e) => setNewPw(e.target.value)}
+            onChange={(e) => {
+              setNewPw(e.target.value);
+              setError("");
+            }}
+            disabled={isLoading}
           />
           <input
             type="password"
             placeholder="새 비밀번호를 다시 입력하세요"
             value={confirmPw}
-            onChange={(e) => setConfirmPw(e.target.value)}
+            onChange={(e) => {
+              setConfirmPw(e.target.value);
+              setError("");
+            }}
+            disabled={isLoading}
           />
         </div>
 
-        <button className="change-btn" onClick={handlePasswordChange}>
-          비밀번호 변경
+        {error && (
+          <div style={{ color: "red", marginBottom: "10px", fontSize: "14px" }}>
+            {error}
+          </div>
+        )}
+
+        <button 
+          className="change-btn" 
+          onClick={handlePasswordChange}
+          disabled={isLoading}
+        >
+          {isLoading ? "변경 중..." : "비밀번호 변경"}
         </button>
       </section>
 
