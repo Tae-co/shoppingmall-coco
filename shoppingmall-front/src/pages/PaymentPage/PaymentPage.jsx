@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../css/PaymentPage.css';
 import { useOrder } from '../OrderContext'; // 전역 주문 상태(Context) 훅
 import TermsPopup from './TermsPopup'; // 약관 상세 보기 팝업 컴포넌트
+import axios from 'axios';
 
 // 결제 수단 선택, 포인트 사용, 약관 동의 및 최종 결제를 처리하는 페이지 컴포넌트 (주문 프로세스 3단계)
 function PaymentPage() {
@@ -16,7 +17,7 @@ function PaymentPage() {
     shippingFee,   // 배송비
     userPoints,    // 사용자 보유 포인트
     pointsToUse, setPointsToUse, // 사용할 포인트 상태
-    lastName, firstName, phone, postcode, address, addressDetail // 배송지 정보
+    lastName, firstName, phone, postcode, address, addressDetail, deliveryMessage // 배송지 정보
   } = useOrder();
 
   // 로컬 상태 관리: 결제 수단, 약관 동의, 약관 팝업 표시 여부
@@ -94,16 +95,49 @@ function PaymentPage() {
       // 포트원 결제 창 호출
       IMP.request_pay(data, (rsp) => {
         if (rsp.success) {
-          // --- 결제 성공 ---
+          // 결제 성공 로그 
           console.log("결제 성공:", rsp);
-          
-          
-          // 검증 성공 후, 성공 페이지로 이동
-          navigate('/order-success');
+
+          //  백엔드로 보낼 데이터 
+          const orderData = {
+            
+            orderItems: [
+              { 
+                prdNo: 1,       // 상품 번호
+                optionNo: 1,    // 옵션 번호
+                orderQty: 2     // 수량
+              } 
+            ],
+            // 배송지 정보 (Context에 있는 변수들을 사용)
+            recipientName: lastName + firstName, 
+            recipientPhone: phone,
+            orderZipcode: postcode,
+            orderAddress1: address,
+            orderAddress2: addressDetail,
+            deliveryMessage: deliveryMessage || "조심해서 배송해 주세요.",
+            pointsUsed: pointsToUse
+          };
+
+          // ---  Axios로 백엔드 API 호출 ---
+          axios.post('http://localhost:8080/api/orders', orderData)
+            .then((response) => {
+              console.log("백엔드 저장 성공:", response.data);
+              alert("주문이 성공적으로 완료되었습니다!");
+              
+              // 저장 성공 시에만 성공 페이지로 이동
+              navigate('/order-success'); 
+            })
+            .catch((error) => {
+              console.error("백엔드 저장 실패:", error);
+              // 에러 메시지를 알림창으로 보여줌
+              alert("주문 저장 실패: " + (error.response?.data || "서버 오류"));
+            });
+
         } else {
           // --- 결제 실패 ---
           console.log("결제 실패:", rsp.error_msg);
-          navigate('/order-fail'); // 실패 페이지로 이동
+          alert(`결제에 실패하였습니다. 에러 내용: ${rsp.error_msg}`);
+          navigate('/order-fail'); 
         }
       });
 
