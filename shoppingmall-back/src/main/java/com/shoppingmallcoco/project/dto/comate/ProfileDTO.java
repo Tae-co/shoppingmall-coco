@@ -1,6 +1,6 @@
 package com.shoppingmallcoco.project.dto.comate;
 
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import lombok.*;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.shoppingmallcoco.project.entity.comate;
 
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import jakarta.persistence.*;
 import lombok.*;
 

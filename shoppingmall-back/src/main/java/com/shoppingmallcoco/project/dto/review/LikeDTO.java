@@ -1,6 +1,6 @@
 package com.shoppingmallcoco.project.dto.review;
 
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.entity.review.Review;
 import com.shoppingmallcoco.project.entity.review.ReviewLike;
 import lombok.AllArgsConstructor;
