@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button } from '../../styles/admincommon';
+import { Button, ButtonLink } from '../../styles/admincommon';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logout } from '../../utils/api';
@@ -145,11 +145,14 @@ function AdminLayout() {
       {/* 우측 영역 (헤더 + 본문) */}
       <PageWrapper>
         <TopHeader>
+          <ButtonLink to="/" style={{ marginRight: '10px', fontSize: '13px', padding: '8px 16px', backgroundColor: '#fff', color: '#333', border: '1px solid #ddd' }}>
+            🏠 쇼핑몰 메인
+          </ButtonLink>
           <span style={{ marginRight: '15px', fontWeight: '500' }}>관리자(admin)님</span>
-          <Button 
-            as="button" 
-            onClick={handleLogout} 
-            $primary 
+          <Button
+            as="button"
+            onClick={handleLogout}
+            $primary
             style={{ fontSize: '13px', padding: '8px 16px' }}
           >
             로그아웃
@@ -157,10 +160,10 @@ function AdminLayout() {
         </TopHeader>
 
         <Content>
-          <Outlet /> 
+          <Outlet />
         </Content>
       </PageWrapper>
-      
+
       <ToastContainer autoClose={2000} position="bottom-right" />
     </AdminWrapper>
   );
