@@ -154,7 +154,7 @@ public class ReviewService {
 
     // review 모든 목록 조회 (상품페이지에서 등록된 리뷰 목록 조회)
     public List<ReviewDTO> getReviewList(Long prdNo) {
-        List<Review> findReviews = reviewRepository.findByOrderItem_PrdNo(prdNo);
+        List<Review> findReviews = reviewRepository.findByOrderItemProductPrdNo(prdNo);
         List<ReviewDTO> reviewDtoList = findReviews.stream().map(review -> {
             int likeCount = likeRepository.countByReview(review);
             return ReviewDTO.toDto(review, likeCount);
@@ -163,10 +163,10 @@ public class ReviewService {
         return reviewDtoList;
     }
 
-    // 태그 기반 상품 구매 경고 알림
-    public SimilarSkinStatsDTO getSimilarSkinStats(Long prdNo, Long currentMemberId){
-
-        return
-    }
+//    // 태그 기반 상품 구매 경고 알림
+//    public SimilarSkinStatsDTO getSimilarSkinStats(Long prdNo, Long currentMemberId){
+//
+//        return
+//    }
 
 }
