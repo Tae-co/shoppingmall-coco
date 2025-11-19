@@ -1,6 +1,7 @@
 package com.shoppingmallcoco.project.service.review;
 
 import com.shoppingmallcoco.project.dto.review.ReviewDTO;
+import com.shoppingmallcoco.project.dto.review.SimilarSkinStatsDTO;
 import com.shoppingmallcoco.project.entity.order.OrderItem;
 import com.shoppingmallcoco.project.entity.review.Review;
 import com.shoppingmallcoco.project.entity.review.ReviewImage;
@@ -160,6 +161,12 @@ public class ReviewService {
         }).collect(Collectors.toList());
 
         return reviewDtoList;
+    }
+
+    // 태그 기반 상품 구매 경고 알림
+    public SimilarSkinStatsDTO getSimilarSkinStats(Long prdNo, Long currentMemberId){
+
+        return
     }
 
 }
