@@ -53,6 +53,8 @@ public class WebSecurityConfig {
 				).permitAll()
 				// 로그인된 사용자만 접근할 수 있는 API
 				.requestMatchers("/api/member/me", "/api/member/update").authenticated()
+				// 관리자만 접근할 수 있는 API
+				.requestMatchers("/api/member/admin/**").authenticated()
 				// 나머지 요청은 모두 허용 (추후 필요 시 제한 추가)
 				.anyRequest().permitAll()
 			)

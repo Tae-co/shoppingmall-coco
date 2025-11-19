@@ -130,8 +130,8 @@ function AdminLayout() {
             </NavItem>
           </li>
           <li>
-            <NavItem to="/admin/users" $active={isActive('/admin/users')}>
-              회원 관리 (준비중)
+            <NavItem to="/admin/members" $active={isActive('/admin/members')}>
+              회원 관리
             </NavItem>
           </li>
           <li>

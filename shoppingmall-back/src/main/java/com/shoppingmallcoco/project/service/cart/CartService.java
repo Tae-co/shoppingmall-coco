@@ -5,6 +5,7 @@ import com.shoppingmallcoco.project.dto.cart.CartResponseDto;
 import com.shoppingmallcoco.project.entity.cart.CartEntity;
 import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.entity.product.ProductOptionEntity;
+import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.repository.cart.CartRepository;
 import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.repository.product.ProductOptionRepository;

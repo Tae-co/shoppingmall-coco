@@ -250,6 +250,46 @@ public class MemberController {
         }
     }
 
+    // 현재 로그인한 회원 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentMember(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            MemberResponseDto member = memberService.getMemberByMemId(authentication.getName());
+            return ResponseEntity.ok(member);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // 관리자용: 전체 회원 목록 조회 (페이징, 검색, 필터)
+    @GetMapping("/admin/list")
+    public ResponseEntity<?> getAllMembers(
+            Authentication authentication,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String role) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            // 관리자 권한 체크
+            MemberResponseDto currentMember = memberService.getMemberByMemId(authentication.getName());
+            if (currentMember.getRole() == null || 
+                (!currentMember.getRole().equals("ADMIN") && !currentMember.getRole().equals("admin"))) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "관리자 권한이 필요합니다."));
+            }
+            
+            Map<String, Object> result = memberService.getAllMembers(page, size, searchTerm, role);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
     // 회원 정보 수정 (카카오 로그인 후 추가 정보 입력용)
     @PutMapping("/update")
     public ResponseEntity<?> updateMember(Authentication authentication, @RequestBody MemberUpdateDto updateDto) {
