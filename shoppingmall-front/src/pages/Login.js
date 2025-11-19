@@ -5,14 +5,16 @@ import GoogleIcon from '../images/google.svg';
 import NaverIcon from '../images/naver.svg';
 import KakaoIcon from '../images/kakao.svg';
 import LoginIcon from '../images/login.svg';
+import { login as memberLogin, kakaoLogin, naverLogin, googleLogin } from '../utils/api';
 
 const Login = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
-  // 컴포넌트 마운트 시 카카오 SDK 초기화
+  // 컴포넌트 마운트 시 소셜 로그인 SDK 초기화
   useEffect(() => {
+    // 카카오 SDK 초기화
     if (window.Kakao && !window.Kakao.isInitialized()) {
       window.Kakao.init(process.env.REACT_APP_KAKAO_JS_KEY || 'YOUR_KAKAO_JS_KEY');
     }
@@ -32,35 +34,16 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/member/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          memId: userId,
-          memPwd: password
-        })
+      await memberLogin({
+        memId: userId,
+        memPwd: password
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-        }
-        localStorage.setItem('member', JSON.stringify(data));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        alert('로그인되었습니다.');
-        window.dispatchEvent(new Event('loginStatusChanged'));
-        navigate('/');
-      } else {
-        alert(data.message || '아이디 또는 비밀번호가 일치하지 않습니다.');
-      }
+      alert('로그인되었습니다.');
+      navigate('/');
     } catch (error) {
       console.error('로그인 오류:', error);
-      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -89,38 +72,17 @@ const Login = () => {
           window.Kakao.Auth.login({
             success: async (authObj) => {
               try {
-                const response = await fetch('http://localhost:8080/api/member/kakao/login', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    accessToken: authObj.access_token
-                  })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                  if (data.token) {
-                    localStorage.setItem('token', data.token);
-                  }
-                  localStorage.setItem('member', JSON.stringify(data));
-                  localStorage.setItem('isLoggedIn', 'true');
-                  
-                  if (data.needsAdditionalInfo) {
-                    navigate('/kakao/additional-info');
-                  } else {
-                    alert('카카오 로그인되었습니다.');
-                    window.dispatchEvent(new Event('loginStatusChanged'));
-                    navigate('/');
-                  }
+                const data = await kakaoLogin(authObj.access_token);
+                
+                if (data.needsAdditionalInfo) {
+                  navigate('/kakao/additional-info');
                 } else {
-                  alert(data.message || '카카오 로그인에 실패했습니다.');
+                  alert('카카오 로그인되었습니다.');
+                  navigate('/');
                 }
               } catch (error) {
                 console.error('카카오 로그인 오류:', error);
-                alert('카카오 로그인 중 오류가 발생했습니다.');
+                alert(error.message || '카카오 로그인 중 오류가 발생했습니다.');
               }
             },
             fail: (err) => {
@@ -132,6 +94,59 @@ const Login = () => {
     } catch (error) {
       console.error('카카오 로그인 오류:', error);
       alert('카카오 로그인 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 네이버 소셜 로그인 처리
+  const handleNaverLogin = () => {
+    const clientId = process.env.REACT_APP_NAVER_CLIENT_ID || 'YOUR_NAVER_CLIENT_ID';
+    const redirectUri = encodeURIComponent(window.location.origin + '/login/naver/callback');
+    const state = Math.random().toString(36).substring(2, 15);
+    const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}`;
+    
+    // 상태값을 localStorage에 저장 (CSRF 방지)
+    localStorage.setItem('naver_state', state);
+    
+    // 네이버 로그인 페이지로 리다이렉트
+    window.location.href = naverAuthUrl;
+  };
+
+  // 구글 소셜 로그인 처리
+  const handleGoogleLogin = () => {
+    if (!window.google || !window.google.accounts) {
+      alert('구글 SDK가 초기화되지 않았습니다.');
+      return;
+    }
+
+    try {
+      // Google One Tap 로그인 시도
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // One Tap이 표시되지 않으면 직접 로그인 버튼 클릭
+          window.google.accounts.oauth2.initTokenClient({
+            client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
+            scope: 'email profile',
+            callback: async (response) => {
+              try {
+                const data = await googleLogin(response.access_token);
+                
+                if (data.needsAdditionalInfo) {
+                  navigate('/kakao/additional-info');
+                } else {
+                  alert('구글 로그인되었습니다.');
+                  navigate('/');
+                }
+              } catch (error) {
+                console.error('구글 로그인 오류:', error);
+                alert(error.message || '구글 로그인 중 오류가 발생했습니다.');
+              }
+            }
+          }).requestAccessToken();
+        }
+      });
+    } catch (error) {
+      console.error('구글 로그인 오류:', error);
+      alert('구글 로그인 중 오류가 발생했습니다.');
     }
   };
 
@@ -183,10 +198,10 @@ const Login = () => {
             <button type="button" className="social-button" onClick={handleKakaoLogin}>
               <img src={KakaoIcon} alt="Kakao" />
             </button>
-            <button type="button" className="social-button">
+            <button type="button" className="social-button" onClick={handleNaverLogin}>
               <img src={NaverIcon} alt="Naver" />
             </button>
-            <button type="button" className="social-button">
+            <button type="button" className="social-button" onClick={handleGoogleLogin}>
               <img src={GoogleIcon} alt="Google" />
             </button>
           </div>

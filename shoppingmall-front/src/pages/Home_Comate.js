@@ -40,8 +40,10 @@ function Home_Comate() {
     ];
 
     // 프로필 클릭-> 상세 프로필 이동
-    const handleCardClick = (comateNickname) => {
-        console.log(comateNickname);
+    const handleCardClick = (comateId) => {
+        //navigate(`/comate/user/${comateId}/review`);
+        // 무조건 홍길동 클릭 가정 (임시)
+        navigate('/comate/user/1/review');
     };
 
     const navigate = useNavigate();
@@ -79,7 +81,7 @@ function Home_Comate() {
                             followers={comate.followers + (isFollowing ? 1 : 0)}
                             reviews={comate.reviews}
                             isFollowing={isFollowing}
-                            onClick={() => handleCardClick(comate.nickname)}
+                            onClick={() => handleCardClick(comate.id)}
                             onFollowClick={() => handleFollowClick(comate.nickname)}
                         />
                     </div>
