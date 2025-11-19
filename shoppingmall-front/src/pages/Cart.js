@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Cart.css";
 import OrderSteps from "../components/OrderSteps.js";
+import { getStoredMember } from "../utils/api";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
-  const memNo = 1; // 로그인 회원 번호 (테스트용, 나중에 로그인 정보로 대체)
+  const member = getStoredMember();
+  const memNo = member ? member.memNo : null;
 
   // 장바구니 목록 불러오기
   useEffect(() => {
+    if (!memNo) {
+        alert("로그인이 필요합니다.");
+        return;
+    }
+
     axios
-      .get(`http://localhost:8080/coco/members/cart/items/${memNo}`)
+      .get(`http://localhost:8080/api/coco/members/cart/items/${memNo}`)
       .then((res) => {
         setCartItems(res.data);
         console.log(" 장바구니 불러오기 성공:", res.data);
@@ -23,7 +30,7 @@ function Cart() {
   // 수량 증가 / 감소
   const updateQuantity = (cartNo, newQty) => {
     axios
-      .patch(`http://localhost:8080/coco/members/cart/items/${cartNo}`, {
+      .patch(`http://localhost:8080/api/coco/members/cart/items/${cartNo}`, {
         qty: newQty,
       })
       .then((res) => {
@@ -48,7 +55,7 @@ function Cart() {
   // 장바구니 항목 삭제
   const removeItem = (cartNo) => {
     axios
-      .delete(`http://localhost:8080/coco/members/cart/items/${cartNo}`)
+      .delete(`http://localhost:8080/api/coco/members/cart/items/${cartNo}`)
       .then(() => {
         setCartItems((prev) => prev.filter((item) => item.cartNo !== cartNo));
       })
@@ -58,7 +65,7 @@ function Cart() {
   //  전체 비우기
   const clearCart = () => {
     axios
-      .delete(`http://localhost:8080/coco/members/cart/items/clear/${memNo}`)
+      .delete(`http://localhost:8080/api/coco/members/cart/items/clear/${memNo}`)
       .then(() => setCartItems([]))
       .catch((err) => console.error("전체 삭제 실패:", err));
   };
