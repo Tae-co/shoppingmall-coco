@@ -13,7 +13,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     //Optional<Review> findById(Long reviewNo);
 
     // review 모든 목록 조회 (하나의 상품에 등록된 리뷰 목록 조회)
-    List<Review> findByOrderItem_PrdNo(Long prdNo);
+    List<Review> findByOrderItemProductPrdNo(Long prdNo);
 
     // review 삭제
     //void deleteById(Long reviewNo);
