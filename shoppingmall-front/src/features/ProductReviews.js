@@ -10,7 +10,7 @@ function ProductReviews({ productNo }) {
     const handleDeleteReview = async (reviewNo) => {
 
         try {
-            axios.delete(`/reviews/${reviewNo}`).then(response => {
+            axios.delete(`http://localhost:8080/reviews/${reviewNo}`).then(response => {
                 setReviews(currentReviews =>
                     currentReviews.filter(review => review.reviewNo !== reviewNo))
             });
@@ -26,7 +26,7 @@ function ProductReviews({ productNo }) {
             setLoading(true);
             try {
 
-                await axios.get(`/products/${productNo}/reviews`).then(response => {
+                await axios.get(`http://localhost:8080/products/${productNo}/reviews`).then(response => {
                     setReviews(response.data)
                 })
             } catch (error) {
