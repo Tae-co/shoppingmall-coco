@@ -80,6 +80,38 @@ const Tag = styled.span`
   border-radius: 4px;
 `;
 
+// 수량 조절 컨테이너 스타일
+const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 150px; /* 적절한 너비 설정 */
+  margin-bottom: 20px;
+`;
+
+const QuantityBtn = styled.button`
+  width: 40px;
+  height: 40px;
+  background: #f9f9f9;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  &:hover { background: #eee; }
+`;
+
+const QuantityValue = styled.input`
+  flex: 1;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  height: 40px;
+  font-size: 16px;
+  width: 100%;
+  &:focus { outline: none; }
+`;
+
 const skinTypeMap = { dry: '건성', oily: '지성', combination: '복합성', sensitive: '민감성' };
 const skinConcernMap = {
   hydration: '수분', moisture: '보습', brightening: '미백', tone: '피부톤',
@@ -141,13 +173,15 @@ const ProductInfoBox = ({
       {/* --- 수량 --- */}
       <div>
         <VisuallyHiddenLabel htmlFor="product-quantity">상품 수량</VisuallyHiddenLabel>
-        <QuantityInput
-          id="product-quantity"
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-          min="1"
-        />
+        <QuantityControl>
+          <QuantityBtn onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</QuantityBtn>
+          <QuantityValue
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+          />
+          <QuantityBtn onClick={() => setQuantity(quantity + 1)}>+</QuantityBtn>
+        </QuantityControl>
       </div>
 
       <ButtonGroup>
