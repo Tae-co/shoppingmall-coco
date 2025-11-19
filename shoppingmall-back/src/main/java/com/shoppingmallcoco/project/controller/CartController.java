@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coco/members/cart")
+@RequestMapping("/api/coco/members/cart")
 public class CartController {
 
     private final CartService cartService;
@@ -24,26 +24,26 @@ public class CartController {
 
     // 장바구니 조회
     @GetMapping("/items/{memNo}")
-    public List<CartResponseDto> getCartItems(@PathVariable Long memNo) {
+    public List<CartResponseDto> getCartItems(@PathVariable("memNo") Long memNo) {
         return cartService.getCartItems(memNo);
     }
 
     // 수량 변경
     @PatchMapping("/items/{cartNo}")
-    public CartResponseDto updateQty(@PathVariable Long cartNo, @RequestBody Map<String, Integer> body) {
+    public CartResponseDto updateQty(@PathVariable("cartNo") Long cartNo, @RequestBody Map<String, Integer> body) {
         Integer qty = body.get("qty");
         return cartService.updateCartQty(cartNo, qty);
     }
 
     // 항목 삭제
     @DeleteMapping("/items/{cartNo}")
-    public void deleteItem(@PathVariable Long cartNo) {
+    public void deleteItem(@PathVariable("cartNo") Long cartNo) {
         cartService.deleteCart(cartNo);
     }
 
     // 장바구니 전체 비우기
     @DeleteMapping("/items/clear/{memNo}")
-    public void clearCart(@PathVariable Long memNo) {
+    public void clearCart(@PathVariable("memNo") Long memNo) {
         cartService.clearCart(memNo);
     }
 }
