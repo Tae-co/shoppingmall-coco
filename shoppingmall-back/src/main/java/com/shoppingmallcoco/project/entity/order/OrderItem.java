@@ -18,7 +18,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orderitem_seq_gen")
     @SequenceGenerator(name = "orderitem_seq_gen", sequenceName = "orderitem_SEQ", allocationSize = 1)
     @Column(name = "orderitemNo")
-    private Long orderItemId;
+    private Long orderItemNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prdNo", nullable = false) // DB 컬럼 'prdNo'와 연결
