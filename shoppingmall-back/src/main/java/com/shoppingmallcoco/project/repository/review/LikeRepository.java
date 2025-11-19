@@ -1,0 +1,22 @@
+package com.shoppingmallcoco.project.repository.review;
+
+import com.shoppingmallcoco.project.entity.review.Review;
+import com.shoppingmallcoco.project.entity.review.ReviewLike;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface LikeRepository extends JpaRepository<ReviewLike,Long> {
+    int countByReview(Review review);
+    
+    /* [이규리] 작성 - 나중에 병합할때 체크 */
+    // 리뷰 목록 조회용 좋아요 개수 확인
+    int countByReview_ReviewNo(Long reviewNo);
+    // 특정 회원이 좋아요 누른 모든 리뷰 조회
+    List<ReviewLike> findByMember_MemNo(Long memNo);
+    
+    // 특정 회원이 특정 리뷰에 좋아요 눌렀는지 확인
+    boolean existsByMember_MemNoAndReview_ReviewNo(Long memNo, Long reviewNo);
+
+}

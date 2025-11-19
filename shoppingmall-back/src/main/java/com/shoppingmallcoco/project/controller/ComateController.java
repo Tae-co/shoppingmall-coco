@@ -42,5 +42,4 @@ public class ComateController {
         return ResponseEntity.ok("언팔로우 완료");
     }
 
-
 }

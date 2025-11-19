@@ -1,11 +1,16 @@
 package com.shoppingmallcoco.project.service.comate;
 
 import com.shoppingmallcoco.project.dto.comate.FollowInfoDTO;
+import com.shoppingmallcoco.project.dto.comate.LikedReviewDTO;
+import com.shoppingmallcoco.project.dto.comate.MyReviewDTO;
 import com.shoppingmallcoco.project.dto.comate.ProfileDTO;
 import com.shoppingmallcoco.project.entity.Member;
 import com.shoppingmallcoco.project.entity.comate.Follow;
 import com.shoppingmallcoco.project.repository.MemberRepository;
 import com.shoppingmallcoco.project.repository.comate.FollowRepository;
+import com.shoppingmallcoco.project.repository.review.LikeRepository;
+import com.shoppingmallcoco.project.repository.review.ReviewRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +22,13 @@ public class ComateService {
 
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
+    private final ReviewRepository reviewRepository;
+    private final LikeRepository likeRepository;
 
     // 프로필 조회
     public ProfileDTO getProfile(Long currentMemNo, Long targetMemNo) {
-
+    	
+    	/* 팔로잉 팔로워 수 및 목록 */
         Member member = memberRepository.findById(targetMemNo)
                 .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
 
@@ -30,9 +38,71 @@ public class ComateService {
         int followerCount = followers.size();
         int followingCount = followings.size();
 
-        // 현재 로그인 사용자 확인
+        /* 현재 로그인 사용자 확인 */
         boolean isMine = currentMemNo.equals(targetMemNo);
-
+        
+        /* 내가 작성한 리뷰 목록 */
+        List<MyReviewDTO> myReviews = reviewRepository
+        		.findByOrderItem_Order_Member_MemNoOrderByCreatedAtDesc(currentMemNo)
+                .stream()
+                .map(review -> {
+                	var orderItem = review.getOrderItem();
+                	var product = orderItem.getProduct();
+                	var option = orderItem.getProductOption();
+                
+                	List<String> tags = review.getReviewTagMaps().stream()
+                		.map(map -> map.getTag().getTagName())
+                		.toList();
+                		
+                	int likeCount = likeRepository.countByReview_ReviewNo(review.getReviewNo());
+                	
+                	return MyReviewDTO.builder()
+                		.reviewNo(review.getReviewNo())
+                        .productNo(product.getPrdNo())
+                        .productName(product.getPrdName())
+                        .productOption(option != null ? option.getOptionName() : null)
+                        .rating(review.getRating())
+                        .createdAt(review.getCreatedAt())
+                        .tags(tags)
+                        .content(review.getContent())
+                        .likeCount(likeCount)
+                        .build();
+                })
+                .toList();
+        
+        /* 좋아요 누른 리뷰 목록 */
+        List<LikedReviewDTO> likedReviews = likeRepository.findByMember_MemNo(currentMemNo)
+        		.stream()
+        		.map(like -> {
+        			var review = like.getReview();
+        			var orderItem = review.getOrderItem();
+        			var product = orderItem.getProduct();
+        			var option = orderItem.getProductOption();
+        			
+        			List<String> tags = review.getReviewTagMaps()
+        					.stream()
+        					.map(map -> map.getTag().getTagName())
+        					.toList();
+        			
+        			int likeCount = likeRepository.countByReview_ReviewNo(review.getReviewNo());
+        			var reviewMember = orderItem.getOrder().getMember();
+        			
+        			return LikedReviewDTO.builder()
+        					.reviewNo(review.getReviewNo())
+                            .productNo(product.getPrdNo())
+                            .productName(product.getPrdName())
+                            .productOption(option != null ? option.getOptionName() : null)
+                            .rating(review.getRating())
+                            .createdAt(review.getCreatedAt())
+                            .tags(tags)
+                            .content(review.getContent())
+                            .likeCount(likeCount)
+                            .memNo(reviewMember.getMemNo())
+                            .memNickname(reviewMember.getMemNickname())
+                            .build();
+        		})
+        		.toList();
+        
         return ProfileDTO.builder()
                 .memNo(member.getMemNo())
                 .memName(member.getMemName())
@@ -42,10 +112,12 @@ public class ComateService {
                 .isMyProfile(isMine)
                 .followers(followers)
                 .followings(followings)
+                .myReviews(myReviews)
+                .likedReviews(likedReviews)
                 .build();
     }
     
-    // 팔로우
+    /* 팔로우 */
     public void follow(Long followerNo, Long followingNo) {
         if(followerNo.equals(followingNo)) {
             throw new RuntimeException("자기 자신을 팔로우할 수 없습니다.");
@@ -69,7 +141,7 @@ public class ComateService {
         followRepository.save(follow);
     }
 
-    // 언팔로우
+    /* 언팔로우 */
     public void unfollow(Long followerNo, Long followingNo) {
         boolean exists = followRepository.existsByFollowerMemNoAndFollowingMemNo(followerNo, followingNo);
         if(!exists) {
