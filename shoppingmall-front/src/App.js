@@ -40,7 +40,7 @@ function App() {
         <Route path="/my-comate" element={<MyCoMate />} />
         <Route path="/order-detail/:id" element={<OrderDetail />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/reviews" element={<Review />} />
+        <Route path="/reviews/:orderItemNo" element={<Review />} />
         <Route path="/update-reviews/:reviewNo" element={<UpdateReview />} />
         <Route path="/product" element={<ProductListPage />} />
         <Route path="/products/:productId" element={<ProductDetailPage />} />
