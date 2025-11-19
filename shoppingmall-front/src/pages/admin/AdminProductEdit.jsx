@@ -45,7 +45,6 @@ function AdminProductEdit() {
     imageUrl: '',
     categoryNo: '',
     prdPrice: 0,
-    stock: 0,
     status: 'SALE',
     howToUse: '',
     skinType: [],
@@ -56,6 +55,28 @@ function AdminProductEdit() {
   const [categories, setCategories] = useState([]);
   const [newImageFile, setNewImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [options, setOptions] = useState([]);
+
+  // 옵션 변경 핸들러
+  const handleOptionChange = (index, field, value) => {
+    const newOptions = [...options];
+    newOptions[index][field] = value;
+    setOptions(newOptions);
+  };
+
+  // 옵션 추가 핸들러
+  const handleAddOption = () => {
+    setOptions([...options, { optionName: '', optionValue: '', addPrice: 0, stock: 0 }]);
+  };
+
+  // 옵션 삭제 핸들러
+  const handleRemoveOption = (index) => {
+    if (options.length === 1) {
+      alert("최소 1개의 옵션은 있어야 합니다.");
+      return;
+    }
+    setOptions(options.filter((_, i) => i !== index));
+  };
 
   // 데이터 로드
   useEffect(() => {
@@ -85,6 +106,14 @@ function AdminProductEdit() {
           skinConcern: productData.skinConcerns || [],
           personalColor: productData.personalColors || []
         });
+
+        // 기존 옵션 데이터 로드
+        if (productData.options && productData.options.length > 0) {
+          setOptions(productData.options);
+        } else {
+          // 옵션이 없으면 기본값 하나 추가
+          setOptions([{ optionName: '기본', optionValue: '', addPrice: 0, stock: 0 }]);
+        }
 
       } catch (error) {
         console.error(error);
@@ -128,7 +157,7 @@ function AdminProductEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { prdName, prdPrice, stock, categoryNo } = formData;
+    const { prdName, prdPrice, categoryNo } = formData;
 
     if (!prdName || prdName.trim() === "") {
       toast.error('상품명을 입력해주세요.');
@@ -140,12 +169,20 @@ function AdminProductEdit() {
       description: formData.description,
       categoryNo: Number(categoryNo),
       prdPrice: Number(prdPrice),
-      stock: Number(stock),
       status: formData.status,
       howToUse: formData.howToUse,
       skinType: formData.skinType.join(','),
       skinConcern: formData.skinConcern.join(','),
-      personalColor: formData.personalColor.join(',')
+      personalColor: formData.personalColor.join(','),
+
+      // 옵션 리스트
+      options: options.map(opt => ({
+        optionNo: opt.optionNo || null,
+        optionName: opt.optionName,
+        optionValue: opt.optionValue,
+        addPrice: Number(opt.addPrice),
+        stock: Number(opt.stock)
+      }))
     };
 
     const dataToSend = new FormData();
@@ -324,19 +361,60 @@ function AdminProductEdit() {
           />
         </FormGroup>
 
-        {/* 재고 */}
-        <FormGroup>
-          <Label htmlFor="stock">재고 *</Label>
-          <Input
-            type="number"
-            id="stock"
-            name="stock"
-            value={formData.stock}
-            onChange={handleChange}
-            min="0"
-            required
-          />
-        </FormGroup>
+        <div style={{ marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+          <Label>상품 옵션 관리</Label>
+          
+          {/* 옵션 컬럼 헤더 */}
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '8px', fontSize: '13px', fontWeight: 'bold', color: '#666', paddingLeft: '4px' }}>
+            <span style={{ width: '20%' }}>옵션명</span>
+            <span style={{ flex: 1 }}>옵션값</span>
+            <span style={{ width: '15%' }}>추가금(원)</span>
+            <span style={{ width: '15%' }}>재고(개)</span>
+            <span style={{ width: '60px', textAlign: 'center' }}>관리</span>
+          </div>
+
+          {options.map((opt, index) => (
+            <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+              <Input 
+                placeholder="예: 용량" 
+                value={opt.optionName} 
+                onChange={(e) => handleOptionChange(index, 'optionName', e.target.value)} 
+                style={{ width: '20%' }} 
+              />
+              <Input 
+                placeholder="예: 50ml" 
+                value={opt.optionValue} 
+                onChange={(e) => handleOptionChange(index, 'optionValue', e.target.value)} 
+                style={{ flex: 1 }} 
+              />
+              <Input 
+                type="number" 
+                placeholder="0" 
+                value={opt.addPrice} 
+                onChange={(e) => handleOptionChange(index, 'addPrice', e.target.value)} 
+                style={{ width: '15%' }} 
+              />
+              <Input 
+                type="number" 
+                placeholder="0" 
+                value={opt.stock} 
+                onChange={(e) => handleOptionChange(index, 'stock', e.target.value)} 
+                style={{ width: '15%' }} 
+              />
+              <Button 
+                type="button" 
+                onClick={() => handleRemoveOption(index)} 
+                style={{ backgroundColor: '#ff6b6b', color: 'white', padding: '10px', width: '60px', fontSize: '13px' }}
+              >
+                삭제
+              </Button>
+            </div>
+          ))}
+
+          <Button type="button" onClick={handleAddOption} style={{ width: '100%', background: '#fff', border: '1px dashed #ccc', color: '#555', marginTop: '10px' }}>
+            + 옵션 추가하기
+          </Button>
+        </div>
 
         {/* 버튼 영역 */}
         <ButtonContainer>
