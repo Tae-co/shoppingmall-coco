@@ -1,7 +1,7 @@
 package com.shoppingmallcoco.project.entity.review;
 
 import com.shoppingmallcoco.project.dto.review.LikeDTO;
-import com.shoppingmallcoco.project.entity.Member;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
