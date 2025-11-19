@@ -23,6 +23,7 @@ public class ProductDetailResponseDTO {
     private List<String> imageUrls;
     private double averageRating; 
     private int reviewCount;
+    private Long categoryNo;
     
     // 옵션 목록
     private List<ProductOptionDTO> options;
@@ -60,6 +61,10 @@ public class ProductDetailResponseDTO {
                                     .collect(Collectors.toList());
         } else {
             this.options = Collections.emptyList();
+        }
+        
+        if (product.getCategory() != null) {
+            this.categoryNo = product.getCategory().getCategoryNo();
         }
         
         if (product.getSkinType() != null && !product.getSkinType().isEmpty()) {
