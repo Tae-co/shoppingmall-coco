@@ -61,8 +61,16 @@ const StatusTag = styled.span`
   padding: 4px 8px;
   border-radius: 12px;
   color: white;
-  font-size: 12px;
-  background: ${props => (props.$status === '판매중' ? 'green' : 'red')};
+  font-weight: 600;
+  /* 상태 텍스트에 따라 배경색 변경 */
+  background-color: ${props => {
+    switch (props.$status) {
+      case '판매중': return '#28a745'; // 초록색
+      case '품절': return '#dc3545';   // 빨간색
+      case '판매중지': return '#fd7e14'; // 주황색
+      default: return '#333';
+    }
+  }};
 `;
 
 const EditLink = styled(Link)`
