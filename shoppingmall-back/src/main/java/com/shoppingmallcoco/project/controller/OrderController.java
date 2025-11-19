@@ -25,15 +25,15 @@ public class OrderController {
     public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto requestDto) {
 
 
-        Long tempMemberId = 1L; // (임시) 회원 ID
+        Long tempMemberNo = 1L; // (임시) 회원 No
 
         try {
 
-            Long orderId = orderService.createOrder(requestDto, tempMemberId);
+            Long orderNo = orderService.createOrder(requestDto, tempMemberNo);
 
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("주문이 성공적으로 생성되었습니다. 주문 ID: " + orderId);
+                    .body("주문이 성공적으로 생성되었습니다. 주문 No: " + orderNo);
 
         } catch (RuntimeException e) {
             // (예외 처리) 재고 부족 등 문제가 생겼을 경우
@@ -45,10 +45,10 @@ public class OrderController {
     public ResponseEntity<List<OrderResponseDto>> getMyOrderHistory() {
 
 
-        Long tempMemberId = 1L; // (임시) 테스트용 회원 ID: 1 (홍길동)
+        Long tempMemberNo = 1L; // (임시) 테스트용 회원 No: 1 (홍길동)
 
         // 서비스 호출
-        List<OrderResponseDto> orderHistory = orderService.getOrderHistory(tempMemberId);
+        List<OrderResponseDto> orderHistory = orderService.getOrderHistory(tempMemberNo);
 
         return ResponseEntity.ok(orderHistory);
 
@@ -61,10 +61,10 @@ public class OrderController {
     @PostMapping("/{orderNo}/cancel")
     public ResponseEntity<String> cancelOrder(@PathVariable Long orderNo) {
 
-        Long tempMemberId = 1L; // (임시) 로그인한 회원 ID
+        Long tempMemberNo = 1L; // (임시) 로그인한 회원 No
 
         try {
-            orderService.cancelOrder(orderNo, tempMemberId);
+            orderService.cancelOrder(orderNo, tempMemberNo);
             return ResponseEntity.ok("주문이 성공적으로 취소되었습니다.");
 
         } catch (RuntimeException e) {
