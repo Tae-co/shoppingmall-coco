@@ -1,26 +1,20 @@
 import react, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
 import '../css/review.css'
 import UseStarRating from '../features/UseStarRating.js'
 import UseTag from '../features/UseTag.js'
-import Usefile from '../features/UseFile.js'
-import UseSubmut from '../features/UseSubmit.js'
+import UseFile from '../features/UseFile.js'
+import UseSubmit from '../features/UseSubmit.js'
+import axios from "axios";
+
 function Review() {
 
     const navigate = useNavigate();
-
-    const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
-        , "흡수가 빨라요", "끈적임 없어요", "피부 진정", "화이트닝 효과"
-        , "주름 개선", "모공 케어", "민감성 피부 OK", "가성비 좋아요"
-    ]
-
-    const ntags = ["보습력이 부족해요", "향이 별로예요", "발림성 안 좋아요"
-        , "흡수가 느려요", "끈적여요", "자극이 있어요", "효과 없어요"
-        , "피부 트러블", "가격이 비싸요", "용량이 적어요", "제품이 변질됐어요"
-    ]
+    const { orderItemNo } = useParams();
+    
 
     const reviewGuide = `1. 제품의 '첫인상'과 '사용감'을 자세히 알려주세요
 
@@ -65,33 +59,53 @@ function Review() {
     `;
 
 
-    const [text, setText] = useState(textGuide); // 리뷰 텍스트를 위한 state
-    const [date, setDate] = useState(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    });
-    const [userNmae, setUserName] = useState("테스트아이디");
-    const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
-    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked } = UseTag(ptags, ntags);
-    const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = Usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate, date, userNmae)
 
+
+    const [content, setContent] = useState(textGuide); // 리뷰 텍스트를 위한 state
+    const [tags, setTags] = useState([]);
+    const [loadingTags, setLoadingTags] = useState(true);
+    const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
+    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, ptagsList, ntagsList } = UseTag(tags);
+    const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = UseFile();
+    const { handleSubmit } = UseSubmit(
+        ptagsList, ntagsList,
+        ptagsClicked, ntagsClicked,
+        content,
+        starTotal,
+        previewFiles, navigate,
+        orderItemNo,
+        null
+    )
+
+    useEffect(() => {
+        const loadAllTags = async () => {
+            setLoadingTags(true);
+            try {
+                const response = await axios.get(`http://localhost:8080/api/tags`);
+                setTags(response.data);
+
+            } catch (error) {
+                console.error("태그 목록 로딩 실패:", error);
+            }
+            setLoadingTags(false);
+        }
+        loadAllTags();
+    },[]);
     // 별 1~2개 일 떄 경고 알림
 
+
     const handleCancel = () => {
-        window.alert("정말 취소 하시겠습니까?")
-        navigate(`/`);
+        if(window.confirm("정말 취소 하시겠습니까?")){
+            navigate(`/`);
+        }
+        
     };
 
     const warnStarTags = (starTotal) => {
         return 0 < starTotal && starTotal <= 2 ? "별점이 낮을 경우, 아쉬운 점을 최소 1개 이상 선택해주세요." : " ";
     }
 
-
-
+   
     return (
         <div className="reviewBox">
             <div className="reviewMain">
@@ -118,11 +132,11 @@ function Review() {
 
                     <div className="tagBox">
                         <h5 className="tagsTitle">어떤 점이 좋았나요? (복수 선택가능)</h5>
-                        <br /><div className="warnText">{pWarnMsg}</div>
+                        <div className="warnText">{pWarnMsg}</div>
                         {/* 버튼 형식의 태그  */}
                         <div className="tagContainer">
-                            {ptags.map((tags, i) => (
-                                <button type="button" className={"tagBtn" + (ptagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ptoggleActive(i)}>{tags}</button>
+                            {ptagsList.map((tag, i) => (
+                                <button type="button" className={"tagBtn" + (ptagsClicked[i] ? "active" : " ")} key={tag.tagNo} value={tag.tagName} onClick={() => ptoggleActive(i)}>{tag.tagName}</button>
                             ))}
                         </div>
                     </div>
@@ -130,14 +144,15 @@ function Review() {
                     <div className="tagBox">
                         {/* 별점이 1~2개 일 때 필수로 선택해야 한다는 문구 표시 */}
                         <h5 className="tagsTitle">어떤 점이 아쉬웠나요? (복수 선택가능)</h5>
-                        <br /><div className="warnText">{nWarnMsg}&nbsp;&nbsp;</div>
+                        <div className="warnText">{nWarnMsg}</div>
                         <div className="warnText">{warnStarTags(starTotal)}</div>
 
 
                         {/* 버튼 형식의 태그  */}
-                        <div className="tagContainer"> {ntags.map((tags, i) => (
-                            <button type="button" className={"tagBtn" + (ntagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ntoggleActive(i)}>{tags}</button>
-                        ))} </div>
+                        <div className="tagContainer">
+                            {ntagsList.map((tag, i) => (
+                                <button type="button" className={"tagBtn" + (ntagsClicked[i] ? "active" : " ")} key={tag.tagNo} value={tag.tagName} onClick={() => ntoggleActive(i)}>{tag.tagName}</button>
+                            ))} </div>
                     </div>
 
                     <div className="textBox">
@@ -151,8 +166,8 @@ function Review() {
                                 id="postText"
                                 placeholder={reviewGuide}
                                 rows={30}
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
                             />
                         </div>
                     </div>

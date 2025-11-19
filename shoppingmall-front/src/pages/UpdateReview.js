@@ -12,18 +12,8 @@ import UseData from '../features/UseData.js'
 import '../css/review.css'
 function UpdateReview() {
 
-    const { reviewNo } = useParams();
+    const { reviewNo, orderItemNo } = useParams();
     const navigate = useNavigate();
-
-    const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
-        , "흡수가 빨라요", "끈적임 없어요", "피부 진정", "화이트닝 효과"
-        , "주름 개선", "모공 케어", "민감성 피부 OK", "가성비 좋아요"
-    ]
-
-    const ntags = ["보습력이 부족해요", "향이 별로예요", "발림성 안 좋아요"
-        , "흡수가 느려요", "끈적여요", "자극이 있어요", "효과 없어요"
-        , "피부 트러블", "가격이 비싸요", "용량이 적어요", "제품이 변질됐어요"
-    ]
 
     const reviewGuide = `1. 제품의 '첫인상'과 '사용감'을 자세히 알려주세요
 
@@ -57,23 +47,50 @@ function UpdateReview() {
     사용 팁: 메이크업 직후 vs 5시간 후 지속력 비교 샷
     `;
 
-    const [text, setText] = useState(""); // 리뷰 텍스트를 위한 state
-    const [date, setDate] = useState(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    });
+    const [tags, setTags] = useState([]);
+    const [loadingTags, setLoadingTags] = useState(true);
 
-    const [userNmae, setUserName] = useState("테스트아이디");
+    const [content, setContent] = useState(""); // 리뷰 텍스트를 위한 state
 
     const { starTotal, clicked, starScore, starArray, setRating } = UseStarRating(0);
-    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked, setPtagArr,
-        setNtagArr, } = UseTag(ptags, ntags);
+    const { ptagsClicked, ntagsClicked, pWarnMsg, nWarnMsg, ptoggleActive, ntoggleActive, setPtagsClicked, setNtagsClicked, ptagsList, ntagsList } = UseTag(tags);
     const { previewFiles, setPreviewFiles, handleDelete, handleAddImageClick, handleFileChange, ref, fileError } = usefile();
-    const { handleSubmit } = UseSubmut(ptags, ptagsClicked, ntags, ntagsClicked, text, starTotal, previewFiles, navigate, date, userNmae)
-    const { loadData } = UseData(setText, setRating, ptags, setPtagsClicked, ntags, setNtagsClicked, setPreviewFiles, setPtagArr, setNtagArr);
+    const { handleSubmit } = UseSubmut(
+        ptagsList, ntagsList,
+        ptagsClicked, ntagsClicked,
+        content,
+        starTotal,
+        previewFiles, navigate,
+        null,
+        reviewNo
+    )
+    const { loadData, loading } = UseData(
+        setContent, setRating,
+        ptagsList, setPtagsClicked,
+        ntagsList, setNtagsClicked,
+        setPreviewFiles
+    );
+
+    useEffect(() => {
+        const loadAllTags = async () => {
+            setLoadingTags(true);
+            try {
+                const response = await axios.get(`http://localhost:8080/api/tags`);
+                setTags(response.data);
+            } catch (error) {
+                console.error("태그 목록 로딩 실패:", error);
+            }
+            setLoadingTags(false);
+        }
+        loadAllTags();
+    }, [])
+
+    useEffect(() => {
+
+        if (tags.length > 0 && reviewNo) {
+            loadData(reviewNo);
+        }
+    }, [tags, reviewNo]);
 
     // 별 1~2개 일 떄 경고 알림
 
@@ -86,18 +103,14 @@ function UpdateReview() {
         return 0 < starTotal && starTotal <= 2 ? "별점이 낮을 경우, 아쉬운 점을 최소 1개 이상 선택해주세요." : " ";
     }
 
-
-    useEffect(() => {
-        loadData();
-    }, []);
-
+    console.log("이미지", previewFiles);
 
     return (
         <div className="reviewBox">
             <div className="reviewMain">
                 <form className="reviewForm" onSubmit={handleSubmit}>
                     <div className="title">
-                        <h1>리뷰 작성</h1>
+                        <h1>리뷰 수성</h1>
                         <h4>제품을 사용해보신 경험을 공유해주세요</h4>
                     </div>
 
@@ -122,8 +135,8 @@ function UpdateReview() {
                         <br /><div className="warnText">{pWarnMsg}</div>
                         {/* 버튼 형식의 태그  */}
                         <div className="tagContainer">
-                            {ptags.map((tags, i) => (
-                                <button type="button" className={"tagBtn" + (ptagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ptoggleActive(i)}>{tags}</button>
+                            {ptagsList.map((tag, i) => (
+                                <button type="button" className={"tagBtn" + (ptagsClicked[i] ? "active" : " ")} key={tag.tagNo} value={tag.tagName} onClick={() => ptoggleActive(i)}>{tag.tagName}</button>
                             ))}
                         </div>
                     </div>
@@ -136,9 +149,10 @@ function UpdateReview() {
 
 
                         {/* 버튼 형식의 태그  */}
-                        <div className="tagContainer"> {ntags.map((tags, i) => (
-                            <button type="button" className={"tagBtn" + (ntagsClicked[i] ? "active" : " ")} key={i} value={tags} onClick={() => ntoggleActive(i)}>{tags}</button>
-                        ))} </div>
+                        <div className="tagContainer">
+                            {ntagsList.map((tag, i) => (
+                                <button type="button" className={"tagBtn" + (ntagsClicked[i] ? "active" : " ")} key={tag.tagNo} value={tag.tagName} onClick={() => ntoggleActive(i)}>{tag.tagName}</button>
+                            ))} </div>
                     </div>
 
                     <div className="textBox">
@@ -152,9 +166,9 @@ function UpdateReview() {
                                 id="postText"
                                 rows={30}
                                 placeholder="자세한 리뷰는 다른 분들께 큰 도움이 됩니다."
-                                value={text}
+                                value={content}
                                 minLength={1000}
-                                onChange={(e) => setText(e.target.value)}
+                                onChange={(e) => setContent(e.target.value)}
                             />
                         </div>
                     </div>
@@ -168,13 +182,15 @@ function UpdateReview() {
                         </div>
                     </div>
 
+
+
                     <div className="fileBox">
                         <div className="scrollable-container">
                             {/* 이미지 미리보기 컴포넌트 리스트 */}
                             {previewFiles.map(preview => (
                                 <div key={preview.id} className="preview-component">
                                     <img
-                                        src={preview.url}
+                                        src={preview.file ? URL.createObjectURL(preview.file) : `http://localhost:8080/images/${preview.url}`}
                                         alt="미리보기"
                                         className="preview-image"
                                     />
@@ -219,7 +235,7 @@ function UpdateReview() {
                         {/* 취소 선택시 상품 페이지로 */}
                         {/* 리뷰 등록 선택시 리뷰 등록 후 상품 페이지로 */}
                         <button type="button" onClick={handleCancel}>취소</button>
-                        <button type="submit">리뷰등록</button>
+                        <button type="submit">리뷰수정</button>
                     </div>
                 </form >
             </div>
