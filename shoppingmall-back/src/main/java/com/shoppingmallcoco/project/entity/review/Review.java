@@ -55,6 +55,9 @@ public class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
     private List<ReviewTagMap> reviewTagMaps = new ArrayList<>();
 
+    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
+    private List<ReviewImage> reviewImages = new ArrayList<>();
+
     @Column(nullable = false)
     private int rating;
 

@@ -20,6 +20,7 @@ public class ReviewDTO {
 
     private Long reviewNo; // 리뷰 ID
     private Long orderItemNo; // 구매 내역
+    private String userNickname;
     private int rating; // 별점
     private String content; // 리뷰 텍스트
     private LocalDateTime createdAt; // 리뷰 작성 날짜
@@ -28,6 +29,7 @@ public class ReviewDTO {
     private List<Long> tagIds;
     private List<TagDTO> prosTags;
     private List<TagDTO> consTags;
+    private List<ReviewImageDTO> reviewImages;
 
     // Entity -> Dto
     public static ReviewDTO toDto(Review entity, int likeCount) {
@@ -48,11 +50,15 @@ public class ReviewDTO {
                 .collect(Collectors.toList());
         }
 
+        List<ReviewImageDTO> reviewImagesList = null;
+
+        reviewImagesList = entity.getReviewImages().stream().map(ReviewImageDTO::toDTO)
+            .collect(Collectors.toList());
+
         return ReviewDTO.builder().reviewNo(entity.getReviewNo())
             .orderItemNo(entity.getOrderItem().getOrderItemNo()).rating(entity.getRating()).content(
                 entity.getContent()).createdAt(entity.getCreatedAt())
             .updatedAt(entity.getUpdatedAt()).likeCount(likeCount).prosTags(prosTagList)
-            .consTags(consTagList)
-            .build();
+            .consTags(consTagList).reviewImages(reviewImagesList).build();
     }
 }

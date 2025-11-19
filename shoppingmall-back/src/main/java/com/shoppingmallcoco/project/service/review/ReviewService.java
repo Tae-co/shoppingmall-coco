@@ -147,16 +147,16 @@ public class ReviewService {
 
     // review 1개 조회 (수정하기 페이지)
     public ReviewDTO getReview(Long reviewNo) {
-        Review findReview = reviewRepository.findById(reviewNo).orElseThrow(()->new IllegalArgumentException("리뷰 조회 에러입니다."));
+        Review findReview = reviewRepository.findById(reviewNo)
+            .orElseThrow(() -> new IllegalArgumentException("리뷰 조회 에러입니다."));
         int likeCount = likeRepository.countByReview(findReview);
         ReviewDTO reviewDTO = ReviewDTO.toDto(findReview, likeCount);
-        return  reviewDTO;
+        return reviewDTO;
     }
 
     // review 모든 목록 조회 (상품페이지에서 등록된 리뷰 목록 조회)
     public List<ReviewDTO> getReviewList(Long prdNo) {
         List<Review> findReviews = reviewRepository.findByOrderItem_PrdNo(prdNo);
-
         List<ReviewDTO> reviewDtoList = findReviews.stream().map(review -> {
             int likeCount = likeRepository.countByReview(review);
             return ReviewDTO.toDto(review, likeCount);
@@ -164,7 +164,5 @@ public class ReviewService {
 
         return reviewDtoList;
     }
-
-
 
 }

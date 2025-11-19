@@ -1,8 +1,14 @@
 package com.shoppingmallcoco.project.controller;
 
 import com.shoppingmallcoco.project.dto.review.ReviewDTO;
+import com.shoppingmallcoco.project.dto.review.TagDTO;
+import com.shoppingmallcoco.project.entity.review.Tag;
 import com.shoppingmallcoco.project.service.review.ReviewService;
+import com.shoppingmallcoco.project.service.review.TagService;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +27,7 @@ public class ReviewController {
 
 
     private final ReviewService reviewService;
+    private final TagService tagService;
 
     // 리뷰 작성 페이지 데이터 저장
     @PostMapping("/reviews")
@@ -59,6 +66,13 @@ public class ReviewController {
         return reviewService.getReviewList(productNo);
     }
 
+    // 태그 목록 조회
+    @GetMapping("api/tags")
+    public List<TagDTO> getTags() {
+        List<Tag> tagList = tagService.getTagList();
+        List<TagDTO> tagDTOList = tagList.stream().map(TagDTO::toDTO).collect(Collectors.toList());
+        return tagDTOList;
+    }
     // 리뷰 구매 경고 알림
 
 }
