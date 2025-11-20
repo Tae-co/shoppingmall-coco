@@ -364,3 +364,14 @@ export const getCurrentMember = async () => {
 
   return data;
 };
+
+export const getStoredMemberId = () => {
+  const memberStr = localStorage.getItem('member');  // 저장 키 확인!
+  if (!memberStr) return null;
+  try {
+    const member = JSON.parse(memberStr);
+    return member.id || member.memberId;
+  } catch (e) {
+    return null;
+  }
+};
