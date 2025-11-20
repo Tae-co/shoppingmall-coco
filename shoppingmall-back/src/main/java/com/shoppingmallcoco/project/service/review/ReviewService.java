@@ -2,20 +2,27 @@ package com.shoppingmallcoco.project.service.review;
 
 import com.shoppingmallcoco.project.dto.review.ReviewDTO;
 import com.shoppingmallcoco.project.dto.review.SimilarSkinStatsDTO;
+import com.shoppingmallcoco.project.entity.auth.Member;
+import com.shoppingmallcoco.project.entity.mypage.SkinProfile;
 import com.shoppingmallcoco.project.entity.order.OrderItem;
 import com.shoppingmallcoco.project.entity.review.Review;
 import com.shoppingmallcoco.project.entity.review.ReviewImage;
 import com.shoppingmallcoco.project.entity.review.ReviewTagMap;
 import com.shoppingmallcoco.project.entity.review.Tag;
+import com.shoppingmallcoco.project.repository.auth.MemberRepository;
+import com.shoppingmallcoco.project.repository.mypage.SkinRepository;
 import com.shoppingmallcoco.project.repository.order.OrderItemRepository;
 import com.shoppingmallcoco.project.repository.review.LikeRepository;
 import com.shoppingmallcoco.project.repository.review.ReviewImageRepository;
 import com.shoppingmallcoco.project.repository.review.ReviewRepository;
 import com.shoppingmallcoco.project.repository.review.ReviewTagMapRepository;
 import com.shoppingmallcoco.project.repository.review.TagRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +39,8 @@ public class ReviewService {
     private final ReviewTagMapRepository reviewTagMapRepository;
     private final TagRepository tagRepository;
     private final FileUploadService fileUploadService;
+    private final SkinRepository skinRepository;
+    private final MemberRepository memberRepository;
 
     // review 등록
     @Transactional
@@ -163,10 +172,41 @@ public class ReviewService {
         return reviewDtoList;
     }
 
-//    // 태그 기반 상품 구매 경고 알림
-//    public SimilarSkinStatsDTO getSimilarSkinStats(Long prdNo, Long currentMemberId){
-//
-//        return
-//    }
+    // 태그 기반 상품 구매 경고 알림
+    @Transactional(readOnly = true)
+    public SimilarSkinStatsDTO getSimilarSkinStats(Long prdNo, Long currentMemberNo) {
 
+        // 1. 현재 로그인한 사용자의 피부 타입 조회
+        // (Member 엔티티에 Skin이 연결되어 있다면 member.getSkin().getSkinType()으로 가능)
+        SkinProfile userSkin = skinRepository.findByMember_MemNo(currentMemberNo)
+            .orElseThrow(() -> new IllegalArgumentException("피부타입 설정을 완료해주세요."));
+
+        String skinType = userSkin.getSkinType();
+
+        // 2. 분모 계산: 이 상품에 대해 '지성' 피부 유저가 쓴 총 리뷰 수
+
+        long totalReviewers = reviewTagMapRepository.countReviewsByProductAndSkinType(prdNo,
+            skinType);
+
+        if (totalReviewers == 0) {
+            return SimilarSkinStatsDTO.builder().skinType(skinType).totalReviewerCount(0L)
+                .topTags(new ArrayList<>()).build();
+        }
+
+        // 3. 분자 계산: '지성' 피부 유저가 가장 많이 선택한 태그 Top 3 조회
+
+        Pageable top3 = PageRequest.of(0, 3);
+        List<ReviewTagMapRepository.TagStatSimple> topTags = reviewTagMapRepository.findTopTagsByProductAndSkinType(
+            prdNo, skinType, top3);
+
+        // 4. 백분율 변환 및 DTO 생성
+
+        List<SimilarSkinStatsDTO.TagStat> stats = topTags.stream().map(tag -> {
+            int percentage = (int) Math.round(((double) tag.getCount() / totalReviewers) * 100);
+            return new SimilarSkinStatsDTO.TagStat(tag.getTagName(), percentage, tag.getCount());
+        }).collect(Collectors.toList());
+
+        return SimilarSkinStatsDTO.builder().skinType(skinType).totalReviewerCount(totalReviewers)
+            .topTags(stats).build();
+    }
 }

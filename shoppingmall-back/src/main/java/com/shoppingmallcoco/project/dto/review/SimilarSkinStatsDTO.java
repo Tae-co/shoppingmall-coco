@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SimilarSkinStatsDTO {
 
-    private String SkinType; // 피부 타입
-    private Long totalReviewCount; // 그 피부 타입을 가진 리뷰어 총 인원 ㅜ
+    private String skinType; // 피부 타입
+    private Long totalReviewerCount; // 그 피부 타입을 가진 리뷰어 총 인원 수
     private List<TagStat> topTags; // 상위 태그 목록
 
     @Getter
