@@ -7,6 +7,7 @@ import com.shoppingmallcoco.project.dto.auth.MemberUpdateDto;
 import com.shoppingmallcoco.project.dto.auth.FindIdDto;
 import com.shoppingmallcoco.project.dto.auth.ResetPasswordDto;
 import com.shoppingmallcoco.project.dto.auth.ChangePasswordDto;
+import com.shoppingmallcoco.project.dto.auth.DeleteAccountDto;
 import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.util.JwtUtil;
@@ -224,6 +225,26 @@ public class MemberService {
                 .memPwd(encodedPassword)
                 .build();
         memberRepository.save(member);
+    }
+
+    // 계정 삭제 (로그인한 사용자)
+    public void deleteAccount(String memId, DeleteAccountDto deleteAccountDto) {
+        Optional<Member> memberOpt = memberRepository.findByMemId(memId);
+        if (memberOpt.isEmpty()) {
+            throw new RuntimeException("회원을 찾을 수 없습니다.");
+        }
+
+        Member member = memberOpt.get();
+
+        if (deleteAccountDto.getCurrentPassword() == null || deleteAccountDto.getCurrentPassword().trim().isEmpty()) {
+            throw new RuntimeException("현재 비밀번호를 입력해주세요.");
+        }
+
+        if (!passwordEncoder.matches(deleteAccountDto.getCurrentPassword(), member.getMemPwd())) {
+            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        memberRepository.delete(member);
     }
 
     // 카카오 소셜 로그인 처리

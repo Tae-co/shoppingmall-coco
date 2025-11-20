@@ -336,6 +336,21 @@ public class MemberController {
         }
     }
 
+    // 계정 삭제 (로그인한 사용자)
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(Authentication authentication, @RequestBody DeleteAccountDto deleteAccountDto) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            memberService.deleteAccount(authentication.getName(), deleteAccountDto);
+            return ResponseEntity.ok(Map.of("success", true, "message", "계정이 삭제되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
 }
 
 
