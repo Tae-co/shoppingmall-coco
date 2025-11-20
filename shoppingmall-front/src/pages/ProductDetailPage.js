@@ -5,7 +5,9 @@ import ProductDetailSkeleton from '../components/product/detail/ProductDetailSke
 import ProductImageGallery from '../components/product/detail/ProductImageGallery';
 import ProductInfoBox from '../components/product/detail/ProductInfoBox';
 import ProductTabs from '../components/product/detail/ProductTabs';
-import { fetchWithAuth, getStoredMember, isLoggedIn } from '../utils/api';
+import SimilarSkinReview from '../features/SimilarSkinReview';
+import { fetchWithAuth, getStoredMember, isLoggedIn, getStoredMemberId} from '../utils/api';
+
 
 // --- 스타일 컴포넌트 정의 ---
 
@@ -98,6 +100,8 @@ function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState('');
+  const [skinStats, setSkinStats] = useState(null);  // 유사 피부타입 태그 통계
+  const memberId = getStoredMemberId();
 
   // productId가 바뀔 때마다 실행
   useEffect(() => {
@@ -124,6 +128,22 @@ function ProductDetailPage() {
     fetchProductDetail();
 
   }, [productId]);
+
+  // 피부 타입 
+  useEffect(() => {
+    if (!productId || !memberId) return;
+    const fetchSkinStats = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/api/products/${productId}/similar-skin-tags?memberId=${memberId}`);
+        if (!res.ok) throw new Error('통계 데이터 불러오기 실패');
+        const stats = await res.json();
+        setSkinStats(stats);
+      } catch (e) {
+        setSkinStats(null);
+      }
+    };
+    fetchSkinStats();
+  }, [productId, memberId]);
 
   // 토스트 메시지가 나타나면 2초 후에 사라지도록 하는 useEffect
   useEffect(() => {
@@ -262,6 +282,7 @@ function ProductDetailPage() {
           handleAddToCart={handleAddToCart}
           handleBuyNow={handleBuyNow}
         />
+         <SimilarSkinReview stats={skinStats} />
       </TopSection>
       <ProductTabs product={product} />
 

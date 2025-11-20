@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import greyStar from '../images/greyStar.svg'
 import yellowStar from '../images/yellowStar.svg'
 import addImg from '../images/addImg.svg'
-//import axios from "axios";
+import axios from "axios";
 import UseStarRating from '../features/UseStarRating.js'
 import UseTag from '../features/UseTag.js'
 import usefile from '../features/UseFile.js'

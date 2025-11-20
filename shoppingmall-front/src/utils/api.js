@@ -365,6 +365,18 @@ export const getCurrentMember = async () => {
   return data;
 };
 
+  // memberId 조회
+export const getStoredMemberId = () => {
+  const memberStr = localStorage.getItem('member');  // 저장 키 확인!
+  if (!memberStr) return null;
+  try {
+    const member = JSON.parse(memberStr);
+    return member.id || member.memberId;
+  } catch (e) {
+    return null;
+  }
+};
+
 // 비밀번호 변경
 export const changePassword = async (currentPassword, newPassword) => {
   const response = await fetchWithAuth('/member/change-password', {

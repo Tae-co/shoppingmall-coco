@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 @CrossOrigin(origins = "http://localhost:3000")
 public class ReviewController {
 
-
     private final ReviewService reviewService;
     private final TagService tagService;
 
@@ -73,6 +72,5 @@ public class ReviewController {
         List<TagDTO> tagDTOList = tagList.stream().map(TagDTO::toDTO).collect(Collectors.toList());
         return tagDTOList;
     }
-    // 리뷰 구매 경고 알림
 
 }
