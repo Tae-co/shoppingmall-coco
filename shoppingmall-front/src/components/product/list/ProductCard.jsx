@@ -94,6 +94,30 @@ const ProductPrice = styled.p`
   padding-top: 10px;
 `;
 
+// 스타일 추가: 이미지 래퍼 및 품절 오버레이
+const ImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+`;
+
+const SoldOutOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); // 반투명 검정
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 4px;
+  z-index: 1;
+`;
+
 const skinConcernMap = {
   hydration: '수분',
   moisture: '보습',
@@ -121,9 +145,20 @@ const personalColorMap = {
 };
 
 const ProductCard = ({ product, onAddToCart }) => {
+  const isSoldOut = product.status === '품절' || product.status === 'SOLD_OUT'; 
+  const isStop = product.status === '판매중지' || product.status === 'STOP';
   return (
-    <CardLink key={product.prdNo} to={`/products/${product.prdNo}`}>
-      <ProductImage src={product.imageUrl} alt={product.prdName} loading="lazy" />
+    <CardLink to={isSoldOut || isStop ? '#' : `/products/${product.prdNo}`} style={{ cursor: isSoldOut ? 'default' : 'pointer' }}>
+      <ImageWrapper>
+        <ProductImage src={product.imageUrl} alt={product.prdName} loading="lazy" />
+        {/* 품절/판매중지 시 오버레이 표시 */}
+        {(isSoldOut || isStop) && (
+          <SoldOutOverlay>
+            {isSoldOut ? 'SOLD OUT' : '판매 중지'}
+          </SoldOutOverlay>
+        )}
+      </ImageWrapper>
+
       <CardContent>
         <ProductName>{product.prdName}</ProductName>
         <ProductRating>
@@ -145,8 +180,20 @@ const ProductCard = ({ product, onAddToCart }) => {
         </TagContainer>
         <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
         <SimpleReview>{product.simpleReview}</SimpleReview>
-        <ProductButton onClick={onAddToCart} $primary style={{ marginTop: '12px' }}>
-          장바구니 담기
+        <ProductButton
+          onClick={(e) => {
+            if (isSoldOut || isStop) {
+              e.preventDefault();
+              alert("구매할 수 없는 상품입니다.");
+            } else {
+              onAddToCart(e);
+            }
+          }}
+          $primary
+          disabled={isSoldOut || isStop}
+          style={{ marginTop: '12px', opacity: (isSoldOut || isStop) ? 0.5 : 1 }}
+        >
+          {isSoldOut ? '품절' : (isStop ? '판매 중지' : '장바구니 담기')}
         </ProductButton>
       </CardContent>
     </CardLink>
