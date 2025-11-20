@@ -22,6 +22,6 @@ public class ProfileDTO {
     private int followingCount;
 
     // 현재 사용자 확인
-    private boolean isMyProfile;
+    private boolean isMine;
 
 }

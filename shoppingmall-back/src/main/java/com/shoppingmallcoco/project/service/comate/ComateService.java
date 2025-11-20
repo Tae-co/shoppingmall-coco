@@ -45,7 +45,7 @@ public class ComateService {
                 .likedCount(likedCount)
                 .followerCount(followerCount)
                 .followingCount(followingCount)
-                .isMyProfile(isMine)
+                .isMine(isMine)
                 .build();
     }
     
