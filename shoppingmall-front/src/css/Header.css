@@ -123,6 +123,10 @@ ul {
     width: 300px;
     font-size: 12px;
     border-radius: 25px 0 0 25px;
+    outline: none;
+}
+.search_container input[type="text"]:focus {
+    background-color: #fdfdfd; 
 }
 
 .btn_search {
