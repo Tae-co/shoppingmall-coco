@@ -3,6 +3,7 @@ package com.shoppingmallcoco.project.dto.product;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +20,15 @@ public class ProductAdminRequestDTO {
     private String skinType;
     private String skinConcern;
     private String personalColor;
+    
+    private List<OptionDTO> options; 
+
+    @Data
+    public static class OptionDTO {
+        private String optionName;
+        private String optionValue;
+        private int addPrice;
+        private int stock;
+    }
     
 }

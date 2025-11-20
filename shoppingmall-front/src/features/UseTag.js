@@ -1,14 +1,26 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 
-function useTag (ptags,ntags) {
+function useTag(tags) {
+    const ptagsList = useMemo(
+        () => (tags ? tags.filter(tag => tag.tagStatus == "장점") : []), [tags]
+    )
 
-    const [ptagsClicked, setPtagsClicked] = useState(Array(ptags.length).fill(false));
-    const [ntagsClicked, setNtagsClicked] = useState(Array(ntags.length).fill(false));
+    const ntagsList = useMemo(
+        () => (tags ? tags.filter(tag => tag.tagStatus == "단점") : []), [tags]
+    )
+
+    const [ptagsClicked, setPtagsClicked] = useState(Array(ptagsList.length).fill(false));
+    const [ntagsClicked, setNtagsClicked] = useState(Array(ntagsList.length).fill(false));
     const [pWarnMsg, pSetWarnMsg] = useState("");
     const [nWarnMsg, nSetWarnMsg] = useState("");
 
-    const [ptagArr, setPtagArr] = useState([]);
-    const [ntagArr, setNtagArr] = useState([]);
+    // const [ptagArr, setPtagArr] = useState([]);
+    // const [ntagArr, setNtagArr] = useState([]);
+
+    useEffect(() => {
+        setPtagsClicked(Array(ptagsList.length).fill(false));
+        setNtagsClicked(Array(ntagsList.length).fill(false));
+    }, [ptagsList, ntagsList])
 
     const ptoggleActive = (indexTogle) => {
 
@@ -46,6 +58,8 @@ function useTag (ptags,ntags) {
     };
 
     return {
+        ptagsList,
+        ntagsList,
         ptagsClicked,
         ntagsClicked,
         pWarnMsg,
@@ -53,12 +67,7 @@ function useTag (ptags,ntags) {
         ptoggleActive,
         ntoggleActive,
         setPtagsClicked,
-        setNtagsClicked,
-        setPtagArr,
-        setNtagArr,
-        ptagArr,
-        ntagArr
-
+        setNtagsClicked
     }
 }
 
