@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {NavLink, Link, Routes, Route, useNavigate} from 'react-router-dom';
+import {NavLink, Link, Routes, Route, useNavigate, useLocation} from 'react-router-dom';
 
 import Logo from '../images/logo.png';
 
@@ -104,6 +104,79 @@ const Header = () => {
         }
     };
 
+    const location = useLocation(); // 현재 페이지 확인용
+
+    // 검색어 상태 관리
+    const [searchTerm, setSearchTerm] = useState(''); 
+    
+    // 디바운싱을 위한 타이머 상태
+    const [timer, setTimer] = useState(null);
+
+    // URL의 쿼리스트링(?q=...)이 바뀌면 입력창도 동기화 (새로고침 등 대응)
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const query = params.get('q');
+        if (query) {
+            setSearchTerm(query);
+        } else if (location.pathname !== '/product') {
+            // 상품 페이지가 아니면 검색창 비우기 (선택사항)
+            setSearchTerm('');
+        }
+    }, [location.search, location.pathname]);
+
+    // 입력창 변경 핸들러 (실시간 검색 로직)
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value); // 화면에는 바로 글자가 써지게 함
+
+        // 현재 페이지가 '상품 목록' 페이지일 때만 실시간 검색 작동
+        if (location.pathname === '/product') {
+            // 이전에 설정된 타이머가 있다면 취소 (연속 입력 시 API 호출 방지)
+            if (timer) {
+                clearTimeout(timer);
+            }
+
+            // 0.5초 뒤에 검색 실행 (디바운스)
+            const newTimer = setTimeout(() => {
+                navigate(`/product?q=${encodeURIComponent(value)}`);
+            }, 500);
+
+            setTimer(newTimer);
+        }
+    };
+
+    // 엔터키/버튼 클릭 핸들러 (기존 유지)
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        // 엔터를 쳤을 때는 타이머 취소하고 즉시 이동
+        if (timer) clearTimeout(timer);
+        
+        if (searchTerm.trim() === "") {
+            alert("검색어를 입력하세요");
+            return;
+        }
+        navigate(`/product?q=${encodeURIComponent(searchTerm)}`);
+    };
+
+
+    // 검색 핸들러 함수
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const searchValue = e.target.search.value.trim(); // 공백 제거
+
+        if (searchValue === "") {
+            alert("검색어를 입력하세요");
+            return;
+        }
+
+        // 상품 목록 페이지로 이동하며 쿼리 스트링 전달
+        // 예: /product?q=립스틱
+        navigate(`/product?q=${encodeURIComponent(searchValue)}`);
+        
+        // 검색 후 입력창 비우기
+        e.target.search.value = '';
+    };
+
     return (
         <div>
             <header className="header">
@@ -168,19 +241,10 @@ const Header = () => {
                         </div>
                         {/* 우측 기능 버튼 */}
                         <div className="header_right">  
-                            {/* 검색 폼 : 임시 검색어 콘솔 출력 ~ 추후 연동 예정 */}
+                            {/* 검색 폼 수정*/}
                             <div className="search_container">
-                                <form onSubmit={(e) => {
-                                                e.preventDefault(); 
-                                                const searchValue = e.target.search.value;
-
-                                                if (searchValue == "") {
-                                                    alert("검색어를 입력하세요");
-                                                } else {
-                                                    console.log('검색 실행:', searchValue);
-                                                }
-                                }}>
-                                    <input type="text" name="search" placeholder="검색어를 입력해보세요" />
+                                <form onSubmit={handleSearch}>
+                                    <input type="text" name="search" placeholder="검색어를 입력해보세요" value={searchTerm} onChange={handleInputChange} autoComplete="off" />
                                     <button type="submit" className="btn_search">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24" width="20" height="20">
                                             <path fill="#777777" fillRule="evenodd" d="M15.571 16.631a8.275 8.275 0 1 1 1.06-1.06l4.5 4.498-1.061 1.06-4.499-4.498Zm1.478-6.357a6.775 6.775 0 1 1-13.55 0 6.775 6.775 0 0 1 13.55 0Z" clipRule="evenodd"></path>
