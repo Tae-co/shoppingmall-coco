@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.shoppingmallcoco.project.dto.comate.ProfileDTO;
 import com.shoppingmallcoco.project.service.comate.ComateService;
+import com.shoppingmallcoco.project.service.comate.FollowService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,25 +21,26 @@ import lombok.RequiredArgsConstructor;
 public class ComateController {
 
     private final ComateService comateService;
+    private final FollowService followService;
 
     // 프로필 조회
     @GetMapping("/user/{memNo}")
     public ProfileDTO getProfile(@PathVariable("memNo") Long memNo) {
         Long currentMemNo = 1L; // 테스트용
-        return comateService.getProfile(currentMemNo, memNo);
+        return comateService.getProfileBasic(currentMemNo, memNo);
     }
 
     // 팔로우
     @PostMapping("/follow/{targetMemNo}")
     public ResponseEntity<String> follow(@RequestParam Long currentMemNo, @PathVariable Long targetMemNo) {
-        comateService.follow(currentMemNo, targetMemNo);
+        followService.follow(currentMemNo, targetMemNo);
         return ResponseEntity.ok("팔로우 완료");
     }
 
     // 언팔로우
     @DeleteMapping("/unfollow/{targetMemNo}")
     public ResponseEntity<String> unfollow(@RequestParam Long currentMemNo, @PathVariable Long targetMemNo) {
-        comateService.unfollow(currentMemNo, targetMemNo);
+        followService.unfollow(currentMemNo, targetMemNo);
         return ResponseEntity.ok("언팔로우 완료");
     }
 
