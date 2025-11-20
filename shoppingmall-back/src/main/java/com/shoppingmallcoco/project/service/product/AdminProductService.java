@@ -3,7 +3,7 @@ package com.shoppingmallcoco.project.service.product;
 import com.shoppingmallcoco.project.dto.product.ProductSaveDTO;
 import com.shoppingmallcoco.project.entity.product.*;
 import com.shoppingmallcoco.project.repository.product.*;
-import com.shoppingmallcoco.project.service.IReviewService;
+import com.shoppingmallcoco.project.service.review.IReviewService;
 
 import lombok.RequiredArgsConstructor;
 
