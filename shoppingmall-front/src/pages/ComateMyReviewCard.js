@@ -5,8 +5,11 @@ import '../css/ComateReviewCard.css';
 import sampleImg_product from '../images/sampleImg_product.png'; // 임시 상품 이미지
 import starIcon from '../images/review_rate_icon_star.png';
 
-const ComateReviewCard = ({productName, productOption, createdAt, rating, content, tags, likeCount}) => {
-
+const ComateReviewCard = ({
+    productName, productOption, 
+    createdAt, rating, content, tags = [], likeCount = 0,
+    authorName, author_MemNo // 작성자 관련 (like 리뷰일때만 사용)
+}) => {
     return (
         <div className="comate_review_wrapper">
             <div className="product_info">
