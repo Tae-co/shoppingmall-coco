@@ -2,6 +2,7 @@ package com.shoppingmallcoco.project.service.comate;
 
 import com.shoppingmallcoco.project.dto.comate.FollowInfoDTO;
 import com.shoppingmallcoco.project.dto.comate.LikedReviewDTO;
+import com.shoppingmallcoco.project.dto.comate.MiniProfileDTO;
 import com.shoppingmallcoco.project.dto.comate.MyReviewDTO;
 import com.shoppingmallcoco.project.dto.comate.ProfileDTO;
 import com.shoppingmallcoco.project.entity.auth.Member;
@@ -47,6 +48,28 @@ public class ComateService {
                 .followingCount(followingCount)
                 .isMyProfile(isMine)
                 .build();
+    }
+    
+    // 메인용 - 전체 회원 목록 조회
+    public List<MiniProfileDTO> getAllComates() {
+    	List<Member> members = memberRepository.findAll();
+    	return members.stream().map(member -> {
+    		
+    		int followerCount = followRepository.countByFollowing_MemNo(member.getMemNo());
+    		int reviewCount = reviewRepository.countByOrderItem_Order_Member_MemNo(member.getMemNo());
+    		
+    		// 피부타입 아직 구현안됨 (추가예정)
+    		// MiniProfileDTO skinTypes 주석 지워야함
+    		// List<String> skinTypes = member.getSkinTypes();
+    		
+    		return MiniProfileDTO.builder()
+    				.memNo(member.getMemNo())
+    				.memNickname(member.getMemNickname())
+    				//.skinTypes(skinTypes)
+    				.followerCount(followerCount)
+    				.reviewCount(reviewCount)
+    				.build();
+    	}).toList();
     }
   
 }

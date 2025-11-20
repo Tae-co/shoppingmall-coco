@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.shoppingmallcoco.project.dto.comate.FollowInfoDTO;
 import com.shoppingmallcoco.project.dto.comate.LikedReviewDTO;
+import com.shoppingmallcoco.project.dto.comate.MiniProfileDTO;
 import com.shoppingmallcoco.project.dto.comate.MyReviewDTO;
 import com.shoppingmallcoco.project.dto.comate.ProfileDTO;
 import com.shoppingmallcoco.project.service.comate.CM_ReviewService;
@@ -86,4 +87,9 @@ public class ComateController {
         return reviewService.getLikedReviews(memNo);
     }
 
+    // 메인용 - 전체 회원 목록 조회
+    @GetMapping("/users")
+    public ResponseEntity<List<MiniProfileDTO>> getAllComates() {
+    	return ResponseEntity.ok(comateService.getAllComates());
+    }
 }
