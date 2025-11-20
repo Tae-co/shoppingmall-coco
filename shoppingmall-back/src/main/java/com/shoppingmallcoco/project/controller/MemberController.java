@@ -308,6 +308,49 @@ public class MemberController {
         }
     }
 
+    // 비밀번호 변경 (로그인한 사용자용)
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(Authentication authentication, @RequestBody ChangePasswordDto changePasswordDto) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            if (changePasswordDto.getCurrentPassword() == null || changePasswordDto.getCurrentPassword().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", "현재 비밀번호를 입력해주세요."));
+            }
+            if (changePasswordDto.getNewPassword() == null || changePasswordDto.getNewPassword().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", "새 비밀번호를 입력해주세요."));
+            }
+            if (changePasswordDto.getNewPassword().length() < 8) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", "비밀번호는 8자 이상이어야 합니다."));
+            }
+
+            memberService.changePassword(authentication.getName(), changePasswordDto);
+            return ResponseEntity.ok(Map.of("success", true, "message", "비밀번호가 성공적으로 변경되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    // 계정 삭제 (로그인한 사용자)
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(Authentication authentication, @RequestBody DeleteAccountDto deleteAccountDto) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
+        }
+        try {
+            memberService.deleteAccount(authentication.getName(), deleteAccountDto);
+            return ResponseEntity.ok(Map.of("success", true, "message", "계정이 삭제되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
 }
 
 

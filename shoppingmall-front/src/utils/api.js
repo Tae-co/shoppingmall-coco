@@ -364,3 +364,38 @@ export const getCurrentMember = async () => {
 
   return data;
 };
+
+// 비밀번호 변경
+export const changePassword = async (currentPassword, newPassword) => {
+  const response = await fetchWithAuth('/member/change-password', {
+    method: 'PUT',
+    body: JSON.stringify({
+      currentPassword,
+      newPassword,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || '비밀번호 변경에 실패했습니다.');
+  }
+
+  return data;
+};
+
+// 계정 삭제
+export const deleteAccount = async (currentPassword) => {
+  const response = await fetchWithAuth('/member/delete', {
+    method: 'DELETE',
+    body: JSON.stringify({ currentPassword }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || '계정 삭제에 실패했습니다.');
+  }
+
+  return data;
+};
