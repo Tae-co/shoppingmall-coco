@@ -95,11 +95,10 @@ function ProfileEdit() {
         <div className="input-row">
           <input
             type="text"
-            className="input"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            className="input readonly"
+            value={nickname} 
+            readOnly
           />
-          <button className="edit-btn">🖉 수정</button>
         </div>
 
         <label>이메일 (ID)</label>
