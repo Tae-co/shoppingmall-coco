@@ -54,10 +54,6 @@ const SelectBox = styled.select`
   ${CommonFormStyle}
 `;
 
-const QuantityInput = styled.input`
-  ${CommonFormStyle}
-`;
-
 const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
@@ -78,6 +74,38 @@ const Tag = styled.span`
   color: #555;
   padding: 4px 8px;
   border-radius: 4px;
+`;
+
+// 수량 조절 컨테이너 스타일
+const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 150px; /* 적절한 너비 설정 */
+  margin-bottom: 20px;
+`;
+
+const QuantityBtn = styled.button`
+  width: 40px;
+  height: 40px;
+  background: #f9f9f9;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  &:hover { background: #eee; }
+`;
+
+const QuantityValue = styled.input`
+  flex: 1;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  height: 40px;
+  font-size: 16px;
+  width: 100%;
+  &:focus { outline: none; }
 `;
 
 const skinTypeMap = { dry: '건성', oily: '지성', combination: '복합성', sensitive: '민감성' };
@@ -101,6 +129,12 @@ const ProductInfoBox = ({
   handleAddToCart,
   handleBuyNow
 }) => {
+
+  // 상태 확인 로직
+  const isSoldOut = product.status === '품절' || product.status === 'SOLD_OUT';
+  const isStop = product.status === '판매중지' || product.status === 'STOP';
+  const isUnavailable = isSoldOut || isStop;
+
   return (
     <InfoBox>
       <ProductName>{product.prdName}</ProductName>
@@ -141,21 +175,24 @@ const ProductInfoBox = ({
       {/* --- 수량 --- */}
       <div>
         <VisuallyHiddenLabel htmlFor="product-quantity">상품 수량</VisuallyHiddenLabel>
-        <QuantityInput
-          id="product-quantity"
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-          min="1"
-        />
+        <QuantityControl>
+          <QuantityBtn onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</QuantityBtn>
+          <QuantityValue
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+          />
+          <QuantityBtn onClick={() => setQuantity(quantity + 1)}>+</QuantityBtn>
+        </QuantityControl>
       </div>
 
       <ButtonGroup>
-        <ProductButton onClick={handleAddToCart}>
-          장바구니
-        </ProductButton>
-        <ProductButton primary onClick={handleBuyNow}>
-          바로구매
+        <ProductButton
+          onClick={handleAddToCart}
+          disabled={isUnavailable} // 비활성화
+          style={{ opacity: isUnavailable ? 0.5 : 1 }}
+        >
+          {isSoldOut ? '품절' : (isStop ? '판매 중지' : '장바구니')}
         </ProductButton>
       </ButtonGroup>
     </InfoBox>
