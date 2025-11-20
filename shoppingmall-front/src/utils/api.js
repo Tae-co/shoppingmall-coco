@@ -383,3 +383,19 @@ export const changePassword = async (currentPassword, newPassword) => {
 
   return data;
 };
+
+// 계정 삭제
+export const deleteAccount = async (currentPassword) => {
+  const response = await fetchWithAuth('/member/delete', {
+    method: 'DELETE',
+    body: JSON.stringify({ currentPassword }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || '계정 삭제에 실패했습니다.');
+  }
+
+  return data;
+};

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/AccountSettings.css";
-import { changePassword } from "../utils/api";
+import { changePassword, deleteAccount, logout } from "../utils/api";
 
 function AccountSettings() {
   const navigate = useNavigate();
@@ -11,6 +11,10 @@ function AccountSettings() {
   const [confirmPw, setConfirmPw] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [deletePw, setDeletePw] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [notifications, setNotifications] = useState({
     email: true,
@@ -60,6 +64,31 @@ function AccountSettings() {
       setError(error.message || "비밀번호 변경에 실패했습니다.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteError("");
+
+    if (!deletePw) {
+      setDeleteError("현재 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    if (!window.confirm("정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await deleteAccount(deletePw);
+      alert("계정이 삭제되었습니다.");
+      logout();
+      navigate("/");
+    } catch (error) {
+      setDeleteError(error.message || "계정 삭제에 실패했습니다.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -214,7 +243,30 @@ function AccountSettings() {
         <p className="section-desc">
           계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다
         </p>
-        <button className="delete-btn">계정 삭제하기</button>
+        <div className="input-group">
+          <input
+            type="password"
+            placeholder="현재 비밀번호를 입력하세요"
+            value={deletePw}
+            onChange={(e) => {
+              setDeletePw(e.target.value);
+              setDeleteError("");
+            }}
+            disabled={isDeleting}
+          />
+        </div>
+        {deleteError && (
+          <div style={{ color: "red", marginBottom: "10px", fontSize: "14px" }}>
+            {deleteError}
+          </div>
+        )}
+        <button
+          className="delete-btn"
+          onClick={handleDeleteAccount}
+          disabled={isDeleting}
+        >
+          {isDeleting ? "삭제 중..." : "계정 삭제하기"}
+        </button>
       </section>
     </div>
   );
