@@ -29,25 +29,15 @@ public class ComateService {
     private final CM_ReviewService reviewService;
 
     // 프로필 기본 정보 조회
-    public ProfileDTO getProfileBasic(Long currentMemNo, Long targetMemNo) {
+    public ProfileDTO getProfile(Long currentMemNo, Long targetMemNo) {
     	
     	Member member = memberRepository.findById(targetMemNo)
     			.orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
     	
-    	// 팔로워 / 팔로잉 목록
-        List<FollowInfoDTO> followers = followService.getFollowers(targetMemNo);
-        List<FollowInfoDTO> followings = followService.getFollowings(targetMemNo);
+    	boolean isMine = currentMemNo.equals(targetMemNo);
 
-        int followerCount = followers.size();
-        int followingCount = followings.size();
-
-        // 본인 프로필인지 여부
-        boolean isMine = currentMemNo.equals(targetMemNo);
-        
-        // 사용자가 작성한 리뷰
-        List<MyReviewDTO> myReviews = reviewService.getMyReviews(targetMemNo);
-        // 사용자가 좋아요 누른 리뷰 목록
-        List<LikedReviewDTO> likedReviews = reviewService.getLikedReviews(currentMemNo);
+        int followerCount = followRepository.countByFollowing_MemNo(targetMemNo);
+        int followingCount = followRepository.countByFollower_MemNo(targetMemNo);
         
         return ProfileDTO.builder()
                 .memNo(member.getMemNo())
@@ -56,10 +46,6 @@ public class ComateService {
                 .followerCount(followerCount)
                 .followingCount(followingCount)
                 .isMyProfile(isMine)
-                .followers(followers)
-                .followings(followings)
-                .myReviews(myReviews)
-                .likedReviews(likedReviews)
                 .build();
     }
   

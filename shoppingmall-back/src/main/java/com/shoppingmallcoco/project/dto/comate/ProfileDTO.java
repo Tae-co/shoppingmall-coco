@@ -17,15 +17,8 @@ public class ProfileDTO {
     // 팔로잉 관련 정보
     private int followerCount;
     private int followingCount;
-    private List<FollowInfoDTO> followers;
-    private List<FollowInfoDTO> followings;
 
     // 현재 사용자 확인
     private boolean isMyProfile;
-    
-    // 작성한 리뷰 목록
-    private List<MyReviewDTO> myReviews;
-    // 좋아요 누른 리뷰 목록
-    private List<LikedReviewDTO> likedReviews;
 
 }
