@@ -14,7 +14,7 @@ import jakarta.persistence.criteria.Predicate;
 
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
 import com.shoppingmallcoco.project.repository.product.ProductRepository;
-import com.shoppingmallcoco.project.service.IReviewService;
+import com.shoppingmallcoco.project.service.review.IReviewService;
 
 @Service
 public class ProductService {
