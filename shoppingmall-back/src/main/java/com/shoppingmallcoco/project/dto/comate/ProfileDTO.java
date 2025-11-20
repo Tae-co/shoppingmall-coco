@@ -14,6 +14,9 @@ public class ProfileDTO {
     private String memName;
     private String memNickname;
     
+    // 좋아요 누른 리뷰 개수
+    private int likedCount;
+    
     // 팔로잉 관련 정보
     private int followerCount;
     private int followingCount;

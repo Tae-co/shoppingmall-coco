@@ -1,9 +1,6 @@
 package com.shoppingmallcoco.project.service.comate;
 
-import com.shoppingmallcoco.project.dto.comate.FollowInfoDTO;
-import com.shoppingmallcoco.project.dto.comate.LikedReviewDTO;
 import com.shoppingmallcoco.project.dto.comate.MiniProfileDTO;
-import com.shoppingmallcoco.project.dto.comate.MyReviewDTO;
 import com.shoppingmallcoco.project.dto.comate.ProfileDTO;
 import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.entity.comate.Follow;
@@ -37,6 +34,7 @@ public class ComateService {
     	
     	boolean isMine = currentMemNo.equals(targetMemNo);
 
+    	int likedCount = likeRepository.countByMember_MemNo(targetMemNo);
         int followerCount = followRepository.countByFollowing_MemNo(targetMemNo);
         int followingCount = followRepository.countByFollower_MemNo(targetMemNo);
         
@@ -44,6 +42,7 @@ public class ComateService {
                 .memNo(member.getMemNo())
                 .memName(member.getMemName())
                 .memNickname(member.getMemNickname())
+                .likedCount(likedCount)
                 .followerCount(followerCount)
                 .followingCount(followingCount)
                 .isMyProfile(isMine)

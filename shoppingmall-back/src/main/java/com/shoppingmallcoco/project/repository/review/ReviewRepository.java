@@ -22,7 +22,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 특정 사용자가 작성한 리뷰 조회 (기본값:최신순)
     //List<Review> findByOrderItem_Member_MemNo(Long memNo);
 	List<Review> findByOrderItem_Order_Member_MemNoOrderByCreatedAtDesc(Long memNo);
-	// 특정 사용자가 작성한 리뷰 개수 반환
+	// 특정 사용자가 작성한 리뷰 개수
 	int countByOrderItem_Order_Member_MemNo(Long memNo);
 
 }
