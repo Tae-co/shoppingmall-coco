@@ -40,9 +40,13 @@ const Comate = () => {
         const initUser = async () => {
             try {
                 const current = await getCurrentMember();
-                setTargetMemNo(current);
+                setLoginUser(current);
 
                 if (!memNo || memNo === current.memNo.toString()) {
+                    if (window.location.pathname !== `/comate/me/`) {
+                        navigate('/comate/me/review', {replace: true});
+                    }
+
                     setUserType('me');
                     setTargetMemNo(current.memNo);
                 } else {

@@ -8,7 +8,7 @@ const ComateUserCard = ({ memNo, nickname, skinTypes, isFollowing, onFollowClick
 
     return (
         <div className="uc_wrapper">
-            <Link to={`/comate/user/${memNo}`}>
+            <Link to={`/comate/user/${memNo}/review`}>
             <div className="uc_info_wrapper">
                 <img src={sampleImg_profile} alt={nickname} className="profile_img"/>
                 <div className="uc_info">
