@@ -9,8 +9,12 @@ import starIcon from '../images/review_rate_icon_star.png';
 const ComateReviewCard = ({
     productName, productOption, createdAt, 
     rating, content, tags, likeCount,
-    memNickname, memNo
+    authorNo, authorNickname
 }) => {
+
+    const totalStar = 5;
+    const filledStar = rating;
+    const emptyStar = totalStar - filledStar;
 
     return (
         <div className="comate_review_wrapper">
@@ -22,19 +26,20 @@ const ComateReviewCard = ({
                 </div>
             </div>
             <div className="review_info">
-                {memNickname && (
+                {authorNickname && (
                     <div className="author_info">
-                        <img src={sampleImg_profile} alt={memNickname} className="author_img"/>
-                        <div className="author_name">{memNickname}</div>
+                        <img src={sampleImg_profile} alt={authorNickname} className="author_img"/>
+                        <div className="author_name">{authorNickname}</div>
                     </div>
                 )}
                 <div className="review_header">
                     <div className="review_star">
-                        <img src={starIcon} alt="star" />
-                        <img src={starIcon} alt="star" />
-                        <img src={starIcon} alt="star" />
-                        <img src={starIcon} alt="star" />
-                        <img src={starIcon} alt="star" />
+                        {[...Array(filledStar)].map((_, i) => (
+                            <img key={`filled-${i}`} src={starIcon} alt="star" />
+                        ))}
+                        {[...Array(emptyStar)].map((_, i) => (
+                            <img key={`empty-${i}`} src={starIcon} alt="star" style={{filter: 'grayscale(100%)', opacity: 0.3}} />
+                        ))}
                     </div>
                     <div className="review_meta">작성일자 {createdAt}</div>
                 </div>

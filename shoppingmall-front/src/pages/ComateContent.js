@@ -27,7 +27,10 @@ const ComateContent = ({
             break;
         case 'like':
             title = "좋아요";
-            content = likeList.map(item => <ComateReviewCard key={item.id} {...item} />);
+            content = likeList.map(item => <ComateReviewCard key={item.id} {...item} 
+                    authorNo={item.authorNo}
+                    authorNickname={item.authorNickname}
+                        />);
             break;
         case 'follower':
             title = "팔로워";
