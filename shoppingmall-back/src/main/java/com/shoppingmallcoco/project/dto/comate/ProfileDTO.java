@@ -1,5 +1,6 @@
 package com.shoppingmallcoco.project.dto.comate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shoppingmallcoco.project.entity.auth.Member;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class ProfileDTO {
     private int followingCount;
 
     // 현재 사용자 확인
+    @JsonProperty("isFollowing")
     private boolean isMine;
 
 }
