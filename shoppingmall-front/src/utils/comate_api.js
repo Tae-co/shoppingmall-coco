@@ -79,7 +79,8 @@ export const follow = async (currentMemNo, targetMemNo) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
-        }
+        },
+        body: JSON.stringify({ currentMemNo })
     });
     if (!response.ok) throw new Error('팔로우 실패');
     return response.text();
@@ -91,7 +92,8 @@ export const unfollow = async (currentMemNo, targetMemNo) => {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
-        }
+        },
+        body: JSON.stringify({ currentMemNo })
     });
     if (!response.ok) throw new Error('언팔로우 실패');
     return response.text(); // "언팔로우 완료" 문자열 반환

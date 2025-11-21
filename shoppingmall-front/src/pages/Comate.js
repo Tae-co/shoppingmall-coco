@@ -36,6 +36,7 @@ const Comate = () => {
 
     const isMine = userType === 'me';
 
+    /* 로그인 유저 정보 초기화 */
     useEffect(() => {
         const initUser = async () => {
             try {
@@ -46,7 +47,6 @@ const Comate = () => {
                     if (window.location.pathname !== `/comate/me/`) {
                         navigate('/comate/me/review', {replace: true});
                     }
-
                     setUserType('me');
                     setTargetMemNo(current.memNo);
                 } else {
@@ -70,8 +70,7 @@ const Comate = () => {
             try {
                 const data = await getProfile(targetMemNo);
                 setMember(data);
-                console.log('프로필 정보 ', data);
-                // setIsFollowing(data.isFollowing || false); 
+                setFollowing(!!data.following);
             } catch (error) {
                 console.error(error);
                 alert("회원 정보를 불러오는 중 오류가 발생했습니다. ");
@@ -114,6 +113,12 @@ const Comate = () => {
         loadTabData();
     }, [activeTab, targetMemNo]);
 
+    /* URL 파라미터 탭 변경 감지 */
+    useEffect(() => {
+        if (tab && tab !== activeTab) setActiveTab(tab);
+    }, [tab]);
+
+    /* 탭 클릭 */
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
         if (userType === 'me') {
@@ -123,22 +128,25 @@ const Comate = () => {
         }
     };
 
-    /* URL 파라미터 탭 변경 감지 */
-    useEffect(() => {
-        if (tab && tab !== activeTab) setActiveTab(tab);
-    }, [tab]);
-
-    /* 팔로우/언팔로우 버튼 클릭 */
+    /* 팔로우/언팔로우 클릭 */
     const handleFollowClick = async () => {
+        if (!member || !loginUser) return;
+
         try {
-            if (!member) return;
-            
             if (following) {
-                // await unfollow(currentMemNo, targetMemNo);
+                await unfollow(loginUser.memNo, targetMemNo)
                 setFollowing(false);
+                setMember(prev => ({
+                    ...prev,
+                    followerCount: Math.max((prev.followerCount || 1) - 1, 0)
+                }));
             } else {
-                // await followerList(currentMemNo, targetMemNo);
+                await follow(loginUser.memNo, targetMemNo);
                 setFollowing(true);
+                setMember(prev => ({
+                    ...prev,
+                    followerCount: (prev.followerCount || 0) + 1
+                }));
             }
         } catch (error) {
             console.error(error);
@@ -154,13 +162,13 @@ const Comate = () => {
             <ComateFullProfile
                 nickname={member.memNickname}
                 // skinTypes={member.skinTypes}
-                likes={member.likedCount}
-                followers={member.followerCount}
-                following={member.followingCount}
+                likes={member.likedCount || 0}
+                followers={member.followerCount || 0}
+                following={member.followingCount || 0}
                 onFollowClick={handleFollowClick}
                 onTabClick={handleTabClick}
                 isMine = {isMine}
-                isFollowing={member.following}
+                isFollowing={following}
             />
             <ComateContent 
                 activeTab={activeTab}

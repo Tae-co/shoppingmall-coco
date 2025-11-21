@@ -10,6 +10,7 @@ import com.shoppingmallcoco.project.entity.comate.Follow;
 import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.repository.comate.FollowRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.*;
 
 @Service
@@ -48,6 +49,7 @@ public class FollowService {
     }
     
     /* 팔로우 */
+    @Transactional
     public void follow(Long followerNo, Long followingNo) {
         if (followerNo.equals(followingNo)) {
         	throw new RuntimeException("자기 자신을 팔로우할 수 없니다. ");
@@ -72,6 +74,7 @@ public class FollowService {
     }
 
     /* 언팔로우 */
+    @Transactional
     public void unfollow(Long followerNo, Long followingNo) {
     	boolean exists = followRepository.existsByFollowerMemNoAndFollowingMemNo(followerNo, followingNo);
         if (!exists) {
