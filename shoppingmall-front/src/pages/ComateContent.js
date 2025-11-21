@@ -2,13 +2,15 @@ import React, {useState} from 'react';
 
 import ComateReviewCard from './ComateReviewCard';
 import ComateFollowListCard from './ComateFollowListCard';
+import { login } from '../utils/api';
 
 const ComateContent = ({ 
     activeTab,
     reviewList,
     likeList,
     followerList,
-    followingList
+    followingList,
+    loginUserNo
 }) => {
 
     let title = null;
@@ -38,7 +40,9 @@ const ComateContent = ({
                                                     key={`follower-${item.memNo}-${index}`}
                                                     memNo={item.memNo}
                                                     nickname={item.nickname}
-                                                    isFollowing={item.following} />);
+                                                    isFollowing={item.following}
+                                                    loginUserNo={loginUserNo}
+                                                    />);
             break;
         case 'following':
             title = "팔로잉";
@@ -46,7 +50,9 @@ const ComateContent = ({
                                                     key={`following-${item.memNo}-${index}`}
                                                     memNo={item.memNo}
                                                     nickname={item.nickname}
-                                                    isFollowing={item.following} />);
+                                                    isFollowing={item.following}
+                                                    loginUserNo={loginUserNo}
+                                                    />);
             break;
         default:
             content = <div>데이터 없음</div>;

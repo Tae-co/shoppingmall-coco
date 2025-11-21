@@ -167,6 +167,7 @@ const Comate = () => {
                 likeList={likeList}
                 followerList={followerList}
                 followingList={followingList}
+                loginUserNo={loginUser?.memNo}
             />
         </div>
     );   
