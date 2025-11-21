@@ -40,7 +40,6 @@ public class ReviewService {
     private final TagRepository tagRepository;
     private final FileUploadService fileUploadService;
     private final SkinRepository skinRepository;
-    private final MemberRepository memberRepository;
 
     // review 등록
     @Transactional
@@ -51,11 +50,9 @@ public class ReviewService {
             .orElseThrow(() -> new IllegalArgumentException("구매내역이 없습니다."));
 
         // Entity로 변경
-
         Review review = Review.toEntity(orderItem, reviewDTO);
 
         // 리뷰 저장
-
         reviewRepository.save(review);
 
         // 이미지 파일 여부
@@ -71,7 +68,6 @@ public class ReviewService {
         }
 
         // 태그 아이디 여부, ReviewTagMap타입으로 엔티티 변환, 저장
-
         if (reviewDTO.getTagIds() != null && !reviewDTO.getTagIds().isEmpty()) {
             for (Long tagId : reviewDTO.getTagIds()) {
                 Tag tag = tagRepository.findById(tagId)
@@ -176,14 +172,14 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public SimilarSkinStatsDTO getSimilarSkinStats(Long prdNo, Long currentMemberNo) {
 
-        // 1. 현재 로그인한 사용자의 피부 타입 조회
+        // 현재 로그인한 사용자의 피부 타입 조회
         // (Member 엔티티에 Skin이 연결되어 있다면 member.getSkin().getSkinType()으로 가능)
         SkinProfile userSkin = skinRepository.findByMember_MemNo(currentMemberNo)
             .orElseThrow(() -> new IllegalArgumentException("피부타입 설정을 완료해주세요."));
 
         String skinType = userSkin.getSkinType();
 
-        // 2. 분모 계산: 이 상품에 대해 '지성' 피부 유저가 쓴 총 리뷰 수
+        // 분모 계산: 이 상품에 대해 '지성' 피부 유저가 쓴 총 리뷰 수
 
         long totalReviewers = reviewTagMapRepository.countReviewsByProductAndSkinType(prdNo,
             skinType);
@@ -193,13 +189,13 @@ public class ReviewService {
                 .topTags(new ArrayList<>()).build();
         }
 
-        // 3. 분자 계산: '지성' 피부 유저가 가장 많이 선택한 태그 Top 3 조회
+        // 분자 계산: '지성' 피부 유저가 가장 많이 선택한 태그 Top 3 조회
 
         Pageable top3 = PageRequest.of(0, 3);
         List<ReviewTagMapRepository.TagStatSimple> topTags = reviewTagMapRepository.findTopTagsByProductAndSkinType(
             prdNo, skinType, top3);
 
-        // 4. 백분율 변환 및 DTO 생성
+        // 백분율 변환 및 DTO 생성
 
         List<SimilarSkinStatsDTO.TagStat> stats = topTags.stream().map(tag -> {
             int percentage = (int) Math.round(((double) tag.getCount() / totalReviewers) * 100);
