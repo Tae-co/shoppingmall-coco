@@ -195,14 +195,26 @@ const ProductInfoBox = ({
         </QuantityControl>
       </div>
 
+      {/* 장바구니 버튼 */}
       <ButtonGroup>
         <ProductButton
           onClick={handleAddToCart}
           disabled={isUnavailable} // 비활성화
-          style={{ opacity: isUnavailable ? 0.5 : 1 }}
+          style={{ opacity: isUnavailable ? 0.5 : 1, flex: 1 }}
         >
           {isSoldOut ? '품절' : (isStop ? '판매 중지' : '장바구니')}
         </ProductButton>
+
+        {/* 바로구매 버튼 */}
+        {!isUnavailable && ( // 품절/판매중지가 아닐 때만 표시
+          <ProductButton
+            primary // 검은색 배경 스타일 적용
+            onClick={handleBuyNow}
+            style={{ flex: 1 }} // 너비 반반 차지
+          >
+            바로구매
+          </ProductButton>
+        )}
       </ButtonGroup>
     </InfoBox>
   );

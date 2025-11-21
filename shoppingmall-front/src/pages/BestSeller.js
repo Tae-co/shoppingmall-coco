@@ -56,11 +56,9 @@ function MultipleItems() {
                 if (!response.ok) throw new Error("데이터 로드 실패");
 
                 const data = await response.json();
-                const content = data.content || [];
 
                 // 판매중지 상품은 아예 목록에서 제외
-                const validProducts = content.filter(p => p.status !== '판매중지');
-
+                const validProducts = (data.content || []).filter(p => p.status !== '판매중지');
                 setProducts(validProducts);
 
             } catch (error) {
@@ -131,51 +129,33 @@ function MultipleItems() {
         <div className="slider-container">
             <Slider {...settings}>
                 {products.map((p, index) => {
+
+                    // 상태값 공백 제거 후 비교
+                    const safeStatus = p.status ? p.status.trim() : "";
+                    const isSoldOut = safeStatus === '품절' || safeStatus === 'SOLD_OUT';
+
                     // 태그 한글 변환 로직
                     const koreanSkinTypes = p.skinTypes
                         ? p.skinTypes.map(type => skinTypeMap[type] || type)
                         : [];
 
-                    // 품절 여부 확인
-                    const isSoldOut = p.status === '품절';
-
-
                     return (
                         <div key={p.prdNo} style={{ padding: '10px', position: 'relative' }}> {/* 슬라이드 간 간격 조정 */}
 
-                            {/* 랭킹 뱃지 표시 */}
-                            <div style={{
-                                position: 'absolute', top: '0', left: '20px', zIndex: 1,
-                                background: 'black', color: 'white', width: '30px', height: '30px',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
-                            }}>
-                                {index + 1}
-                            </div>
-
+                            {/* ProductCard 표시*/}
                             <ProductCard
                                 name={p.prdName}
-                                productSkinType={koreanSkinTypes} // 변환된 한글 태그 전달
-                                price={p.prdPrice.toLocaleString()} // 천단위 콤마
+                                productSkinType={koreanSkinTypes}
+                                price={p.prdPrice.toLocaleString()}
                                 image={p.imageUrl}
                                 star_avg={p.averageRating}
                                 reviewCount={p.reviewCount}
-
-                                // 클릭 이벤트 연결
-                                onClick={() => handleProductClick(p.prdNo)} // 상품 클릭-> 상세페이지로 이동 경로 추가
-                                onAddToCart={(e) => handleAddToCart(e, p)} // 장바구니 클릭-> 장바구니에 상품 추가 로직 추가
+                                onClick={() => handleProductClick(p.prdNo)}
+                                onAddToCart={(e) => handleAddToCart(e, p)}
+                                // 상태와 순위 정보만 넘겨줌
+                                isSoldOut={isSoldOut}
+                                rank={index + 1} 
                             />
-
-                            {/* 품절 시 시각적 처리 */}
-                            {isSoldOut && (
-                                <div style={{
-                                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                                    background: 'rgba(255,255,255,0.6)', pointerEvents: 'none',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: 'red', fontWeight: 'bold', fontSize: '1.2rem'
-                                }}>
-                                    SOLD OUT
-                                </div>
-                            )}
                         </div>
                     );
                 })}

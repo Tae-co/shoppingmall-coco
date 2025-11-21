@@ -228,6 +228,9 @@ function ProductDetailPage() {
       alert('옵션을 선택하세요.');
       return;
     }
+    // 실제 기능 연결 대신 "준비 중" 알림 띄우기
+    alert("바로구매 기능은 현재 준비 중입니다.\n장바구니를 이용해 주세요.");
+
     console.log(`[주문 담당] ${product.prdName}, 옵션: ${selectedOption}, 수량: ${quantity} 바로구매`);
   };
 
