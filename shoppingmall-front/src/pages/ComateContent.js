@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 
 import ComateReviewCard from './ComateReviewCard';
 import ComateFollowListCard from './ComateFollowListCard';
-import { login } from '../utils/api';
 
 const ComateContent = ({ 
     activeTab,
@@ -10,7 +9,8 @@ const ComateContent = ({
     likeList,
     followerList,
     followingList,
-    loginUserNo
+    loginUserNo,
+    onListFollowChange
 }) => {
 
     let title = null;
@@ -37,11 +37,12 @@ const ComateContent = ({
         case 'follower':
             title = "팔로워";
             content = followerList.map((item, index) => <ComateFollowListCard 
-                                                    key={`follower-${item.memNo}-${index}`}
                                                     memNo={item.memNo}
                                                     nickname={item.nickname}
                                                     isFollowing={item.following}
                                                     loginUserNo={loginUserNo}
+                                                    listType="follower"
+                                                    onFollowChange = {(newState) => onListFollowChange('follower', newState)}
                                                     />);
             break;
         case 'following':
@@ -52,6 +53,8 @@ const ComateContent = ({
                                                     nickname={item.nickname}
                                                     isFollowing={item.following}
                                                     loginUserNo={loginUserNo}
+                                                    listType="following"
+                                                    onFollowChange = {(newState) => onListFollowChange('following', newState)}
                                                     />);
             break;
         default:

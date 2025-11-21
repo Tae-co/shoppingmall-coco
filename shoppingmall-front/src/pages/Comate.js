@@ -70,7 +70,7 @@ const Comate = () => {
             try {
                 const data = await getProfile(targetMemNo);
                 setMember(data);
-                setFollowing(!!data.following);
+                setFollowing(data.following);
             } catch (error) {
                 console.error(error);
                 alert("회원 정보를 불러오는 중 오류가 발생했습니다. ");
@@ -128,7 +128,7 @@ const Comate = () => {
         }
     };
 
-    /* 팔로우/언팔로우 클릭 */
+    /* Full Profile 팔로우/언팔로우 클릭 */
     const handleFollowClick = async () => {
         if (!member || !loginUser) return;
 
@@ -136,24 +136,17 @@ const Comate = () => {
             if (following) {
                 await unfollow(loginUser.memNo, targetMemNo)
                 setFollowing(false);
-                setMember(prev => ({
-                    ...prev,
-                    followerCount: Math.max((prev.followerCount || 1) - 1, 0)
-                }));
+                setMember(prev => ({...prev, followerCount: Math.max((prev.followerCount || 1) - 1)}));
             } else {
                 await follow(loginUser.memNo, targetMemNo);
                 setFollowing(true);
-                setMember(prev => ({
-                    ...prev,
-                    followerCount: (prev.followerCount || 0) + 1
-                }));
+                setMember(prev => ({...prev,followerCount: (prev.followerCount || 0) + 1}));
             }
         } catch (error) {
             console.error(error);
             alert("팔로우/언팔로우 처리 중 오류가 발생했습니다.");
         }
     };
-
 
     if (loading || !member) return <div>로딩중...</div>;
 
@@ -177,6 +170,19 @@ const Comate = () => {
                 followerList={followerList}
                 followingList={followingList}
                 loginUserNo={loginUser?.memNo}
+                onListFollowChange={(type, newState) => {
+                // 리스트에서 팔로우/언팔로우 클릭-> Full Profile count 반영
+                    setMember(prev => {
+                        if (!prev) return prev;
+                        const updated = {...prev};
+                        if (type === 'follower') {
+                            updated.followerCount += newState ? 1 : -1;
+                        } else if (type === 'following') {
+                            updated.followingCount += newState ? 1 : -1;
+                        }
+                        return updated;
+                    });
+                }}
             />
         </div>
     );   

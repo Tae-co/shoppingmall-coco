@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import '../css/ComateFollowListCard.css';
 import sampleImg_profile from '../images/sampleImg_profile.png'; // 임시 프로필 이미지
+import { follow, unfollow } from '../utils/comate_api';
 
-const ComateUserCard = ({ memNo, nickname, skinTypes, isFollowing, onFollowClick, loginUserNo }) => {
-    const isMine = loginUserNo === memNo; // 로그인 유저라면 팔로우 버튼 숨김
+const ComateFollowListCard = ({ memNo, nickname, skinTypes, isFollowing, loginUserNo, listType, onFollowChange }) => {
+    const isMine = loginUserNo === memNo; // 로그인 유저(본인) 프로필인 경우 팔로우 버튼 숨김
+    const [followingState, setFollowingState] = useState(isFollowing || false);
+
+    const handleClick = async () => {
+        try {
+            if (followingState) {
+                await unfollow(loginUserNo, memNo);
+                setFollowingState(false);
+                onFollowChange(false);
+            } else {
+                await follow(loginUserNo, memNo);
+                setFollowingState(true);
+                onFollowChange(true);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("팔로우/언팔로우 처리 중 문제가 발생했습니다.");
+        }
+    }
 
     return (
         <div className="uc_wrapper">
@@ -23,13 +42,13 @@ const ComateUserCard = ({ memNo, nickname, skinTypes, isFollowing, onFollowClick
             </div>
             </Link>
             {!isMine && (
-            <button onClick={onFollowClick}
-            className={`uc_follow_btn ${isFollowing ? "active" : ""}`}
+            <button onClick={handleClick}
+            className={`uc_follow_btn ${followingState ? "active" : ""}`}
             >
-            {isFollowing ? "팔로잉" : "팔로우"}
+            {followingState ? "팔로잉" : "팔로우"}
             </button>)}
         </div>
     );   
 }
 
-export default ComateUserCard;
+export default ComateFollowListCard;
