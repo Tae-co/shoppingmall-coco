@@ -1,12 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-import '../css/ComateUserCard.css';
+import '../css/ComateFollowListCard.css';
 import sampleImg_profile from '../images/sampleImg_profile.png'; // 임시 프로필 이미지
 
-const ComateUserCard = ({ nickname, skinTypes, isFollowing, onFollowClick }) => {
+const ComateUserCard = ({ memNo, nickname, skinTypes, isFollowing, onFollowClick }) => {
 
     return (
         <div className="uc_wrapper">
+            <Link to={`/comate/user/${memNo}`}>
             <div className="uc_info_wrapper">
                 <img src={sampleImg_profile} alt={nickname} className="profile_img"/>
                 <div className="uc_info">
@@ -18,6 +20,7 @@ const ComateUserCard = ({ nickname, skinTypes, isFollowing, onFollowClick }) => 
                     </div>
                 </div>
             </div>
+            </Link>
             <button onClick={onFollowClick}
             className={`uc_follow_btn ${isFollowing ? "active" : ""}`}
             >

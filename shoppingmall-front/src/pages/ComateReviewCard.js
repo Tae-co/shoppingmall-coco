@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import '../css/ComateReviewCard.css';
 
@@ -7,7 +8,7 @@ import sampleImg_product from '../images/sampleImg_product.png'; // 임시 상�
 import starIcon from '../images/review_rate_icon_star.png';
 
 const ComateReviewCard = ({
-    productName, productOption, createdAt, 
+    productNo, productName, productOption, createdAt, 
     rating, content, tags, likeCount,
     authorNo, authorNickname
 }) => {
@@ -18,6 +19,7 @@ const ComateReviewCard = ({
 
     return (
         <div className="comate_review_wrapper">
+            <Link to={`/products/${productNo}`}>
             <div className="product_info">
                 <img src={sampleImg_product} alt={productName} className="product_img comate"/>
                 <div className="text_info">
@@ -25,12 +27,15 @@ const ComateReviewCard = ({
                     <div className="product_option">{productOption}</div>
                 </div>
             </div>
+            </Link>
             <div className="review_info">
                 {authorNickname && (
+                    <Link to={`/comate/user/${authorNo}`}>
                     <div className="author_info">
                         <img src={sampleImg_profile} alt={authorNickname} className="author_img"/>
                         <div className="author_name">{authorNickname}</div>
                     </div>
+                    </Link>
                 )}
                 <div className="review_header">
                     <div className="review_star">

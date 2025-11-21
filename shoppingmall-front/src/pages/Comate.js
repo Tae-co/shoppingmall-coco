@@ -16,11 +16,14 @@ import {
 } from '../utils/comate_api';
 import { getCurrentMember } from '../utils/api';
 
-const Comate = ({ userType }) => {
+const Comate = () => {
     const navigate = useNavigate();
     const { memNo, tab } = useParams();
 
+    const [loginUser, setLoginUser] = useState(null);
     const [targetMemNo, setTargetMemNo] = useState(null);
+    const [userType, setUserType] = useState('user');
+
     const [activeTab, setActiveTab] = useState(tab ||  'review');
     const [member, setMember] = useState(null);
     const [following, setFollowing] = useState(false);
@@ -34,40 +37,44 @@ const Comate = ({ userType }) => {
     const isMine = userType === 'me';
 
     useEffect(() => {
-        const loadCurrentMemNo = async () => {
-            if (isMine) {
-                try {
-                    const user = await getCurrentMember();
-                    setTargetMemNo(user.memNo);
-                } catch (error) {
-                    console.error('로그인 유저 정보 불러오기 실패: ', error);
+        const initUser = async () => {
+            try {
+                const current = await getCurrentMember();
+                setTargetMemNo(current);
+
+                if (!memNo || memNo === current.memNo.toString()) {
+                    setUserType('me');
+                    setTargetMemNo(current.memNo);
+                } else {
+                    setUserType('user');
+                    setTargetMemNo(memNo);
                 }
-            } else {
-                setTargetMemNo(memNo);
+            } catch (error) {
+                console.error('로그인 유저 정보 불러오기 실패: ', error);
             }
         }
 
-        loadCurrentMemNo();
-    }, [memNo, isMine]);
+        initUser();
+    }, [memNo]);
 
     /* 회원 기본정보 조회 */
-    const loadProfile = async () => {
+    useEffect(() => {
         if (!targetMemNo) return;
 
-        setLoading(true);
-        try {
-            const data = await getProfile(targetMemNo);
-            setMember(data);
-            // setIsFollowing(data.isFollowing || false); 
-        } catch (error) {
-            console.error(error);
-            alert("회원 정보를 불러오는 중 오류가 발생했습니다. ");
-        } finally {
-            setLoading(false);
+        const loadProfile = async () => {
+            setLoading(true);
+            try {
+                const data = await getProfile(targetMemNo);
+                setMember(data);
+                // setIsFollowing(data.isFollowing || false); 
+            } catch (error) {
+                console.error(error);
+                alert("회원 정보를 불러오는 중 오류가 발생했습니다. ");
+            } finally {
+                setLoading(false);
+            }
         }
-    };
 
-    useEffect(() => {
         loadProfile();
     }, [targetMemNo]);
 
@@ -109,7 +116,7 @@ const Comate = ({ userType }) => {
         } else {
             navigate(`/comate/user/${targetMemNo}/${tabName}`);
         }
-    }
+    };
 
     /* URL 파라미터 탭 변경 감지 */
     useEffect(() => {
@@ -133,7 +140,6 @@ const Comate = ({ userType }) => {
             alert("팔로우/언팔로우 처리 중 오류가 발생했습니다.");
         }
     };
-
 
 
     if (loading || !member) return <div>로딩중...</div>;

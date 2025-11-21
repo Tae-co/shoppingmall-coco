@@ -36,6 +36,7 @@ const ComateContent = ({
             title = "팔로워";
             content = followerList.map((item, index) => <ComateFollowListCard 
                                                     key={`follower-${item.memNo}-${index}`}
+                                                    memNo={item.memNo}
                                                     nickname={item.nickname}
                                                     isFollowing={item.following} />);
             break;
@@ -43,6 +44,7 @@ const ComateContent = ({
             title = "팔로잉";
             content = followingList.map((item, index) => <ComateFollowListCard
                                                     key={`following-${item.memNo}-${index}`}
+                                                    memNo={item.memNo}
                                                     nickname={item.nickname}
                                                     isFollowing={item.following} />);
             break;
