@@ -268,10 +268,10 @@ public class MemberController {
     @GetMapping("/admin/list")
     public ResponseEntity<?> getAllMembers(
             Authentication authentication,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String searchTerm,
-            @RequestParam(required = false) String role) {
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "searchTerm", required = false) String searchTerm,
+            @RequestParam(value = "role", required = false) String role) {
         if (authentication == null || authentication.getName() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증이 필요합니다."));
         }
