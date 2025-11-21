@@ -44,8 +44,7 @@ public class ComateController {
             @PathVariable Long targetMemNo) {
 
         Long currentMemNo = user.getMemNo();
-
-        return profileService.getProfileBasic(currentMemNo, targetMemNo);
+        return profileService.getProfile(currentMemNo, targetMemNo);
     }
 */
 

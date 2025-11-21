@@ -76,8 +76,8 @@ public class CM_ReviewService {
                             .tags(tags)
                             .content(review.getContent())
                             .likeCount(likeCount)
-                            .memNo(reviewMember.getMemNo())
-                            .memNickname(reviewMember.getMemNickname())
+                            .authorNo(reviewMember.getMemNo())
+                            .authorNickname(reviewMember.getMemNickname())
                             .build();
         		})
         		.toList();
