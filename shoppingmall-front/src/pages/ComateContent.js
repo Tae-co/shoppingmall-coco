@@ -5,14 +5,14 @@ import ComateFollowListCard from './ComateFollowListCard';
 
 const ComateContent = ({ 
     activeTab,
-    reviewList = [],
-    likeList = [],
-    followerList = [],
-    followingList = []
+    reviewList,
+    likeList,
+    followerList,
+    followingList
 }) => {
+
     let title = null;
     let content = null;
-
     const showSortAndCount = activeTab === 'review' || activeTab === 'like';
     const count = activeTab === 'review' ? reviewList.length
             : activeTab === 'like' ? likeList.length
@@ -34,11 +34,17 @@ const ComateContent = ({
             break;
         case 'follower':
             title = "팔로워";
-            content = followerList.map(item => <ComateFollowListCard key={item.id} {...item} />);
+            content = followerList.map(item => <ComateFollowListCard 
+                                                    key={item.memNo} 
+                                                    nickname={item.nickname}
+                                                    isFollowing={item.following} />);
             break;
         case 'following':
             title = "팔로잉";
-            content = followingList.map(item => <ComateFollowListCard key={item.id} {...item} />);
+            content = followingList.map(item => <ComateFollowListCard
+                                                    key={item.memNo} 
+                                                    nickname={item.nickname}
+                                                    isFollowing={item.following} />);
             break;
         default:
             content = <div>데이터 없음</div>;

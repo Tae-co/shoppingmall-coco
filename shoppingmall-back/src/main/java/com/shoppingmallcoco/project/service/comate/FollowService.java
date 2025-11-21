@@ -20,13 +20,31 @@ public class FollowService {
     private final FollowRepository followRepository;
 
     /* 팔로워 목록 조회 */
-    public List<FollowInfoDTO> getFollowers(Long memNo) {
-        return followRepository.findFollowerInfo(memNo);
+    public List<FollowInfoDTO> getFollowers(Long targetMemNo, Long currentMemNo) {
+        List<FollowInfoDTO> list = followRepository.findFollowerInfo(targetMemNo);
+        
+        // isFollowing 체크
+        list.forEach(item -> {
+     	   boolean isFollowing = followRepository
+     			   .existsByFollowerMemNoAndFollowingMemNo(currentMemNo, item.getMemNo());
+     	   item.setFollowing(isFollowing);
+        });
+        
+        return list;
     }
 
     /* 팔로잉 목록 조회 */
-    public List<FollowInfoDTO> getFollowings(Long memNo) {
-        return followRepository.findFollowingInfo(memNo);
+    public List<FollowInfoDTO> getFollowings(Long targetMemNo, Long currentMemNo) {
+       List<FollowInfoDTO> list = followRepository.findFollowingInfo(targetMemNo);
+       
+       // isFollowing 체크
+       list.forEach(item -> {
+    	   boolean isFollowing = followRepository
+    			   .existsByFollowerMemNoAndFollowingMemNo(currentMemNo, item.getMemNo());
+    	   item.setFollowing(isFollowing);
+       });
+       
+       return list;
     }
     
     /* 팔로우 */
@@ -42,7 +60,7 @@ public class FollowService {
         
         Member follower = memberRepository.findById(followerNo)
         		.orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
-        Member following = memberRepository.findById(followerNo)
+        Member following = memberRepository.findById(followingNo)
         		.orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
         
         Follow follow = Follow.builder()

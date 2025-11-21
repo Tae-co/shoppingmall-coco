@@ -12,7 +12,6 @@ import lombok.*;
 public class FollowInfoDTO {
     private Long memNo;
     private String nickname;
-    @JsonProperty("isFollowing")
     private boolean isFollowing;
     
     public FollowInfoDTO(Long memNo, String nickname) {

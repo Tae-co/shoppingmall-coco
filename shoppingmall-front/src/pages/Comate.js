@@ -22,7 +22,7 @@ const Comate = () => {
     const targetMemNo = memNo;
     const [activeTab, setActiveTab] = useState(tab ||  'review');
     const [member, setMember] = useState(null);
-    const [isFollowing, setIsFollowing] = useState(false);
+    const [following, setFollowing] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const [reviewList, setReviewList] = useState([]);
@@ -43,7 +43,7 @@ const Comate = () => {
         try {
             if (!member) return;
             
-            if (isFollowing) {
+            if (following) {
                 // await unfollow(currentMemNo, targetMemNo);
                 // setIsFollowing(false);
             } else {

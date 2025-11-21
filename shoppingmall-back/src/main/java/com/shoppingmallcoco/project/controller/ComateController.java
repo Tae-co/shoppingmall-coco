@@ -51,13 +51,15 @@ public class ComateController {
     // 팔로워 목록 조회
     @GetMapping("/follow/followers/{memNo}")
     public List<FollowInfoDTO> getFollowers(@PathVariable("memNo") Long memNo) {
-    	return followService.getFollowers(memNo);
+    	Long currentMemNo = 1L;
+    	return followService.getFollowers(memNo, currentMemNo);
     }
     
     // 팔로잉 목록 조회
     @GetMapping("/follow/followings/{memNo}")
     public List<FollowInfoDTO> getFollowings(@PathVariable("memNo") Long memNo) {
-    	return followService.getFollowings(memNo);
+    	Long currentMemNo = 1L;
+    	return followService.getFollowings(memNo, currentMemNo);
     }
 
     // 팔로우
