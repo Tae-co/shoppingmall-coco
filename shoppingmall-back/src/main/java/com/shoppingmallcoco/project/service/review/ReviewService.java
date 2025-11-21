@@ -8,6 +8,7 @@ import com.shoppingmallcoco.project.entity.order.OrderItem;
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
 import com.shoppingmallcoco.project.entity.review.Review;
 import com.shoppingmallcoco.project.entity.review.ReviewImage;
+import com.shoppingmallcoco.project.entity.review.ReviewLike;
 import com.shoppingmallcoco.project.entity.review.ReviewTagMap;
 import com.shoppingmallcoco.project.entity.review.Tag;
 import com.shoppingmallcoco.project.repository.auth.MemberRepository;
@@ -227,5 +228,32 @@ public class ReviewService implements IReviewService {
 
         return SimilarSkinStatsDTO.builder().skinType(skinType).totalReviewerCount(totalReviewers)
             .topTags(stats).build();
+    }
+
+    // 좋아요 추가/삭제 (토글)
+    @Transactional
+    public int toggleLike(Long reviewNo, Long memNo) {
+        Review review = reviewRepository.findById(reviewNo)
+            .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+        
+        Member member = memberRepository.findById(memNo)
+            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        boolean exists = likeRepository.existsByMember_MemNoAndReview_ReviewNo(memNo, reviewNo);
+        
+        if (exists) {
+            // 좋아요 삭제
+            likeRepository.findByMember_MemNo(memNo).stream()
+                .filter(like -> like.getReview().getReviewNo().equals(reviewNo))
+                .findFirst()
+                .ifPresent(likeRepository::delete);
+        } else {
+            // 좋아요 추가
+            ReviewLike reviewLike = ReviewLike.toEntity(member, review);
+            likeRepository.save(reviewLike);
+        }
+        
+        // 업데이트된 좋아요 개수 반환
+        return likeRepository.countByReview(review);
     }
 }
