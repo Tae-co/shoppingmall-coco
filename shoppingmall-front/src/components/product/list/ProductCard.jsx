@@ -53,8 +53,7 @@ const TagContainer = styled.div`
   display: flex;
   gap: 6px;
   margin-top: 10px;
-  flex-wrap: warp;
-  overflow: hidden;
+  flex-wrap: wrap;
 `;
 
 const Tag = styled.span`
