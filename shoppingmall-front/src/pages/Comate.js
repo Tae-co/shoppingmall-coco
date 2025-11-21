@@ -31,18 +31,24 @@ const Comate = ({ userType }) => {
     const [followerList, setFollowerList] = useState([]);
     const [followingList, setFollowingList] = useState([]);
 
+    const isMine = userType === 'me';
+
     useEffect(() => {
         const loadCurrentMemNo = async () => {
-            if (userType === 'me') {
-                const user = await getCurrentMember();
-                setTargetMemNo(user.memNo);
+            if (isMine) {
+                try {
+                    const user = await getCurrentMember();
+                    setTargetMemNo(user.memNo);
+                } catch (error) {
+                    console.error('로그인 유저 정보 불러오기 실패: ', error);
+                }
             } else {
                 setTargetMemNo(memNo);
             }
         }
 
         loadCurrentMemNo();
-    }, [memNo, userType]);
+    }, [memNo, isMine]);
 
     /* 회원 기본정보 조회 */
     const loadProfile = async () => {
@@ -66,34 +72,33 @@ const Comate = ({ userType }) => {
     }, [targetMemNo]);
 
     /* 탭별 데이터 조회 */
-    const loadTabData = async() => {
+    useEffect(() => {
         if (!targetMemNo) return;
 
-        try {
-            switch (activeTab) {
-                case 'review' :
-                    setReviewList(await getReviewList(targetMemNo));
-                    break;
-                case 'like' :
-                    setLikeList(await getLikedList(targetMemNo));
-                    break;
-                case 'follower' :
-                    setFollowerList(await getFollowerList(targetMemNo));
-                    break;
-                case 'following' :
-                    setFollowingList(await getFollowingList(targetMemNo));
-                    break;
-                default:
-                    break;
+        const loadTabData = async() => {
+            try {
+                switch (activeTab) {
+                    case 'review' :
+                        setReviewList(await getReviewList(targetMemNo));
+                        break;
+                    case 'like' :
+                        setLikeList(await getLikedList(targetMemNo));
+                        break;
+                    case 'follower' :
+                        setFollowerList(await getFollowerList(targetMemNo));
+                        break;
+                    case 'following' :
+                        setFollowingList(await getFollowingList(targetMemNo));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (error) {
+                console.error(error);
+                alert(`${activeTab} 데이터를 불러오는 중 오류가 발생햇습니다.`);
             }
-        } catch (error) {
-            console.error(error);
-            alert(`${activeTab} 데이터를 불러오는 중 오류가 발생햇습니다.`);
-        }
-    };
+        };
 
-    /* 탭 변경 시 데이터 조회 */
-    useEffect(() => {
         loadTabData();
     }, [activeTab, targetMemNo]);
 
@@ -141,10 +146,10 @@ const Comate = ({ userType }) => {
                 likes={member.likedCount}
                 followers={member.followerCount}
                 following={member.followingCount}
-                // userType={member.isMine ? 'me' : 'other'}
-                // isFollowing={isFollowing}
                 onFollowClick={handleFollowClick}
                 onTabClick={handleTabClick}
+                isMine = {isMine}
+                // isFollowing={isFollowing}
             />
             <ComateContent 
                 activeTab={activeTab}
