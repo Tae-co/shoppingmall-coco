@@ -23,26 +23,26 @@ const ComateContent = ({
     switch(activeTab) {
         case 'review':
             title = "누적 리뷰";
-            content = reviewList.map(item => <ComateReviewCard key={item.id} {...item} />);
+            content = reviewList.map((item, index) => <ComateReviewCard key={`review-${item.id}-${index}`} {...item} />);
             break;
         case 'like':
             title = "좋아요";
-            content = likeList.map(item => <ComateReviewCard key={item.id} {...item} 
-                    authorNo={item.authorNo}
-                    authorNickname={item.authorNickname}
-                        />);
+            content = likeList.map((item, index) => <ComateReviewCard 
+                                                    key={`like-${item.id}-${index}`} {...item} 
+                                                    authorNo={item.authorNo}
+                                                    authorNickname={item.authorNickname} />);
             break;
         case 'follower':
             title = "팔로워";
-            content = followerList.map(item => <ComateFollowListCard 
-                                                    key={item.memNo} 
+            content = followerList.map((item, index) => <ComateFollowListCard 
+                                                    key={`follower-${item.memNo}-${index}`}
                                                     nickname={item.nickname}
                                                     isFollowing={item.following} />);
             break;
         case 'following':
             title = "팔로잉";
-            content = followingList.map(item => <ComateFollowListCard
-                                                    key={item.memNo} 
+            content = followingList.map((item, index) => <ComateFollowListCard
+                                                    key={`following-${item.memNo}-${index}`}
                                                     nickname={item.nickname}
                                                     isFollowing={item.following} />);
             break;
