@@ -55,8 +55,6 @@ function Home_Comate() {
     // 프로필 클릭-> 상세 프로필 이동
     const handleCardClick = (memNo) => {
         navigate(`/comate/user/${memNo}/review`);
-        // 무조건 홍길동 클릭 가정 (임시)
-        //navigate('/comate/user/1/review');
     };
 
     // 팔로우 버튼 클릭
