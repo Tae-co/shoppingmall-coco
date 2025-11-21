@@ -14,12 +14,13 @@ import {
     follow,
     unfollow
 } from '../utils/comate_api';
+import { getCurrentMember } from '../utils/api';
 
-const Comate = () => {
+const Comate = ({ userType }) => {
     const navigate = useNavigate();
     const { memNo, tab } = useParams();
 
-    const targetMemNo = memNo;
+    const [targetMemNo, setTargetMemNo] = useState(null);
     const [activeTab, setActiveTab] = useState(tab ||  'review');
     const [member, setMember] = useState(null);
     const [following, setFollowing] = useState(false);
@@ -30,37 +31,26 @@ const Comate = () => {
     const [followerList, setFollowerList] = useState([]);
     const [followingList, setFollowingList] = useState([]);
 
-    /* 탭 변경 */
-    const handleTabClick = (tabName) => {
-        setActiveTab(tabName);
-        navigate(//targetMemNo === currentMemNo 
-            //? `/comate/me/${tabName}` :
-            `/comate/user/${targetMemNo}/${tabName}`);
-    };
-
-    /* 팔로우/언팔로우 버튼 클릭 */
-    const handleFollowClick = async () => {
-        try {
-            if (!member) return;
-            
-            if (following) {
-                // await unfollow(currentMemNo, targetMemNo);
-                // setIsFollowing(false);
+    useEffect(() => {
+        const loadCurrentMemNo = async () => {
+            if (userType === 'me') {
+                const user = await getCurrentMember();
+                setTargetMemNo(user.memNo);
             } else {
-                // await followerList(currentMemNo, targetMemNo);
-                // setIsFollowing(true);
+                setTargetMemNo(memNo);
             }
-        } catch (error) {
-            console.error(error);
-            alert("팔로우/언팔로우 처리 중 오류가 발생했습니다.");
         }
-    };
+
+        loadCurrentMemNo();
+    }, [memNo, userType]);
 
     /* 회원 기본정보 조회 */
     const loadProfile = async () => {
+        if (!targetMemNo) return;
+
         setLoading(true);
         try {
-            const data = await getProfile(memNo);
+            const data = await getProfile(targetMemNo);
             setMember(data);
             // setIsFollowing(data.isFollowing || false); 
         } catch (error) {
@@ -71,10 +61,15 @@ const Comate = () => {
         }
     };
 
+    useEffect(() => {
+        loadProfile();
+    }, [targetMemNo]);
+
     /* 탭별 데이터 조회 */
     const loadTabData = async() => {
+        if (!targetMemNo) return;
+
         try {
-            if (!targetMemNo) return;
             switch (activeTab) {
                 case 'review' :
                     setReviewList(await getReviewList(targetMemNo));
@@ -97,20 +92,44 @@ const Comate = () => {
         }
     };
 
-    /* 처음 로딩 시 데이터 조회 */
-    useEffect(() => {
-        loadProfile();
-    }, [targetMemNo]);
-
     /* 탭 변경 시 데이터 조회 */
     useEffect(() => {
         loadTabData();
     }, [activeTab, targetMemNo]);
 
+    const handleTabClick = (tabName) => {
+        setActiveTab(tabName);
+        if (userType === 'me') {
+            navigate(`/comate/me/${tabName}`);
+        } else {
+            navigate(`/comate/user/${targetMemNo}/${tabName}`);
+        }
+    }
+
     /* URL 파라미터 탭 변경 감지 */
     useEffect(() => {
         if (tab && tab !== activeTab) setActiveTab(tab);
     }, [tab]);
+
+    /* 팔로우/언팔로우 버튼 클릭 */
+    const handleFollowClick = async () => {
+        try {
+            if (!member) return;
+            
+            if (following) {
+                // await unfollow(currentMemNo, targetMemNo);
+                // setIsFollowing(false);
+            } else {
+                // await followerList(currentMemNo, targetMemNo);
+                // setIsFollowing(true);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("팔로우/언팔로우 처리 중 오류가 발생했습니다.");
+        }
+    };
+
+
 
     if (loading || !member) return <div>로딩중...</div>;
 
