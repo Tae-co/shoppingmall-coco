@@ -21,6 +21,8 @@ public class ProfileDTO {
     // 팔로잉 관련 정보
     private int followerCount;
     private int followingCount;
+    // 팔로잉 여부 확인
+    private boolean isFollowing;
 
     // 현재 사용자 확인
     private boolean isMine;

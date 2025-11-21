@@ -70,6 +70,7 @@ const Comate = () => {
             try {
                 const data = await getProfile(targetMemNo);
                 setMember(data);
+                console.log('프로필 정보 ', data);
                 // setIsFollowing(data.isFollowing || false); 
             } catch (error) {
                 console.error(error);
@@ -134,10 +135,10 @@ const Comate = () => {
             
             if (following) {
                 // await unfollow(currentMemNo, targetMemNo);
-                // setIsFollowing(false);
+                setFollowing(false);
             } else {
                 // await followerList(currentMemNo, targetMemNo);
-                // setIsFollowing(true);
+                setFollowing(true);
             }
         } catch (error) {
             console.error(error);
@@ -159,7 +160,7 @@ const Comate = () => {
                 onFollowClick={handleFollowClick}
                 onTabClick={handleTabClick}
                 isMine = {isMine}
-                // isFollowing={isFollowing}
+                isFollowing={member.following}
             />
             <ComateContent 
                 activeTab={activeTab}

@@ -38,6 +38,9 @@ public class ComateService {
         int followerCount = followRepository.countByFollowing_MemNo(targetMemNo);
         int followingCount = followRepository.countByFollower_MemNo(targetMemNo);
         
+        boolean isFollowing = followRepository
+  			   .existsByFollowerMemNoAndFollowingMemNo(currentMemNo, targetMemNo);
+        
         return ProfileDTO.builder()
                 .memNo(member.getMemNo())
                 .memName(member.getMemName())
@@ -45,6 +48,7 @@ public class ComateService {
                 .likedCount(likedCount)
                 .followerCount(followerCount)
                 .followingCount(followingCount)
+                .isFollowing(isFollowing)
                 .isMine(isMine)
                 .build();
     }
