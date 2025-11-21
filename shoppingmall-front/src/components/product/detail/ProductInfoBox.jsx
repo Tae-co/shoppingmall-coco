@@ -106,6 +106,15 @@ const QuantityValue = styled.input`
   font-size: 16px;
   width: 100%;
   &:focus { outline: none; }
+  /* Firefox 및 크롬 등에서 기본 화살표(스핀 버튼) 제거 */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+    
+  /* Firefox 전용 설정 */
+  -moz-appearance: textfield;
 `;
 
 const skinTypeMap = { dry: '건성', oily: '지성', combination: '복합성', sensitive: '민감성' };

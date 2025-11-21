@@ -3,7 +3,7 @@ package com.shoppingmallcoco.project.service.product;
 import com.shoppingmallcoco.project.dto.product.ProductSaveDTO;
 import com.shoppingmallcoco.project.entity.product.*;
 import com.shoppingmallcoco.project.repository.product.*;
-import com.shoppingmallcoco.project.service.IReviewService;
+import com.shoppingmallcoco.project.service.review.IReviewService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -134,8 +134,7 @@ public class AdminProductService {
 
 	// 옵션 저장
 	private void saveOptions(ProductEntity product, List<ProductSaveDTO.OptionDTO> optionDtos) {
-		if (optionDtos == null)
-			return;
+		if (optionDtos == null)	return;
 
 		for (ProductSaveDTO.OptionDTO optDto : optionDtos) {
 			// 정적 생성 메서드 호출
@@ -147,51 +146,85 @@ public class AdminProductService {
 
 	// 옵션 수정
 	private void updateOptions(ProductEntity product, List<ProductSaveDTO.OptionDTO> optionDtos) {
-		List<ProductOptionEntity> existingOptions = product.getOptions();
-		if (existingOptions != null && !existingOptions.isEmpty()) {
-			// ConcurrentModificationException 방지를 위해 리스트 복사본 사용 권장되나,
-			// deleteAll은 내부적으로 처리하므로 바로 호출
-			optionRepo.deleteAll(existingOptions);
-			product.getOptions().clear();
-		}
+		if (optionDtos == null) return;
+		
+		List<ProductOptionEntity> managedOptions = product.getOptions();
+		
+		// 요청된 옵션 ID 목록 추출 (삭제 대상 식별용)
+        List<Long> keepOptionIds = new ArrayList<>();
 
-		// 새 옵션 목록 저장
-		saveOptions(product, optionDtos);
-	}
+        for (ProductSaveDTO.OptionDTO dto : optionDtos) {
+            if (dto.getOptionNo() != null) {
+                // 기존 리스트에서 해당 옵션을 찾아 값 변경
+                managedOptions.stream()
+                    .filter(o -> o.getOptionNo().equals(dto.getOptionNo()))
+                    .findFirst()
+                    .ifPresent(o -> {
+                        o.setOptionName(dto.getOptionName());
+                        o.setOptionValue(dto.getOptionValue());
+                        o.setAddPrice(dto.getAddPrice());
+                        o.setStock(dto.getStock());
+                        keepOptionIds.add(o.getOptionNo());
+                    });
+            } else {
+                // ID가 없으면 새 옵션 생성하여 기존 리스트에 add
+                ProductOptionEntity newOption = ProductOptionEntity.create(
+                        product, 
+                        dto.getOptionName(), 
+                        dto.getOptionValue(), 
+                        dto.getAddPrice(), 
+                        dto.getStock()
+                );
+                managedOptions.add(newOption);
+            }
+        }
 
-	// 이미지 저장
-	private void saveImages(ProductEntity product, List<MultipartFile> files) throws IOException {
-		if (files != null && !files.isEmpty()) {
-			// 기존 이미지 개수를 파악하여 순서(sortOrder) 지정 (없으면 1부터)
-			int currentMaxOrder = product.getImages() != null ? product.getImages().size() : 0;
-			int sortOrder = currentMaxOrder + 1;
+        // 요청 DTO에 없는 기존 옵션은 리스트에서 제거
+        managedOptions.removeIf(option -> 
+            option.getOptionNo() != null && !keepOptionIds.contains(option.getOptionNo())
+        );
+    }
+	
+	// 이미지 저장 로직
+    private void saveImages(ProductEntity product, List<MultipartFile> files) throws IOException {
+        if (files == null || files.isEmpty()) return;
 
-			for (MultipartFile file : files) {
-				if (file.isEmpty())
-					continue;
+        // 저장할 디렉토리 생성 (C:/coco/uploads/)
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
 
-				String originalFileName = file.getOriginalFilename();
-				String uuid = UUID.randomUUID().toString();
-				String savedFileName = uuid + "_" + originalFileName;
+        // 기존 이미지가 있다면 그 다음 순서부터 저장 (sortOrder)
+        int sortOrder = 1;
+        if (product.getImages() != null) {
+            sortOrder = product.getImages().size() + 1;
+        }
 
-				File folder = new File(uploadDir);
-				if (!folder.exists())
-					folder.mkdirs();
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) continue;
 
-				File dest = new File(uploadDir, savedFileName);
-				file.transferTo(dest);
+            // 파일명 중복 방지를 위한 UUID 생성
+            String originalFilename = file.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String savedFileName = uuid + "_" + originalFilename;
 
-				ProductImageEntity newImage = new ProductImageEntity();
-				newImage.setProduct(product);
+            // 서버 디스크에 파일 저장
+            File dest = new File(uploadDir + savedFileName);
+            file.transferTo(dest);
 
-				// ex. /images/uploads/uuid_파일명.jpg
-				newImage.setImageUrl("http://localhost:8080/images/uploads/" + savedFileName);
+            // DB에 이미지 정보 저장
+            ProductImageEntity image = new ProductImageEntity();
+            image.setProduct(product);
+            
+            // 웹에서 접근 가능한 URL로 저장 (WebMvcConfig 설정에 맞춤)
+            // http://localhost:8080/images/uploads/파일명
+            image.setImageUrl("http://localhost:8080/images/uploads/" + savedFileName);
+            image.setSortOrder(sortOrder++);
 
-				newImage.setSortOrder(sortOrder++);
-				prdImgRepo.save(newImage);
-			}
-		}
-	}
+            prdImgRepo.save(image);
+        }
+    }
 
 	/**
 	 * API: 관리자 대시보드 통계 조회

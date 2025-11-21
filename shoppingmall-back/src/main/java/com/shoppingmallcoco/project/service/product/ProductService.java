@@ -14,7 +14,7 @@ import jakarta.persistence.criteria.Predicate;
 
 import com.shoppingmallcoco.project.entity.product.ProductEntity;
 import com.shoppingmallcoco.project.repository.product.ProductRepository;
-import com.shoppingmallcoco.project.service.IReviewService;
+import com.shoppingmallcoco.project.service.review.IReviewService;
 
 @Service
 public class ProductService {
@@ -104,9 +104,15 @@ public class ProductService {
 
 			// 카테고리 필터
 			if (categoryNo != null && categoryNo > 0) {
-				// product.category.categoryNo = ?
-				predicates.add(cb.equal(root.get("category").get("categoryNo"), categoryNo));
-			}
+				// 직속 카테고리인 경우 (예: 크림(5) 선택 -> 크림 상품 조회)
+                Predicate directMatch = cb.equal(root.get("category").get("categoryNo"), categoryNo);
+                
+                // 부모 카테고리인 경우 (예: 스킨케어(1) 선택 -> 부모가 스킨케어인 모든 상품 조회)
+                Predicate parentMatch = cb.equal(root.get("category").get("parentCategory").get("categoryNo"), categoryNo);
+                
+                // 두 조건 중 하나라도 만족하면 됨 (OR 조건)
+                predicates.add(cb.or(directMatch, parentMatch));
+            }
 
 			// 상태 필터 (판매중/품절)
 			if (status != null && !status.isEmpty()) {
