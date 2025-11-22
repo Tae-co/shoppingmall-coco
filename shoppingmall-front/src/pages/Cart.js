@@ -80,7 +80,7 @@ function Cart() {
       .then(() => {
         setCartItems([]);
 
-        // ✅ 전체 비우기 후 헤더 업데이트
+        // 전체 비우기 후 헤더 업데이트
         window.dispatchEvent(new Event("cartUpdated"));
       })
       .catch((err) => console.error("전체 삭제 실패:", err));
