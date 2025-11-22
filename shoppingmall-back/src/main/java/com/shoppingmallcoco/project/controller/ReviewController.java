@@ -2,7 +2,9 @@ package com.shoppingmallcoco.project.controller;
 
 import com.shoppingmallcoco.project.dto.review.ReviewDTO;
 import com.shoppingmallcoco.project.dto.review.TagDTO;
+import com.shoppingmallcoco.project.entity.auth.Member;
 import com.shoppingmallcoco.project.entity.review.Tag;
+import com.shoppingmallcoco.project.repository.auth.MemberRepository;
 import com.shoppingmallcoco.project.service.review.ReviewService;
 import com.shoppingmallcoco.project.service.review.TagService;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,11 +30,12 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final TagService tagService;
+    private final MemberRepository memberRepository;
 
     // 리뷰 작성 페이지 데이터 저장
     @PostMapping("/reviews")
     public Long insertReview(@RequestPart("reviewDTO") ReviewDTO reviewDTO,
-        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+                             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
         Long reviewNo = reviewService.insertReview(reviewDTO, files);
         return reviewNo;
@@ -40,16 +44,16 @@ public class ReviewController {
 
     // 리뷰 수정페이지 데이터 조회
     @GetMapping("/reviews/{reviewNo}")
-    public ReviewDTO getReview(@PathVariable Long reviewNo) {
+    public ReviewDTO getReview(@PathVariable("reviewNo") Long reviewNo) {
         return reviewService.getReview(reviewNo);
     }
 
 
     // 리뷰 수정 데이터 저장
     @PutMapping("/reviews/{reviewNo}")
-    public void updateReview(@PathVariable long reviewNo,
-        @RequestPart("reviewDTO") ReviewDTO reviewDTO,
-        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+    public void updateReview(@PathVariable("reviewNo") long reviewNo,
+                             @RequestPart("reviewDTO") ReviewDTO reviewDTO,
+                             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         reviewService.updateReview(reviewNo, reviewDTO, files);
     }
 
@@ -61,7 +65,7 @@ public class ReviewController {
 
     // 리뷰 목록 조회
     @GetMapping("/products/{productNo}/reviews")
-    public List<ReviewDTO> getReviews(@PathVariable long productNo) {
+    public List<ReviewDTO> getReviews(@PathVariable("productNo") long productNo) {
         return reviewService.getReviewList(productNo);
     }
 
@@ -71,6 +75,17 @@ public class ReviewController {
         List<Tag> tagList = tagService.getTagList();
         List<TagDTO> tagDTOList = tagList.stream().map(TagDTO::toDTO).collect(Collectors.toList());
         return tagDTOList;
+    }
+
+    // 좋아요 추가/삭제 (토글)
+    @PostMapping("/reviews/{reviewNo}/like")
+    public int toggleLike(@PathVariable("reviewNo") Long reviewNo, Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            throw new RuntimeException("인증이 필요합니다.");
+        }
+        Member member = memberRepository.findByMemId(authentication.getName())
+            .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+        return reviewService.toggleLike(reviewNo, member.getMemNo());
     }
 
 }
