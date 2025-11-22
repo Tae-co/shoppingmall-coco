@@ -1,18 +1,46 @@
-import React, {useState} from 'react';
-import {NavLink, Link, Routes, Route} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {NavLink, Link, Routes, Route, useNavigate} from 'react-router-dom';
 
 import Logo from '../images/logo.png';
 
 import '../css/Header.css';
-
-import Home from '../pages/Home';
+import { getStoredMember, isLoggedIn, logout } from '../utils/api';
 
 
 const Header = () => {
 
-    // 로그인 상태 관리 (임시)
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState('홍길동');
+    const navigate = useNavigate();
+
+    // 로그인 상태 관리
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const syncLoginStatus = () => {
+            const status = isLoggedIn();
+            setLoggedIn(status);
+
+            if (status) {
+                const memberData = getStoredMember();
+                const fallbackName = memberData.memNickname || memberData.nickname || memberData.memName || memberData.memId || '회원';
+                setUserName(fallbackName);
+            } else {
+                setUserName('');
+            }
+        };
+
+        syncLoginStatus();
+        window.addEventListener('loginStatusChanged', syncLoginStatus);
+
+        return () => {
+            window.removeEventListener('loginStatusChanged', syncLoginStatus);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <div>
@@ -22,18 +50,23 @@ const Header = () => {
                     <div className="top_inner">
                         <ul className="top_list">
                             {/* 로그인 시 사용자 이름 표시 */}
-                            {isLoggedIn && (
+                                {loggedIn && (
                                 <li className="top_item greet">
-                                    <b>{userName}</b>님, 안녕하세요!
+                                    <b>{userName}</b>님 환영합니다!
                                 </li>
                             )}
                             <li className="top_item">고객센터</li>
-                            <li className="top_item">마이페이지</li>
+                            <li className="top_item"><Link to="/mypage" className="top_item">마이페이지</Link></li>
                             <li className="top_item">알림</li>
                             <li className="top_item">
                                 {/* 로그인 여부에 따라 로그인/로그아웃 버튼 분기 */}
-                                {/* 로그아웃 기능 추후 연동 예정 */}
-                                {isLoggedIn ? (<div>로그아웃</div>) : (<Link to="/login" className="top_item">로그인</Link>)}
+                                {loggedIn ? (
+                                    <button type="button" className="top_item logout_button" onClick={handleLogout}>
+                                        로그아웃
+                                    </button>
+                                ) : (
+                                    <Link to="/login" className="top_item">로그인</Link>
+                                )}
                             </li>
                         </ul>
                     </div>
@@ -56,7 +89,7 @@ const Header = () => {
                                                             className={({isActive}) => 
                                                                 isActive ? 'gnb_link active' : 'gnb_link'}>HOME</NavLink></li>
                                     <li className="gnb_item"><NavLink 
-                                                            to="/shop" 
+                                                            to="/product" 
                                                             className={({isActive}) => 
                                                                 isActive ? 'gnb_link active' : 'gnb_link'}>SHOP</NavLink></li>
                                     <li className="gnb_item"><NavLink 
@@ -90,11 +123,11 @@ const Header = () => {
                                 </form>
                             </div>
                             {/* 장바구니 버튼 */}
-                            <a className="btn_cart">
+                            <Link to="/cart" className="btn_cart">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
                                     <path fill="#222" fillRule="evenodd" d="M16.192 5.2h3.267a1 1 0 0 1 .998.938l.916 14.837a.4.4 0 0 1-.399.425H3.025a.4.4 0 0 1-.4-.425l.917-14.837A1 1 0 0 1 4.54 5.2h3.267a4.251 4.251 0 0 1 8.385 0ZM7.75 6.7H5.01l-.815 13.2h15.61l-.816-13.2h-2.74v2.7h-1.5V6.7h-5.5v2.7h-1.5V6.7Zm1.59-1.5h5.32a2.751 2.751 0 0 0-5.32 0Z" clipRule="evenodd"></path>
                                 </svg>
-                            </a>
+                            </Link>
                             {/* 카테고리 버튼 */}
                             <a className="btn_category">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
@@ -105,15 +138,6 @@ const Header = () => {
                     </div>
                 </div>
             </header>
-            
-            {/* 라우트 매핑 */}
-            <Routes>
-                <Route path="/" element={<Home/>}/>
-                <Route path="/login" />
-                <Route path="/shop" />
-                <Route path="/comate"/>
-                <Route path="/cart" />
-            </Routes>
         </div>
     );
 }

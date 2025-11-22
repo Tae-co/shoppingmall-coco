@@ -33,7 +33,7 @@ const CardContent = styled.div`
   padding: 10px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* 카드의 남은 공간을 꽉 채움 */
+  flex-grow: 1;
 `;
 
 const ProductName = styled.h3`
@@ -53,6 +53,8 @@ const TagContainer = styled.div`
   display: flex;
   gap: 6px;
   margin-top: 10px;
+  flex-wrap: warp;
+  overflow: hidden;
 `;
 
 const Tag = styled.span`
@@ -62,6 +64,8 @@ const Tag = styled.span`
   color: #555;
   padding: 4px 8px;
   border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 `;
 
 // 간단 리뷰
@@ -77,7 +81,7 @@ const SimpleReview = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* 텍스트를 2줄로 제한 */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 `;
 
@@ -86,16 +90,34 @@ const ProductPrice = styled.p`
   font-weight: bold;
   margin-top: 10px;
   
-  /* lex-grow: 1과 함께 사용되어 가격을 맨 아래로 밀어냄 */
   margin-top: auto; 
-  padding-top: 10px; /* 리뷰와의 간격 */
+  padding-top: 10px;
 `;
+
+const skinConcernMap = {
+  hydration: '수분',
+  moisture: '보습',
+  brightening: '미백',
+  tone: '피부톤',
+  soothing: '진정',
+  sensitive: '민감',
+  uv: '자외선차단',
+  wrinkle: '주름',
+  elasticity: '탄력',
+  pores: '모공'
+};
 
 const skinTypeMap = {
   dry: '건성',
   oily: '지성',
   combination: '복합성',
   sensitive: '민감성'
+};
+
+const personalColorMap = {
+  cool: '쿨톤',
+  warm: '웜톤',
+  neutral: '뉴트럴톤'
 };
 
 const ProductCard = ({ product, onAddToCart }) => {
@@ -108,8 +130,17 @@ const ProductCard = ({ product, onAddToCart }) => {
           ⭐ {product.averageRating} ({product.reviewCount})
         </ProductRating>
         <TagContainer>
+          {/* SkinType 태그 */}
           {product.skinTypes?.map(type => (
             <Tag key={type}># {skinTypeMap[type] || type}</Tag>
+          ))}
+          {/* SkinConcern 태그 */}
+          {product.skinConcerns?.map(concern => (
+            <Tag key={concern}># {skinConcernMap[concern] || concern}</Tag>
+          ))}
+          {/* personalColor 태그 */}
+          {product.personalColors?.map(color => (
+            <Tag key={color}># {personalColorMap[color] || color}</Tag>
           ))}
         </TagContainer>
         <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
