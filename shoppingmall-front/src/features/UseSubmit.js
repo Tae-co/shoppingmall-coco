@@ -9,13 +9,13 @@ function useSubmit(
     starTotal,
     previewFiles,
     navigate,
-    orderItemNo ,
-    reviewNo    
+    orderItemNo,
+    reviewNo
 
 ) {
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         const formData = new FormData();
         const positiveTags = ptagsList.filter((tag, index) => ptagsClicked[index]);
         const negativeTags = ntagsList.filter((tag, index) => ntagsClicked[index]);
@@ -42,7 +42,7 @@ function useSubmit(
         const allSelectedTags = [...positiveTags, ...negativeTags];
         const tagIds = allSelectedTags.map(tag => tag.tagNo);
 
-        const orderItemNoNum = Number(orderItemNo); 
+        const orderItemNoNum = Number(orderItemNo);
 
         const reviewDto = {
             rating: starTotal,
@@ -54,11 +54,6 @@ function useSubmit(
         formData.append(
             "reviewDTO", new Blob([JSON.stringify(reviewDto)], { type: "application/json" })
         )
-
-        console.log("reviewDto:", reviewDto);
-        console.log("order",orderItemNoNum)
-        console.log("review",reviewNo)
-
         if (previewFiles && previewFiles.length > 0) {
             previewFiles.forEach((pf) => {
                 if (pf.file) {

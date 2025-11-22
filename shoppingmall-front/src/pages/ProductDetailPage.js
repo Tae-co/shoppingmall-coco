@@ -5,8 +5,7 @@ import ProductDetailSkeleton from '../components/product/detail/ProductDetailSke
 import ProductImageGallery from '../components/product/detail/ProductImageGallery';
 import ProductInfoBox from '../components/product/detail/ProductInfoBox';
 import ProductTabs from '../components/product/detail/ProductTabs';
-import SimilarSkinReview from '../features/SimilarSkinReview';
-import { fetchWithAuth, getStoredMember, isLoggedIn, getStoredMemberId} from '../utils/api';
+import { fetchWithAuth, getStoredMember, isLoggedIn } from '../utils/api';
 
 
 // --- 스타일 컴포넌트 정의 ---
@@ -100,9 +99,6 @@ function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
   const [toastMessage, setToastMessage] = useState('');
-  const [skinStats, setSkinStats] = useState(null);  // 유사 피부타입 태그 통계
-  const memberId = getStoredMemberId();
-
   // productId가 바뀔 때마다 실행
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -128,22 +124,6 @@ function ProductDetailPage() {
     fetchProductDetail();
 
   }, [productId]);
-
-  // 피부 타입 
-  useEffect(() => {
-    if (!productId || !memberId) return;
-    const fetchSkinStats = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/products/${productId}/similar-skin-tags?memberId=${memberId}`);
-        if (!res.ok) throw new Error('통계 데이터 불러오기 실패');
-        const stats = await res.json();
-        setSkinStats(stats);
-      } catch (e) {
-        setSkinStats(null);
-      }
-    };
-    fetchSkinStats();
-  }, [productId, memberId]);
 
   // 토스트 메시지가 나타나면 2초 후에 사라지도록 하는 useEffect
   useEffect(() => {
@@ -174,10 +154,10 @@ function ProductDetailPage() {
     }
 
     // 회원 정보 가져오기 
-    const member = getStoredMember(); 
+    const member = getStoredMember();
     if (!member || !member.memNo) {
-        alert('회원 정보를 찾을 수 없습니다.');
-        return;
+      alert('회원 정보를 찾을 수 없습니다.');
+      return;
     }
 
     // 옵션 번호 결정
@@ -199,27 +179,27 @@ function ProductDetailPage() {
     }
 
     try {
-        // API 호출 (CartRequestDto 형식에 맞춤)
-        const response = await fetchWithAuth('/coco/members/cart/items', {
-            method: 'POST',
-            body: JSON.stringify({
-                memNo: member.memNo,
-                optionNo: optionNoToUse,
-                cartQty: quantity
-            })
-        });
+      // API 호출 (CartRequestDto 형식에 맞춤)
+      const response = await fetchWithAuth('/coco/members/cart/items', {
+        method: 'POST',
+        body: JSON.stringify({
+          memNo: member.memNo,
+          optionNo: optionNoToUse,
+          cartQty: quantity
+        })
+      });
 
-        if (response.ok) {
-             setToastMessage('장바구니에 상품을 담았습니다.');
-             
-             if(window.confirm('장바구니로 이동하시겠습니까?')) { navigate('/cart'); }
-        } else {
-            const errorData = await response.json();
-            alert(errorData.message || '장바구니 담기에 실패했습니다.');
-        }
+      if (response.ok) {
+        setToastMessage('장바구니에 상품을 담았습니다.');
+
+        if (window.confirm('장바구니로 이동하시겠습니까?')) { navigate('/cart'); }
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || '장바구니 담기에 실패했습니다.');
+      }
     } catch (error) {
-        console.error(error);
-        alert('오류가 발생했습니다.');
+      console.error(error);
+      alert('오류가 발생했습니다.');
     }
   };
 
@@ -282,7 +262,6 @@ function ProductDetailPage() {
           handleAddToCart={handleAddToCart}
           handleBuyNow={handleBuyNow}
         />
-         <SimilarSkinReview stats={skinStats} />
       </TopSection>
       <ProductTabs product={product} />
 

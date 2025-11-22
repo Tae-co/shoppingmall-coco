@@ -6,7 +6,7 @@ import ProductListSkeleton from '../components/product/list/ProductListSkeleton'
 import Pagination from '../components/product/list/Pagination';
 import ProductSidebar from '../components/product/list/ProductSidebar';
 import ProductListHeader from '../components/product/list/ProductListHeader';
-import { fetchWithAuth, getStoredMember, isLoggedIn } from '../utils/api';
+import { fetchWithAuth, getStoredMember, isLoggedIn  } from '../utils/api';
 
 // 스타일 컴포넌트 정의
 const PageContainer = styled.div`
@@ -58,7 +58,6 @@ function ProductListPage() {
   // 전체 상품 목록은 처음에 한 번만 불러오기
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchProducts = async () => {
       setIsLoading(true); // 로딩 시작
 

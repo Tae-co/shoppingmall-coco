@@ -1,7 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ProductButton from '../ProductButton';
+
 
 // 스타일 컴포넌트
 const CardLink = styled(Link)`
@@ -144,9 +144,12 @@ const personalColorMap = {
   neutral: '뉴트럴톤'
 };
 
+
+
 const ProductCard = ({ product, onAddToCart }) => {
-  const isSoldOut = product.status === '품절' || product.status === 'SOLD_OUT'; 
+  const isSoldOut = product.status === '품절' || product.status === 'SOLD_OUT';
   const isStop = product.status === '판매중지' || product.status === 'STOP';
+
   return (
     <CardLink to={isSoldOut || isStop ? '#' : `/products/${product.prdNo}`} style={{ cursor: isSoldOut ? 'default' : 'pointer' }}>
       <ImageWrapper>
@@ -180,6 +183,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         </TagContainer>
         <ProductPrice>{product.prdPrice.toLocaleString()}원</ProductPrice>
         <SimpleReview>{product.simpleReview}</SimpleReview>
+
         <ProductButton
           onClick={(e) => {
             if (isSoldOut || isStop) {

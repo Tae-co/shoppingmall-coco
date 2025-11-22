@@ -110,7 +110,7 @@ function UpdateReview() {
             <div className="reviewMain">
                 <form className="reviewForm" onSubmit={handleSubmit}>
                     <div className="title">
-                        <h1>리뷰 수성</h1>
+                        <h1>리뷰 수정</h1>
                         <h4>제품을 사용해보신 경험을 공유해주세요</h4>
                     </div>
 

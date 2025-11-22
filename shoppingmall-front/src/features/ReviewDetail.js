@@ -12,16 +12,6 @@ import axios from 'axios'
 function ReviewDetail({ reviewData, onDelete }) {
     const navigate = useNavigate();
 
-    // const ptags = ["보습력이 좋아요", "향이 좋아요", "발림성 좋아요"
-    //     , "흡수가 빨라요", "끈적임 없어요", "피부 진정", "화이트닝 효과"
-    //     , "주름 개선", "모공 케어", "민감성 피부 OK", "가성비 좋아요"
-    // ]
-
-    // const ntags = ["보습력이 부족해요", "향이 별로예요", "발림성 안 좋아요"
-    //     , "흡수가 느려요", "끈적여요", "자극이 있어요", "효과 없어요"
-    //     , "피부 트러블", "가격이 비싸요", "용량이 적어요", "제품이 변질됐어요"
-    // ]
-
     const {
         reviewNo,
         userNickname,
@@ -45,7 +35,7 @@ function ReviewDetail({ reviewData, onDelete }) {
 
     useEffect(() => {
         setRating(rating);
-    }, [rating, setRating]);
+    }, [rating]);
 
     const updateReview = () => {
         navigate(`/update-reviews/${reviewNo}`);

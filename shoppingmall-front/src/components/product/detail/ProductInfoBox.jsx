@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ProductButton from '../ProductButton';
+import SimilarSkinReview from '../../../features/SimilarSkinReview';
 
 // 스타일
 const InfoBox = styled.div`
@@ -193,6 +194,10 @@ const ProductInfoBox = ({
           />
           <QuantityBtn onClick={() => setQuantity(quantity + 1)}>+</QuantityBtn>
         </QuantityControl>
+      </div>
+
+      <div>
+         <SimilarSkinReview productId={product.prdNo} />
       </div>
 
       <ButtonGroup>
