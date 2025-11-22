@@ -118,8 +118,14 @@ function PaymentPage() {
             pointsUsed: pointsToUse
           };
 
+          const token = localStorage.getItem('token');
           // ---  Axios로 백엔드 API 호출 ---
-          axios.post('http://localhost:8080/api/orders', orderData)
+          axios.post('http://localhost:8080/api/orders', orderData, {
+            headers: {
+              'Authorization': `Bearer ${token}`, 
+              'Content-Type': 'application/json'
+            }
+          })
             .then((response) => {
               console.log("백엔드 저장 성공:", response.data);
               alert("주문이 성공적으로 완료되었습니다!");
@@ -129,8 +135,14 @@ function PaymentPage() {
             })
             .catch((error) => {
               console.error("백엔드 저장 실패:", error);
-              // 에러 메시지를 알림창으로 보여줌
-              alert("주문 저장 실패: " + (error.response?.data || "서버 오류"));
+              
+              // (친절한 에러 처리)
+              if (error.response && error.response.status === 403) {
+                alert("로그인 정보가 만료되었습니다. 다시 로그인해주세요.");
+                // navigate('/login'); // 필요시 로그인 페이지로 이동
+              } else {
+                alert("주문 저장 실패: " + (error.response?.data || "서버 오류"));
+              }
             });
 
         } else {
