@@ -9,6 +9,7 @@ import detailIcon from '../images/detailIcon.svg'
 import love from '../images/love.png'
 import '../css/ReviewDetail.css'
 import axios from 'axios'
+import { isLoggedIn } from '../utils/api'
 function ReviewDetail({ reviewData, onDelete }) {
     const navigate = useNavigate();
 
@@ -30,10 +31,11 @@ function ReviewDetail({ reviewData, onDelete }) {
         content,
         prosTags,
         consTags,
-        reviewImages
+        reviewImages,
+        likeCount
     } = reviewData;
 
-    const [like, setlike] = useState(0);
+    const [like, setlike] = useState(likeCount || 0);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const { starTotal, clicked, starArray, setRating } = UseStarRating(0);
@@ -45,7 +47,8 @@ function ReviewDetail({ reviewData, onDelete }) {
 
     useEffect(() => {
         setRating(rating);
-    }, [rating, setRating]);
+        setlike(likeCount || 0);
+    }, [rating, likeCount]);
 
     const updateReview = () => {
         navigate(`/update-reviews/${reviewNo}`);
@@ -60,9 +63,31 @@ function ReviewDetail({ reviewData, onDelete }) {
         }
     }
 
-    const addLike = () => {
-        let addLove = like + 1;
-        setlike(addLove);
+    const addLike = async () => {
+        if (!isLoggedIn()) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:8080/reviews/${reviewNo}/like`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                const updatedLikeCount = await response.json();
+                setlike(updatedLikeCount);
+            } else {
+                const error = await response.json();
+                alert(error.message || '좋아요 처리에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('좋아요 처리 오류:', error);
+            alert('좋아요 처리에 실패했습니다.');
+        }
     }
 
     return (

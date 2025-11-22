@@ -46,8 +46,8 @@ public class MemberController {
         Map<String, Object> response = new HashMap<>();
         response.put("available", !isDuplicate);
         response.put("message", isDuplicate ?
-            "이미 사용 중인 " + type + "입니다." :
-            "사용 가능한 " + type + "입니다.");
+                "이미 사용 중인 " + type + "입니다." :
+                "사용 가능한 " + type + "입니다.");
         return ResponseEntity.ok(response);
     }
 
@@ -278,11 +278,11 @@ public class MemberController {
         try {
             // 관리자 권한 체크
             MemberResponseDto currentMember = memberService.getMemberByMemId(authentication.getName());
-            if (currentMember.getRole() == null || 
-                (!currentMember.getRole().equals("ADMIN") && !currentMember.getRole().equals("admin"))) {
+            if (currentMember.getRole() == null ||
+                    (!currentMember.getRole().equals("ADMIN") && !currentMember.getRole().equals("admin"))) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "관리자 권한이 필요합니다."));
             }
-            
+
             Map<String, Object> result = memberService.getAllMembers(page, size, searchTerm, role);
             return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
