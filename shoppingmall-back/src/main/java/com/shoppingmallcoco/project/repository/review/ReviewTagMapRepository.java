@@ -26,7 +26,7 @@ public interface ReviewTagMapRepository extends JpaRepository<ReviewTagMap, Long
 
     // 2. 특정 상품(prdNo) + 특정 피부타입(skinType)인 리뷰들의 '태그별 개수' 구하기 (상위 3개만)
     // (ReviewTagMap -> Review -> ... -> Skin 경로)
-    @Query("SELECT t.tagName AS tagName, COUNT(rtm) AS count " +
+    @Query("SELECT t.tagName AS tagName, COUNT(rtm) AS count, t.tagStatus AS tagStatus " +
         "FROM ReviewTagMap rtm " +
         "JOIN rtm.tag t " +
         "JOIN rtm.review r " +
@@ -35,7 +35,7 @@ public interface ReviewTagMapRepository extends JpaRepository<ReviewTagMap, Long
         "JOIN o.member m " +
         "JOIN m.skin s " +
         "WHERE oi.product.prdNo = :prdNo AND s.skinType = :skinType " +
-        "GROUP BY t.tagName " +
+        "GROUP BY t.tagName, t.tagStatus " +
         "ORDER BY COUNT(rtm) DESC")
     List<TagStatSimple> findTopTagsByProductAndSkinType(@Param("prdNo") Long prdNo,
         @Param("skinType") String skinType, Pageable pageable);
@@ -46,5 +46,7 @@ public interface ReviewTagMapRepository extends JpaRepository<ReviewTagMap, Long
         String getTagName();
 
         Long getCount();
+
+        String getTagStatus();
     }
 }

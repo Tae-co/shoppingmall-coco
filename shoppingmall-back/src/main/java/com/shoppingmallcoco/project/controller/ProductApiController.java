@@ -76,9 +76,9 @@ public class ProductApiController {
     // 구매 경고 알림
     @GetMapping("/products/{prdNo}/similar-skin-tags")
     public ResponseEntity<SimilarSkinStatsDTO> getSimilarSkinTagStats(
-        @PathVariable Long prdNo, @RequestParam("memberId") Long memberId) {
+        @PathVariable Long prdNo, @RequestParam("memberNo") Long memberNo) {
 
-        SimilarSkinStatsDTO result = reviewService.getSimilarSkinStats(prdNo, memberId);
+        SimilarSkinStatsDTO result = reviewService.getSimilarSkinStats(prdNo, memberNo);
         return ResponseEntity.ok(result);
     }
 
