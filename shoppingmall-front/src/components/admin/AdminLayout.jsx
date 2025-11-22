@@ -64,6 +64,25 @@ const NavItem = styled(Link)`
   }
 `;
 
+// 비활성화된 메뉴 아이템 스타일
+const DisabledNavItem = styled.span`
+  display: block;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  
+  background: transparent;
+  color: #718096; /* 흐린 회색 */
+  cursor: not-allowed; /* 금지 커서 */
+  border-left: 4px solid transparent;
+
+  &:hover {
+    color: #718096;
+    transform: none; /* 움직임 효과 제거 */
+  }
+`;
+
 const PageWrapper = styled.div`
   flex: 1;
   display: flex;
@@ -135,9 +154,9 @@ function AdminLayout() {
             </NavItem>
           </li>
           <li>
-            <NavItem to="/admin/orders" $active={isActive('/admin/orders')}>
+            <DisabledNavItem>
               주문 관리 (준비중)
-            </NavItem>
+            </DisabledNavItem>
           </li>
         </NavList>
       </Sidebar>

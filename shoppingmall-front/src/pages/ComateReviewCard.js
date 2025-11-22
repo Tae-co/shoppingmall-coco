@@ -9,7 +9,7 @@ const ComateReviewCard = ({productName, productOption, createdAt, rating, conten
 
     return (
         <div className="comate_review_wrapper">
-            <div className="product_info">
+            <div className="comate_product_info">
                 <img src={sampleImg_product} alt={productName} className="product_img comate"/>
                 <div className="text_info">
                     <div className="product_name">{productName}</div>

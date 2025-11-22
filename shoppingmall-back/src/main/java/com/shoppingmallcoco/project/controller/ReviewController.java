@@ -35,7 +35,7 @@ public class ReviewController {
     // 리뷰 작성 페이지 데이터 저장
     @PostMapping("/reviews")
     public Long insertReview(@RequestPart("reviewDTO") ReviewDTO reviewDTO,
-                             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
         Long reviewNo = reviewService.insertReview(reviewDTO, files);
         return reviewNo;
@@ -52,8 +52,8 @@ public class ReviewController {
     // 리뷰 수정 데이터 저장
     @PutMapping("/reviews/{reviewNo}")
     public void updateReview(@PathVariable("reviewNo") long reviewNo,
-                             @RequestPart("reviewDTO") ReviewDTO reviewDTO,
-                             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        @RequestPart("reviewDTO") ReviewDTO reviewDTO,
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         reviewService.updateReview(reviewNo, reviewDTO, files);
     }
 

@@ -5,6 +5,7 @@ import Logo from '../images/logo.png';
 
 import '../css/Header.css';
 import { getStoredMember, isLoggedIn, logout, getCurrentMember } from '../utils/api';
+import axios from "axios";
 
 
 const Header = () => {
@@ -36,6 +37,7 @@ const Header = () => {
     const [loggedIn, setLoggedIn] = useState(initialState.loggedIn);
     const [userName, setUserName] = useState(initialState.userName);
     const [userRole, setUserRole] = useState(initialState.userRole);
+    const [cartCount, setCartCount] = useState(0);
 
     useEffect(() => {
         const syncLoginStatus = () => {
@@ -58,10 +60,27 @@ const Header = () => {
                 setUserRole('');
             }
         };
+    // 장바구니 개수 동기화 함수
+    const syncCartCount = async () => {
+        try {
+            const member = getStoredMember();
+            if (!member || !member.memNo) {
+                setCartCount(0);
+                return;
+            }
+
+            const res = await axios.get(
+                `http://localhost:8080/api/coco/members/cart/items/${member.memNo}`
+            );
+            setCartCount(res.data.length);  // 장바구니 아이템 개수
+        } catch (err) {
+            console.error("장바구니 개수 조회 실패:", err);
+        }
+    };
 
         // 초기 로드 시 먼저 localStorage에서 상태 확인
         syncLoginStatus();
-
+        syncCartCount();
         // 그 다음 백엔드에서 최신 정보 가져오기 (한 번만)
         const loadMemberInfo = async () => {
             if (isLoggedIn()) {
@@ -83,9 +102,10 @@ const Header = () => {
         
         // 로그인 상태 변경 이벤트 리스너 (로그인/로그아웃 시에만 발생)
         window.addEventListener('loginStatusChanged', syncLoginStatus);
-
+        window.addEventListener("cartUpdated", syncCartCount);
         return () => {
             window.removeEventListener('loginStatusChanged', syncLoginStatus);
+            window.removeEventListener("cartUpdated", syncCartCount);
         };
     }, []);
 
@@ -257,6 +277,7 @@ const Header = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24" height="24">
                                     <path fill="#222" fillRule="evenodd" d="M16.192 5.2h3.267a1 1 0 0 1 .998.938l.916 14.837a.4.4 0 0 1-.399.425H3.025a.4.4 0 0 1-.4-.425l.917-14.837A1 1 0 0 1 4.54 5.2h3.267a4.251 4.251 0 0 1 8.385 0ZM7.75 6.7H5.01l-.815 13.2h15.61l-.816-13.2h-2.74v2.7h-1.5V6.7h-5.5v2.7h-1.5V6.7Zm1.59-1.5h5.32a2.751 2.751 0 0 0-5.32 0Z" clipRule="evenodd"></path>
                                 </svg>
+                                {cartCount > 0 && (<span className="cart-badge">{cartCount}</span>)}
                             </Link>
                             {/* 카테고리 버튼 */}
                             <a className="btn_category">
